@@ -23,6 +23,7 @@
 	<ItemGroup>
 		<Folder Include="Contexts\" />
 		<Folder Include="wwwroot\image\" />
+		<Folder Include="wwwroot\font-awesome\" />
 	</ItemGroup>
 
 	<ItemGroup>

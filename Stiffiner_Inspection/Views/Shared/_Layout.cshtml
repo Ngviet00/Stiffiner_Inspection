@@ -8,8 +8,10 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/scss/header.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/scss/header-control.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/scss/main.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
 </head>
-<body class="p-1">
+<body class="pl-1 pr-1 pb-3 pt-1">
     @await Html.PartialAsync("Header")
     @await Html.PartialAsync("HeaderControl")
 
@@ -21,5 +23,6 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script src="~/js/get-current-time.js" asp-append-version="true"></script>
 </body>
 </html>

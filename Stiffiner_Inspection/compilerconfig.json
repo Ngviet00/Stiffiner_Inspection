@@ -6,5 +6,9 @@
   {
     "outputFile": "wwwroot/scss/header-control.css",
     "inputFile": "wwwroot/scss/header-control.scss"
+  },
+  {
+    "outputFile": "wwwroot/scss/main.css",
+    "inputFile": "wwwroot/scss/main.scss"
   }
 ]
