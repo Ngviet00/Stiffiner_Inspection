@@ -1,42 +1,43 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Stiffiner_Inspection.Models.DTO.Data;
+using Stiffiner_Inspection.Models.Response;
+using Stiffiner_Inspection.Services;
 
 namespace Stiffiner_Inspection.Controllers
 {
+    [Route("api/v1/")]
     [ApiController]
     public class DataController : Controller
     {
-        [Route("api/data/get-data")]
-        [HttpGet]
-        public IActionResult GetData()
-        {
-            var dataList = new List<object>
-            {
-                new {
-                    id = 1,
-                    status = 200,
-                    title = "test",
-                    result = "OK",
-                    error_code = "100",
-                    client_id = 1,
-                    time = "13:10:00",
-                },
-                new {
-                    id = 2,
-                    status = 200,
-                    title = "test",
-                    result = "OK",
-                    error_code = "100",
-                    client_id = 1,
-                    time = "13:10:00",
-                },
-            };
+        public DataService _dataService;
 
-            return Ok(dataList);
+        public DataController(DataService dataService)
+        {
+            _dataService = dataService;
         }
 
-        [Route("api/data/post-data")]
+        [Route("save-data")]
         [HttpPost]
-        public IActionResult PostData()
+        public async Task<IActionResult> SaveData(DataDTO dataDTO)
+        {
+            try
+            {
+                var result = await _dataService.Save(dataDTO);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Route("check-index")]
+        [HttpPost]
+        public IActionResult CheckIndex()
         {
             var data = new
             {
@@ -45,6 +46,21 @@ namespace Stiffiner_Inspection.Controllers
             };
 
             return Ok(data);
+        }
+
+        [Route("get-model")]
+        [HttpGet]
+        public IActionResult GetModel(int threshold, int min_area)
+        {
+            var result = new
+            {
+                status = 200,
+                message = "success",
+                threshold = threshold,
+                min_area = min_area
+            };
+
+            return Ok(result);
         }
     }
 }

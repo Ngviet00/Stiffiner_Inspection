@@ -1,7 +1,24 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Stiffiner_Inspection.Contexts;
+using Stiffiner_Inspection.Hubs;
+using Stiffiner_Inspection.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("StiffinerInspectionContext")));
+
+builder.Services.AddScoped<DataService>();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Data", Version = "v1" });
+});
 
 var app = builder.Build();
 
@@ -13,12 +30,19 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "data");
+});
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthorization();
+app.MapHub<HomeHub>("/homeHub");
 
 app.MapControllerRoute(
     name: "default",
