@@ -46,7 +46,6 @@ namespace Stiffiner_Inspection
                 string str = "";
                 for (int i = 0; i < data.Length; i++)
                 {
-
                     Byte[] buf = BitConverter.GetBytes(data[i]);
                     str += System.Text.Encoding.ASCII.GetString(buf);
                 }
