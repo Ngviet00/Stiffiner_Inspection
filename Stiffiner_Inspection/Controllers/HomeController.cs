@@ -15,17 +15,10 @@ namespace Stiffiner_Inspection.Controllers
 
         public IActionResult Index()
         {
+            Global.controlPLC.Connect();
             return View();
         }
 
-        public int Getdata()
-        {
-            Global.controlPLC.Connect();
-
-            //Console.WriteLine("*****************");
-            //return Global.controlPLC.GetData();
-            return 0;
-        }
         public int Setdata()
         {
             Random random = new Random();
