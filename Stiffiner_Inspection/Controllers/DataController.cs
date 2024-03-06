@@ -32,7 +32,7 @@ namespace Stiffiner_Inspection.Controllers
                 //send to status to PLC
 
                 //event to client
-                await _hubContext.Clients.All.SendAsync("receive-data", result);
+                await _hubContext.Clients.All.SendAsync("ReceiveData", result);
 
                 //event to client log
 
@@ -50,7 +50,7 @@ namespace Stiffiner_Inspection.Controllers
             }
         }
 
-        [Route("check-index")]
+        /*[Route("check-index")]
         [HttpPost]
         public IActionResult CheckIndex()
         {
@@ -76,6 +76,6 @@ namespace Stiffiner_Inspection.Controllers
             };
 
             return Ok(result);
-        }
+        }*/
     }
 }

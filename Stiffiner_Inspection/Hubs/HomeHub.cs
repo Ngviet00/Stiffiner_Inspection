@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Stiffiner_Inspection.Hubs
 {
@@ -7,6 +8,12 @@ namespace Stiffiner_Inspection.Hubs
         public HomeHub()
         {
 
+        }
+
+        [HttpPost]
+        public async void GetCurrentStatusPLC()
+        {
+            await Clients.All.SendAsync("SetCurrentStatusPLC", 1);
         }
     }
 }

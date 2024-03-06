@@ -10,10 +10,14 @@ $(function () {
     //start connection
     connection.start().then(() => {
         console.log("Connection established");
+
+        connection.invoke("GetCurrentStatusPLC")
+            .catch(function (err) {
+                console.error(err.toString());
+            });
     }).catch(err => console.error(err.toString()));
 
-    //event 
-    connection.on("receive-data", (data) => {
+    connection.on("ReceiveData", (data) => {
         const noDataTimeLogRow = $('.time-log-no-data');
 
         const noDataResultLogRow = $('.result-log-no-data');
@@ -25,8 +29,14 @@ $(function () {
         appendResultLog(data);
     });
 
-    connection.on("connect-plc", (data) => {
-        alert("connect plc");
+    connection.on("SetCurrentStatusPLC", (value) => {
+        if (value == 1) {
+            $('#value-plc-status').css("color", "#027A48").css("background", "#b3ffd2");
+        }
+    });
+
+    connection.on("ChangeStatusPLC", (value) => {
+        
     });
 
     function appendResultLog(data) {

@@ -242,11 +242,18 @@
   font-weight: 500;
 }
 .wrap-content #overview .wrap-overview #io-status .plc-status #value-plc-status {
-  background: #b3ffd2;
+  /*background: #b3ffd2;*/
   margin-left: 10px;
   padding: 3px 6px;
-  color: #027A48;
+  /*color: #027A48;*/
   border-radius: 3px;
+  background: #686b69;
+  color: #cdcdcd;
+  /*background: #686b69;
+  margin-left: 10px;
+  padding: 3px 6px;
+  color: #cdcdcd;
+  border-radius: 3px;*/
 }
 .wrap-content #overview .statistical-chart {
   background: #F2F5FF;
