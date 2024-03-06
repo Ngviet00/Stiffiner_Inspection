@@ -28,10 +28,16 @@ namespace Stiffiner_Inspection.Controllers
             {
                 //save to db
                 var result = await _dataService.Save(dataDTO);
-                
+
+                //send to status to PLC
+
                 //event to client
                 await _hubContext.Clients.All.SendAsync("receive-data", result);
-                
+
+                //event to client log
+
+                //write log to file
+
                 return Ok(result);
             }
             catch (Exception ex)
