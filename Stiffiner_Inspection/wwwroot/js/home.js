@@ -1,11 +1,75 @@
 ﻿"use strict";
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/homeHub").build();
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/homeHub")
+    .configureLogging(signalR.LogLevel.Information)
+    .build();
 
 $(function () {
-    connection.start().then(function () {
-        console.log("connect success");
-    }).catch(function (err) {
-        return console.error(err.toString());
+
+    //start connection
+    connection.start().then(() => {
+        console.log("Connection established");
+    }).catch(err => console.error(err.toString()));
+
+    //event 
+    connection.on("receive-data", (data) => {
+        const noDataTimeLogRow = $('.time-log-no-data');
+
+        const noDataResultLogRow = $('.result-log-no-data');
+
+        if (noDataResultLogRow) {
+            noDataResultLogRow.remove();
+        }
+
+        appendResultLog(data);
     });
+
+    connection.on("connect-plc", (data) => {
+        alert("connect plc");
+    });
+
+    function appendResultLog(data) {
+        console.log();
+        let result = `
+            <tr>
+                <td>${convertDate(data.time)}</td >
+                <td>${data.model}</td>
+                <td>${data.tray}</td>
+                <td>${data.side}</td>
+                <td>${data.no}</td>
+                <td>${data.camera}</td>
+                <td class="status-item ${data.result == 'OK' ? "text-success" : "text-danger"}">
+                    ${data.result}
+                </td>
+                <td class="detail-error">${data.errorDetection ?? "-"}</td>
+            </tr>
+        `;
+
+        $("#result-log table tbody").prepend(result);
+    }
+
+    function appendTimeLog(data) {
+        let a = "13:49:12";
+        let b = "Program";
+        let c = "Sent>>LOATARESULT32,16,43";
+
+        let result = `
+            <tr>
+                <td class="max-w90">${a}</td>
+                <td class="max-w105">${b}</td>
+                <td>${c}</td>
+            </tr>
+        `;
+
+        $("#time-log table tbody").prepend(result);
+    }
+
+    function convertDate(date) {
+        let hours = date.substr(11, 2);
+        let minutes = date.substr(14, 2);
+        let seconds = date.substr(17, 2);
+
+        return hours + ":" + minutes + ":" + seconds;
+    }
 });

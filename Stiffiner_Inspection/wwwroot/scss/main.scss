@@ -282,6 +282,34 @@ $color_3C3C3C: #3C3C3C;
                         font-weight: 400;
                     }
                 }
+
+                .wr-system-status {
+                    font-size: 13px;
+                    color: #3c3c3c;
+                    font-weight: 500;
+
+                    #value-system-status {
+                        background: #b3ffd2;
+                        margin-left: 10px;
+                        padding: 3px 5px;
+                        color: #027A48;
+                        border-radius: 3px;
+                    }
+                }
+
+                .plc-status {
+                    font-size: 13px;
+                    color: #3c3c3c;
+                    font-weight: 500;
+
+                    #value-plc-status {
+                        background: #b3ffd2;
+                        margin-left: 10px;
+                        padding: 3px 6px;
+                        color: #027A48;
+                        border-radius: 3px;
+                    }
+                }
             }
         }
 
@@ -328,6 +356,8 @@ $color_3C3C3C: #3C3C3C;
     }
 
     #inspection-statistical {
+        padding: 10px;
+
         #result {
             flex-basis: 49%;
             background: #F2F5FF;

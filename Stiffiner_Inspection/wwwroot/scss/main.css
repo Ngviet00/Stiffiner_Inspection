@@ -224,6 +224,30 @@
   color: #767676;
   font-weight: 400;
 }
+.wrap-content #overview .wrap-overview #io-status .wr-system-status {
+  font-size: 13px;
+  color: #3c3c3c;
+  font-weight: 500;
+}
+.wrap-content #overview .wrap-overview #io-status .wr-system-status #value-system-status {
+  background: #b3ffd2;
+  margin-left: 10px;
+  padding: 3px 5px;
+  color: #027A48;
+  border-radius: 3px;
+}
+.wrap-content #overview .wrap-overview #io-status .plc-status {
+  font-size: 13px;
+  color: #3c3c3c;
+  font-weight: 500;
+}
+.wrap-content #overview .wrap-overview #io-status .plc-status #value-plc-status {
+  background: #b3ffd2;
+  margin-left: 10px;
+  padding: 3px 6px;
+  color: #027A48;
+  border-radius: 3px;
+}
 .wrap-content #overview .statistical-chart {
   background: #F2F5FF;
   border-radius: 3px;
@@ -255,6 +279,9 @@
   background: #F2F5FF;
   padding: 7px 0px 5px 10px;
   border-radius: 4px;
+}
+.wrap-content #inspection-statistical {
+  padding: 10px;
 }
 .wrap-content #inspection-statistical #result {
   flex-basis: 49%;

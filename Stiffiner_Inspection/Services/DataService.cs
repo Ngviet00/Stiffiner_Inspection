@@ -1,8 +1,6 @@
 ﻿using Stiffiner_Inspection.Contexts;
 using Stiffiner_Inspection.Models.DTO.Data;
 using Stiffiner_Inspection.Models.Entity;
-using Stiffiner_Inspection.Models.Response;
-using System.Drawing;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -20,10 +18,10 @@ namespace Stiffiner_Inspection.Services
             var data = new Data
             {
                 Id = dataDTO.id,
-                Result = dataDTO.result,
+                Result = dataDTO.result?.ToUpper(),
                 ErrorCode = dataDTO.error_code,
                 Time = dataDTO.time,
-                ClientId = dataDTO.id,
+                ClientId = dataDTO.client_id,
                 Model = dataDTO.model,
                 Tray = dataDTO.tray,
                 Side = dataDTO.side,

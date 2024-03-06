@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Models.DTO.Data;
 using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
@@ -9,11 +11,13 @@ namespace Stiffiner_Inspection.Controllers
     [ApiController]
     public class DataController : Controller
     {
-        public DataService _dataService;
+        protected readonly DataService _dataService;
+        private readonly IHubContext<HomeHub> _hubContext;
 
-        public DataController(DataService dataService)
+        public DataController(DataService dataService, IHubContext<HomeHub> hubContext)
         {
             _dataService = dataService;
+            _hubContext = hubContext;
         }
 
         [Route("save-data")]
@@ -22,7 +26,12 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
+                //save to db
                 var result = await _dataService.Save(dataDTO);
+                
+                //event to client
+                await _hubContext.Clients.All.SendAsync("receive-data", result);
+                
                 return Ok(result);
             }
             catch (Exception ex)
