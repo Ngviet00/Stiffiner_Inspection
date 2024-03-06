@@ -27,13 +27,46 @@
             </select>
         </div>
 
-        <a class="btn btn-setting">
+        <a class="btn btn-setting" onclick="Meee2()">
             <i class="fa fa-cog" aria-hidden="true"></i>
             Setting
         </a>
-        <a href="#" class="btn btn-primary btn-export-excel">
+        <a href="#" class="btn btn-primary btn-export-excel" onclick="Meee()">
             Export report
             <i class="fa fa-arrow-right" aria-hidden="true"></i>
         </a>
     </div>
 </div>
+
+<script>
+    function Meee() {
+        $.ajax({
+            url: '@Url.Action("GetData", "Home")',
+            type: 'GET',
+            success: function (data) {
+                // Display received data
+                //$('#result').html('Name: ' + data.Name + ', Age: ' + data.Age);
+                //  alert(data);
+            },
+            error: function () {
+                // Handle errors
+                $('#result').html('Error occurred.');
+            }
+        });
+    }
+    function Meee2() {
+        $.ajax({
+            url: '@Url.Action("Setdata", "Home")',
+            type: 'GET',
+            success: function (data) {
+                // Display received data
+                //$('#result').html('Name: ' + data.Name + ', Age: ' + data.Age);
+                //  alert(data);
+            },
+            error: function () {
+                // Handle errors
+                $('#result').html('Error occurred.');
+            }
+        });
+    }
+</script>
