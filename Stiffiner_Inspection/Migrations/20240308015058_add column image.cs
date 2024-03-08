@@ -5,18 +5,25 @@
 namespace Stiffiner_Inspection.Migrations
 {
     /// <inheritdoc />
-    public partial class add_name_table : Migration
+    public partial class addcolumnimage : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
+            migrationBuilder.AddColumn<string>(
+                name: "image",
+                table: "data",
+                type: "nvarchar(255)",
+                maxLength: 255,
+                nullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
+            migrationBuilder.DropColumn(
+                name: "image",
+                table: "data");
         }
     }
 }

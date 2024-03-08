@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Models.DTO.Data;
+using Stiffiner_Inspection.Models.Entity;
 using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
+using System.IO;
+using System.Text;
 
 namespace Stiffiner_Inspection.Controllers
 {
@@ -29,14 +33,18 @@ namespace Stiffiner_Inspection.Controllers
                 //save to db
                 var result = await _dataService.Save(dataDTO);
 
-                //send to status to PLC
-
                 //event to client
                 await _hubContext.Clients.All.SendAsync("ReceiveData", result);
 
+                //send to status to PLC
+                //index, data is ok or ng
+                /*Global.controlPLC.WriteSampleStatusByIndex((Global.eSampleStatus)data, index);*/
+
                 //event to client log
+                await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", result.Time, "Program", "Send from server to PLC");
 
                 //write log to file
+                await _dataService.SaveTimeLog(dataDTO.time, "Program", "Send from server to PLC");
 
                 return Ok(result);
             }
@@ -50,32 +58,101 @@ namespace Stiffiner_Inspection.Controllers
             }
         }
 
-        /*[Route("check-index")]
+        [Route("change-status-cam-client")]
         [HttpPost]
-        public IActionResult CheckIndex()
+        public async Task<IActionResult> ChangeStatusCamClient(int client_id, int status = 1) //1 active, 2 inactive
         {
-            var data = new
+            try
             {
-                status = 200,
-                message = "success"
-            };
+                await _hubContext.Clients.All.SendAsync("ChangeStatusCamClient", client_id, status);
 
-            return Ok(data);
+                return Ok(new
+                {
+                    status = 200,
+                    message = "Send API Success"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
         }
 
-        [Route("get-model")]
-        [HttpGet]
-        public IActionResult GetModel(int threshold, int min_area)
+        [Route("change-status-plc")]
+        [HttpPost]
+        public async Task<IActionResult> ChangeStatusPLC(int status) //1:Start, 2: Stop, 3: Alarm, 4: EMG, 5: Disconnect
         {
-            var result = new
+            try
             {
-                status = 200,
-                message = "success",
-                threshold = threshold,
-                min_area = min_area
-            };
+                //get from PLC status
+                await _hubContext.Clients.All.SendAsync("ChangeStatusPLC", status);
 
-            return Ok(result);
-        }*/
+                return Ok(new
+                {
+                    status = 200,
+                    message = "Success"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Route("change-status-system-client")]
+        [HttpPost]
+        public async Task<IActionResult> ChangeStatusSystemClient(int status, string? message) //1:running, 2: pause, 3: error - with message
+        {
+            try
+            {
+                await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", status, message);
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "Success"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Route("change-status-trigger-cam")]
+        [HttpPost]
+        public async Task<IActionResult> ChangeStatusTriggerCam(int client_id) //1:running, 2: pause, 3: error - with message
+        {
+            try
+            {
+                await _hubContext.Clients.All.SendAsync("ChangeStatusTriggerCam", client_id);
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "Success"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
     }
 }

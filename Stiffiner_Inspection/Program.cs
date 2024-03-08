@@ -14,6 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("StiffinerInspectionContext")));
 
 builder.Services.AddScoped<DataService>();
+builder.Services.AddScoped<ErrorCodeService>();
 
 builder.Services.AddSwaggerGen(c =>
 {

@@ -216,7 +216,7 @@
   font-weight: 500;
 }
 .wrap-content #overview .wrap-overview #io-status span i {
-  color: #0ad90a;
+  color: #b6b9b6;
   font-size: 9px;
 }
 .wrap-content #overview .wrap-overview #io-status span label {
@@ -230,11 +230,16 @@
   font-weight: 500;
 }
 .wrap-content #overview .wrap-overview #io-status .wr-system-status #value-system-status {
-  background: #b3ffd2;
+  padding: 3px 15px;
+  border-radius: 10px;
+  background: #E6E6E6;
   margin-left: 10px;
-  padding: 3px 5px;
-  color: #027A48;
-  border-radius: 3px;
+  color: #344054;
+  font-weight: 500;
+}
+.wrap-content #overview .wrap-overview #io-status .wr-system-status #error-system-status {
+  color: #E4491D;
+  font-weight: 500;
 }
 .wrap-content #overview .wrap-overview #io-status .plc-status {
   font-size: 13px;
@@ -242,18 +247,16 @@
   font-weight: 500;
 }
 .wrap-content #overview .wrap-overview #io-status .plc-status #value-plc-status {
-  /*background: #b3ffd2;*/
   margin-left: 10px;
-  padding: 3px 6px;
-  /*color: #027A48;*/
-  border-radius: 3px;
-  background: #686b69;
-  color: #cdcdcd;
-  /*background: #686b69;
-  margin-left: 10px;
-  padding: 3px 6px;
-  color: #cdcdcd;
-  border-radius: 3px;*/
+  padding: 3px 15px;
+  border-radius: 10px;
+  background: #E6E6E6;
+  color: #344054;
+  font-weight: 500;
+}
+.wrap-content #overview .wrap-overview #io-status .plc-status #error-plc-status {
+  color: #E4491D;
+  font-weight: 500;
 }
 .wrap-content #overview .statistical-chart {
   background: #F2F5FF;
@@ -275,7 +278,8 @@
   color: #385083;
 }
 .wrap-content #overview .statistical-chart .chart {
-  margin-left: 5em;
+  width: 84%;
+  margin-left: 1em;
 }
 .wrap-content #log-inspection {
   padding-bottom: 3em;
@@ -294,7 +298,7 @@
   flex-basis: 49%;
   background: #F2F5FF;
   border-radius: 3px;
-  padding: 12px 10px;
+  padding: 7px 10px;
 }
 .wrap-content #inspection-statistical #result h3.genera-title {
   color: #000;
@@ -345,7 +349,7 @@
   flex-basis: 36%;
   border: 1px solid #8e93cd;
   background: white;
-  padding: 0px 15px 15px 15px;
+  padding: 0px 15px 7px 15px;
 }
 .wrap-content #inspection-statistical #result .current-tray .check-item .is-check-tray .title-cam {
   font-size: 14px;
@@ -365,7 +369,7 @@
 .wrap-content #inspection-statistical #result .current-tray .check-item .is-check-tray .ng-ok .ng {
   flex-basis: 48%;
   text-align: center;
-  background: #E4491D;
+  background: #CDCECF;
   border-right: 1px solid #fff;
   color: #fff;
   font-size: 11px;
@@ -374,11 +378,14 @@
 .wrap-content #inspection-statistical #result .current-tray .check-item .is-check-tray .ng-ok .ok {
   flex-basis: 48%;
   text-align: center;
-  background: #66b032;
+  background: #CDCECF;
   border-right: 1px solid #fff;
   color: #fff;
   font-size: 11px;
   padding: 7px 0px;
+}
+.wrap-content #inspection-statistical #result .current-tray .check-item .is-check-tray .ng-ok:hover {
+  cursor: pointer;
 }
 .wrap-content #inspection-statistical #result .current-tray .check-item .checking-tray-left {
   border-right: none;
@@ -426,7 +433,7 @@
   flex-basis: 36%;
   border: 1px solid #8e93cd;
   background: white;
-  padding: 0px 15px 15px 15px;
+  padding: 0px 15px 7px 15px;
 }
 .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .title-cam {
   font-size: 14px;

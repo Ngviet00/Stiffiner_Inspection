@@ -1,0 +1,7 @@
+﻿08/03/2024 11:19:02;Program;Send from server to PLC
+08/03/2024 11:19:02;Program;Send from server to PLC
+08/03/2024 11:19:02;Program;Send from server to PLC
+08/03/2024 11:19:02;Program;Send from server to PLC
+08/03/2024 11:19:02;Program;Send from server to PLC
+08/03/2024 11:19:02;Program;Send from server to PLC
+08/03/2024 11:19:02;Program;Send from server to PLC

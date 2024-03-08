@@ -12,8 +12,8 @@ using Stiffiner_Inspection.Contexts;
 namespace Stiffiner_Inspection.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240305065432_edit_column_table_data_and_create_tbl_time_log")]
-    partial class edit_column_table_data_and_create_tbl_time_log
+    [Migration("20240307094403_remove column error_detechtion")]
+    partial class removecolumnerror_detechtion
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,28 +43,21 @@ namespace Stiffiner_Inspection.Migrations
                         .HasColumnType("int")
                         .HasColumnName("client_id");
 
-                    b.Property<string>("ErrorCode")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                    b.Property<int?>("ErrorCode")
+                        .HasColumnType("int")
                         .HasColumnName("error_code");
 
-                    b.Property<string>("ErrorDetection")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("error_detection");
+                    b.Property<int?>("Index")
+                        .HasColumnType("int")
+                        .HasColumnName("index");
 
                     b.Property<string>("Model")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("model");
 
-                    b.Property<int?>("No")
+                    b.Property<int?>("Result")
                         .HasColumnType("int")
-                        .HasColumnName("no");
-
-                    b.Property<string>("Result")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("result");
 
                     b.Property<string>("Side")
@@ -73,9 +66,16 @@ namespace Stiffiner_Inspection.Migrations
                         .HasColumnName("side");
 
                     b.Property<DateTime?>("Time")
-                        .HasMaxLength(255)
                         .HasColumnType("datetime2")
                         .HasColumnName("time");
+
+                    b.Property<DateTime?>("TimeEnd")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("time_end");
+
+                    b.Property<DateTime?>("TimeStart")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("time_start");
 
                     b.Property<int?>("Tray")
                         .HasColumnType("int")
@@ -84,6 +84,35 @@ namespace Stiffiner_Inspection.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("data");
+                });
+
+            modelBuilder.Entity("Stiffiner_Inspection.Models.Entity.TimeLog", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("message");
+
+                    b.Property<DateTime?>("Time")
+                        .HasMaxLength(255)
+                        .HasColumnType("datetime2")
+                        .HasColumnName("time");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("time_logs");
                 });
 #pragma warning restore 612, 618
         }

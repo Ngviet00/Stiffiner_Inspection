@@ -22,15 +22,15 @@
                         <div class="is-check-tray checking-tray-left">
                             <div class="title-cam text-center">Left</div>
                             <div class="d-flex justify-content-between mb-1">
-                                <div class="type-camera">Area cam 2</div>
+                                <div class="type-camera">Area cam 1</div>
                                 <div class="type-camera">Line cam 2</div>
                             </div>
                             <div class="ng-ok">
                                 @for (int i = 1; i <= 20; i++)
                                 {
-                                    <div class="d-flex flex-wrap">
-                                        <span class="ok">OK</span>
-                                        <span class="ng">NG</span>
+                                    <div class="d-flex flex-wrap justify-content-center">
+                                        <span class="ok left-area-@i">Wait</span>
+                                        <span class="ng left-line-@i">Wait</span>
                                     </div>
                                 }
                             </div>
@@ -39,15 +39,15 @@
                         <div class="is-check-tray checking-tray-right">
                             <div class="title-cam text-center">Right</div>
                             <div class="d-flex justify-content-between mb-1">
-                                <div class="type-camera">Area cam 2</div>
-                                <div class="type-camera">Line cam 2</div>
+                                <div class="type-camera">Area cam 3</div>
+                                <div class="type-camera">Line cam 4</div>
                             </div>
                             <div class="ng-ok">
                                 @for (int i = 1; i <= 20; i++)
                                 {
-                                    <div class="d-flex flex-wrap">
-                                        <span class="ok">OK</span>
-                                        <span class="ng">NG</span>
+                                    <div class="d-flex flex-wrap justify-content-center">
+                                        <span class="ok right-area-@i">Wait</span>
+                                        <span class="ng right-line-@i">Wait</span>
                                     </div>
                                 }
                             </div>
@@ -74,14 +74,14 @@
                         <div class="is-check-tray checking-tray-left">
                             <div class="title-cam text-center">Left</div>
                             <div class="d-flex justify-content-between mb-1">
-                                <div class="type-camera">Area cam 2</div>
+                                <div class="type-camera">Area cam 1</div>
                                 <div class="type-camera">Line cam 2</div>
                             </div>
                             <div class="ng-ok">
                                 @for (int i = 1; i <= 20; i++)
                                 {
-                                    <div class="d-flex flex-wrap">
-                                        <span class="ok">OK</span>
+                                    <div class="d-flex flex-wrap justify-content-center">
+                                        <span class="ok ">OK</span>
                                         <span class="ng">NG</span>
                                     </div>
                                 }
@@ -91,13 +91,13 @@
                         <div class="is-check-tray checking-tray-right">
                             <div class="title-cam text-center">Right</div>
                             <div class="d-flex justify-content-between mb-1">
-                                <div class="type-camera">Area cam 2</div>
-                                <div class="type-camera">Line cam 2</div>
+                                <div class="type-camera">Area cam 3</div>
+                                <div class="type-camera">Line cam 4</div>
                             </div>
                             <div class="ng-ok">
                                 @for (int i = 1; i <= 20; i++)
                                 {
-                                    <div class="d-flex flex-wrap">
+                                    <div class="d-flex flex-wrap justify-content-center">
                                         <span class="ok">OK</span>
                                         <span class="ng">NG</span>
                                     </div>
@@ -166,28 +166,18 @@
                                 <div class="mb-2">
                                     <label class="label-title">PC@{@i}-Area Camera:</label>
 
-                                    <span class="mx-1">
-                                        <i class="fa fa-circle" aria-hidden="true"></i>
+                                    <span class="mx-2">
+                                        <i class="fa fa-circle dot-cam-@i" aria-hidden="true"></i>
                                         <label>Connect</label>
                                     </span>
 
-                                    <span class="mx-1">
-                                        <i class="fa fa-circle" aria-hidden="true"></i>
+                                    <span class="mx-4">
+                                        <i class="fa fa-circle dot-cam-@i" aria-hidden="true"></i>
                                         <label>CAM</label>
                                     </span>
 
-                                    <span class="mx-1">
-                                        <i class="fa fa-circle" aria-hidden="true"></i>
-                                        <label>PLC</label>
-                                    </span>
-
-                                    <span class="mx-1">
-                                        <i class="fa fa-circle" aria-hidden="true"></i>
-                                        <label>Client</label>
-                                    </span>
-
-                                    <span class="mx-1">
-                                        <i class="fa fa-circle" aria-hidden="true" style="color: #b6b9b6"></i>
+                                    <span class="mx-4">
+                                        <i class="fa fa-circle dot-trigger-cam-@i" aria-hidden="true"></i>
                                         <label>
                                             Trigger
                                             CAM
@@ -196,15 +186,17 @@
                                 </div>
                             }
 
-                        <div class="wr-system-status mb-2 mt-3">
-                            <span id="label-system-status">System status:</span>
-                            <span id="value-system-status">Running</span>
-                        </div>
+                            <div class="wr-system-status mb-2 mt-3">
+                                <span id="label-system-status">System status:</span>
+                                <span id="value-system-status">Pause</span>
+                                <span id="error-system-status" class="d-none"></span>
+                            </div>
 
-                        <div class="plc-status mb-2">
-                            <span id="label-plc-status">PLC Connect Status:</span>
-                            <span id="value-plc-status">Stop</span>
-                        </div>
+                            <div class="plc-status mb-2">
+                                <span id="label-plc-status">PLC connect status:</span>
+                                <span id="value-plc-status">Disconnect</span>
+                                <span id="error-plc-status" class="d-none">The door is opened</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -212,9 +204,9 @@
 
             <div class="statistical-chart mt-4 d-flex">
                 <div class="total-error">
-                    <h3 id="title">Error Detach</h3>
+                    <h3 id="title">Error Detect</h3>
                     <div class="total">
-                        Total <span>30</span> detach
+                        Total <span>30</span> detect
                     </div>
                 </div>
 
@@ -267,52 +259,86 @@
         </div>
     </div>
 </div>
+<script src="~/js/chart.js"></script>
+<script src="~/js/chartjs-plugin-datalabels.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
     // Get the canvas element
     var ctx = document.getElementById('pie-chart').getContext('2d');
 
-    // Sample data for the pie chart
-    var data = {
-        labels: ["India", "China", "US"],
-        datasets: [{
-            data: [30, 40, 30], // values for each category
-            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'] // colors for each category
-        }]
-    };
+    var errorCodes = @Html.Raw(Json.Serialize(ViewBag.errorCodes));
+    var labels = [];
+    var values = [];
 
-    // Configure the pie chart
-    var options = {
-        responsive: true,
-        maintainAspectRatio: false,
-        title: {
-            display: false,
-            text: 'Pie chart'
-        },
-        plugins: {
-            datalabels: {
-                formatter: (value, context) => {
-                    var dataset = context.chart.data.datasets[context.datasetIndex];
-                    var total = dataset.data.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
-                    var currentValue = dataset.data[context.dataIndex];
-                    var percentage = Math.round((currentValue / total) * 100);
-                    return percentage + '%';
-                },
-                color: '#fff',
-            }
-        }
-    };
+    const backgroundColor = [
+        '#7F56D9', '#F4EBFF', '#9E77ED', '#B692F6',
+        '#D6BBFB', '#E9D7FE', '#7F56D9', '#F4EBFF',
+        '#9E77ED', '#B692F6', '#D6BBFB', '#E9D7FE',
+        '#7F56D9', '#F4EBFF', '#9E77ED', '#B692F6',
+        '#D6BBFB'
+    ]
 
-    // Create the pie chart
+    errorCodes.forEach(function (item) {
+
+        item.id > 10 ? values.push(item.id * 3) : "";
+
+        labels.push(`${item.errorContent.toUpperCase()}`);
+    });
+
     var myPieChart = new Chart(ctx, {
         type: 'pie',
-        data: data,
-        options: options
-    });
-</script>
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: backgroundColor
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
 
+            title: {
+                display: false,
+                text: null,
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#667085',
+                    }
+                },
+                tooltip: {
+                    enabled: false,
+                },
+                datalabels: {
+                    formatter: (value, context) => {
+                        const datapoints = context.chart.data.datasets[0].data;
+                        function totalSum(total, datapoint) {
+                            return total + datapoint;
+                        }
+                        const totalValue = datapoints.reduce(totalSum, 0);
+                        const percentageValue = (value / totalValue * 100).toFixed(1);
+                        return `${percentageValue}%`;
+                    },
+                    color: '#000000',
+                    font: {
+                        weight: 'bold',
+                        size: 11,
+                    },
+                    align: 'end',
+                    anchor: 'center'
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+
+    myPieChart.update('none');
+
+</script>
 
 @section Scripts {
     <script src="~/lib/microsoft-signalr/signalr.min.js"></script>

@@ -24,6 +24,7 @@
 
 	<ItemGroup>
 		<Folder Include="Migrations\" />
+		<Folder Include="Files\" />
 		<Folder Include="wwwroot\image\" />
 		<Folder Include="wwwroot\font-awesome\" />
 	</ItemGroup>

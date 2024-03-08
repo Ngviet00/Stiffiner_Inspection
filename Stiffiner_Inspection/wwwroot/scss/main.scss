@@ -272,7 +272,7 @@ $color_3C3C3C: #3C3C3C;
 
                 span {
                     i {
-                        color: #0ad90a;
+                        color: #b6b9b6;
                         font-size: 9px;
                     }
 
@@ -289,11 +289,17 @@ $color_3C3C3C: #3C3C3C;
                     font-weight: 500;
 
                     #value-system-status {
-                        background: #b3ffd2;
+                        padding: 3px 15px;
+                        border-radius: 10px;
+                        background: #E6E6E6;
                         margin-left: 10px;
-                        padding: 3px 5px;
-                        color: #027A48;
-                        border-radius: 3px;
+                        color: #344054;
+                        font-weight: 500;
+                    }
+
+                    #error-system-status {
+                        color: #E4491D;
+                        font-weight: 500;
                     }
                 }
 
@@ -303,18 +309,17 @@ $color_3C3C3C: #3C3C3C;
                     font-weight: 500;
 
                     #value-plc-status {
-                        /*background: #b3ffd2;*/
                         margin-left: 10px;
-                        padding: 3px 6px;
-                        /*color: #027A48;*/
-                        border-radius: 3px;
-                        background: #686b69;
-                        color: #cdcdcd;
-                        /*background: #686b69;
-                        margin-left: 10px;
-                        padding: 3px 6px;
-                        color: #cdcdcd;
-                        border-radius: 3px;*/
+                        padding: 3px 15px;
+                        border-radius: 10px;
+                        background: #E6E6E6;
+                        color: #344054;
+                        font-weight: 500;
+                    }
+
+                    #error-plc-status {
+                        color: #E4491D;
+                        font-weight: 500;
                     }
                 }
             }
@@ -345,7 +350,8 @@ $color_3C3C3C: #3C3C3C;
             }
 
             .chart {
-                margin-left: 5em;
+                width: 84%;
+                margin-left: 1em;
             }
         }
     }
@@ -369,7 +375,7 @@ $color_3C3C3C: #3C3C3C;
             flex-basis: 49%;
             background: #F2F5FF;
             border-radius: 3px;
-            padding: 12px 10px;
+            padding: 7px 10px;
 
             h3.genera-title {
                 color: #000;
@@ -428,7 +434,7 @@ $color_3C3C3C: #3C3C3C;
                         flex-basis: 36%;
                         border: 1px solid #8e93cd;
                         background: white;
-                        padding: 0px 15px 15px 15px;
+                        padding: 0px 15px 7px 15px;
 
                         .title-cam {
                             font-size: 14px;
@@ -452,7 +458,7 @@ $color_3C3C3C: #3C3C3C;
                             .ng {
                                 flex-basis: 48%;
                                 text-align: center;
-                                background: #E4491D;
+                                background: #CDCECF;
                                 border-right: 1px solid #fff;
                                 color: #fff;
                                 font-size: 11px;
@@ -462,11 +468,15 @@ $color_3C3C3C: #3C3C3C;
                             .ok {
                                 flex-basis: 48%;
                                 text-align: center;
-                                background: #66b032;
+                                background: #CDCECF;
                                 border-right: 1px solid #fff;
                                 color: #fff;
                                 font-size: 11px;
                                 padding: 7px 0px;
+                            }
+
+                            &:hover {
+                                cursor: pointer;
                             }
                         }
                     }
@@ -527,7 +537,7 @@ $color_3C3C3C: #3C3C3C;
                         flex-basis: 36%;
                         border: 1px solid #8e93cd;
                         background: white;
-                        padding: 0px 15px 15px 15px;
+                        padding: 0px 15px 7px 15px;
 
                         .title-cam {
                             font-size: 14px;

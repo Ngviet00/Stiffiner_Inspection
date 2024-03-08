@@ -12,8 +12,8 @@ using Stiffiner_Inspection.Contexts;
 namespace Stiffiner_Inspection.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240305064223_create_tbl_data")]
-    partial class create_tbl_data
+    [Migration("20240308015058_add column image")]
+    partial class addcolumnimage
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,57 +43,81 @@ namespace Stiffiner_Inspection.Migrations
                         .HasColumnType("int")
                         .HasColumnName("client_id");
 
-                    b.Property<string>("ErrorCode")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                    b.Property<int?>("ErrorCode")
+                        .HasColumnType("int")
                         .HasColumnName("error_code");
 
-                    b.Property<string>("ErrorDetection")
+                    b.Property<string>("Image")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
-                        .HasColumnName("error_detections");
+                        .HasColumnName("image");
 
-                    b.Property<string>("Message")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("messages");
-
-                    b.Property<string>("Models")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("models");
-
-                    b.Property<int?>("No")
+                    b.Property<int?>("Index")
                         .HasColumnType("int")
-                        .HasColumnName("no");
+                        .HasColumnName("index");
 
-                    b.Property<string>("Result")
+                    b.Property<string>("Model")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
+                        .HasColumnName("model");
+
+                    b.Property<int?>("Result")
+                        .HasColumnType("int")
                         .HasColumnName("result");
 
-                    b.Property<string>("Sides")
+                    b.Property<string>("Side")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
-                        .HasColumnName("sides");
+                        .HasColumnName("side");
 
-                    b.Property<string>("Time")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                    b.Property<DateTime?>("Time")
+                        .HasColumnType("datetime2")
                         .HasColumnName("time");
 
-                    b.Property<int?>("Trays")
-                        .HasColumnType("int")
-                        .HasColumnName("trays");
+                    b.Property<DateTime?>("TimeEnd")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("time_end");
 
-                    b.Property<string>("Type")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("types");
+                    b.Property<DateTime?>("TimeStart")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("time_start");
+
+                    b.Property<int?>("Tray")
+                        .HasColumnType("int")
+                        .HasColumnName("tray");
 
                     b.HasKey("Id");
 
                     b.ToTable("data");
+                });
+
+            modelBuilder.Entity("Stiffiner_Inspection.Models.Entity.TimeLog", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("message");
+
+                    b.Property<DateTime?>("Time")
+                        .HasMaxLength(255)
+                        .HasColumnType("datetime2")
+                        .HasColumnName("time");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("time_logs");
                 });
 #pragma warning restore 612, 618
         }
