@@ -267,7 +267,7 @@
     // Get the canvas element
     var ctx = document.getElementById('pie-chart').getContext('2d');
 
-    var errorCodes = @Html.Raw(Json.Serialize(ViewBag.errorCodes));
+    // var errorCodes = @Html.Raw(Json.Serialize(ViewBag.errorCodes));
     var labels = [];
     var values = [];
 
@@ -279,12 +279,12 @@
         '#D6BBFB'
     ]
 
-    errorCodes.forEach(function (item) {
+    // errorCodes.forEach(function (item) {
 
-        item.id > 10 ? values.push(item.id * 3) : "";
+    //     item.id > 10 ? values.push(item.id * 3) : "";
 
-        labels.push(`${item.errorContent.toUpperCase()}`);
-    });
+    //     labels.push(`${item.errorContent.toUpperCase()}`);
+    // });
 
     var myPieChart = new Chart(ctx, {
         type: 'pie',

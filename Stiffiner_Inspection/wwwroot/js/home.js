@@ -12,10 +12,6 @@ $(function () {
     //start connection
     connection.start().then(() => {
         console.log("Connection established");
-        connection.invoke("GetCurrentStatusPLC")
-            .catch(function (err) {
-                console.error(err.toString());
-            });
     }).catch(err => console.error(err.toString()));
 
     //event receive data
@@ -48,13 +44,6 @@ $(function () {
         $("#time-log table tbody").prepend(result);
     });
 
-    //event set current status plc
-    connection.on("SetCurrentStatusPLC", (value) => {
-        if (value == 1) {
-            $('#value-plc-status').css("color", "rgb(255, 255, 255)").css("background", "rgb(73, 163, 29)").text("Start");
-        }
-    });
-
     //event check status camera pc
     connection.on("ChangeStatusCamClient", (clientId, status) => {
         clearTimeout(timeouts[clientId]);
@@ -68,6 +57,7 @@ $(function () {
 
     //event change plc
     connection.on("ChangeStatusPLC", (status) => {
+        console.log('test-test-client' + status);
         let _status = $('#value-plc-status');
         let _message = $('#error-plc-status');
 
@@ -85,11 +75,11 @@ $(function () {
             _status.css("color", "#3C3C3C").css("background", "#FFCA08").text("Alarm");
         }
 
-        if (status === 4) {
+        if (status === 0) {
             _status.css("color", "#E34440").css("background", "#FD53083D").text("EMG");
         }
 
-        if (status === 5) {
+        if (status === -1) {
             _status.css("color", "#222222").css("background", "#E6E6E6").text("Disconnect");
         }
     });

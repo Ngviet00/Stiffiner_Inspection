@@ -8,6 +8,7 @@ using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
 using System.IO;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Stiffiner_Inspection.Controllers
 {
@@ -37,16 +38,15 @@ namespace Stiffiner_Inspection.Controllers
                 await _hubContext.Clients.All.SendAsync("ReceiveData", result);
 
                 //send to status to PLC
-                //index, data is ok or ng
-                /*Global.controlPLC.WriteSampleStatusByIndex((Global.eSampleStatus)data, index);*/
+                Global.controlPLC.WriteDataToRegister(dataDTO.result, dataDTO.index);
 
                 //event to client log
                 await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", result.Time, "Program", "Send from server to PLC");
 
                 //write log to file
-                await _dataService.SaveTimeLog(dataDTO.time, "Program", "Send from server to PLC");
+                //await _dataService.SaveTimeLog(dataDTO.time, "Program", "Send from server to PLC");
 
-                return Ok(result);
+                return Ok("ok");
             }
             catch (Exception ex)
             {
@@ -70,31 +70,6 @@ namespace Stiffiner_Inspection.Controllers
                 {
                     status = 200,
                     message = "Send API Success"
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ErrorResponse
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
-            }
-        }
-
-        [Route("change-status-plc")]
-        [HttpPost]
-        public async Task<IActionResult> ChangeStatusPLC(int status) //1:Start, 2: Stop, 3: Alarm, 4: EMG, 5: Disconnect
-        {
-            try
-            {
-                //get from PLC status
-                await _hubContext.Clients.All.SendAsync("ChangeStatusPLC", status);
-
-                return Ok(new
-                {
-                    status = 200,
-                    message = "Success"
                 });
             }
             catch (Exception ex)

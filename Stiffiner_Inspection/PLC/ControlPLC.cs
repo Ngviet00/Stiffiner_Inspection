@@ -1,5 +1,9 @@
 ﻿using ActUtlTypeLib;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Stiffiner_Inspection.Hubs;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -14,16 +18,17 @@ namespace Stiffiner_Inspection
         private const int _plcStation = 1;
         private bool isExist = false;
         private const int timeSleep = 1000;
-        // 
+        public readonly IHubContext<HomeHub> _hubContext;
 
         // Register read
-        private const string REG_PLC_Read_STATUS = "D1999";
+        private const string REG_PLC_Read_STATUS = "D20";
         private const string REG_PLC_Read_ALARM_MESSAGE = "D2400";
         private const int ALARM_MESSAGE_LEGHT = 40;
+
         // Register Write
         private const string REG_PLC_Write = "D";
-        private const int REG_PLC_Start = 2000;
-        private const string REG_Vision_Bussy = "D2009";
+        private const int REG_PLC_Start = 900;
+        private const string REG_Vision_Bussy = "M420";
 
 
         //machine status
@@ -33,10 +38,13 @@ namespace Stiffiner_Inspection
         private bool isStart = false;
         private bool isStop = false;
         private bool isAlarm = false;
+        private bool isEMG = false;
 
         public bool IsStart { get => isStart; set => isStart = value; }
         public bool IsStop { get => isStop; set => isStop = value; }
         public bool IsAlarm { get => isAlarm; set => isAlarm = value; }
+        public bool IsEMG { get => isEMG; set => isEMG = value; }
+
         public string AlarmMessage
         {
             get
@@ -80,46 +88,46 @@ namespace Stiffiner_Inspection
             {
                 int valueReaded = 0;
                 _plc.ReadDeviceBlock(REG_PLC_Read_STATUS, 1, out valueReaded);
-                string binary = Convert.ToString(valueReaded, 2).PadLeft(16, '0');
-                SetStatusOfMachine(ReverseString(binary));
+                SetStatusOfMachine(valueReaded);
+                Global.tempValuePLC = valueReaded;
                 Thread.Sleep(timeSleep);
             }
         }
-        private string ReverseString(string s)
+
+        private void SetStatusOfMachine(int binary)
         {
-            char[] charArray = s.ToCharArray();
-            Array.Reverse(charArray);
-            return new string(charArray);
-        }
-        private void SetStatusOfMachine(string binary)
-        {
-            isStart = IsCheckBit(binary.ToCharArray()[bit_Start]);
-            isStop = IsCheckBit(binary.ToCharArray()[bit_Stop]);
-            isAlarm = IsCheckBit(binary.ToCharArray()[bit_Alarm]);
-            Console.WriteLine(string.Format("Start: {0} - Stop: {1} - Alarm: {2}", isStart, isStop, isAlarm));
+            isAlarm = isStart = isStop = isEMG = false;
+
+            switch (binary)
+            {
+                case 0:
+                    isEMG = true;
+                    break;
+                case 1:
+                    isStart = true;
+                    break;
+                case 2:
+                    isStop = true;
+                    break;
+                case 3:
+                    isAlarm = true;
+                    break;
+                default:
+                    break;
+            }
+
+            Console.WriteLine(string.Format("EMG: {0} - Start: {1} - Stop: {2} - Alarm: {3}", isEMG, isStart, isStop, isAlarm));
+
         }
 
         public void WriteDataToRegister(int data, int index)
         {
             _plc.WriteDeviceBlock(GetWriteRegisterByIndex(index), 1, data);
         }
-        public void WriteSampleStatusByIndex(Global.eSampleStatus sampleStatus, int index)
-        {
-            _plc.WriteDeviceBlock(GetWriteRegisterByIndex(index), 1, (int)sampleStatus);
-        }
 
         private string GetWriteRegisterByIndex(int index)
         {
             return string.Format("{0}{1}", REG_PLC_Write, REG_PLC_Start + index);
-        }
-        private bool IsCheckBit(char value)
-        {
-            return value == '1' ? true : false;
-        }
-        public void VisionBusy(bool status)
-        {
-            int data = status ? 1 : 0;
-            _plc.WriteDeviceBlock(REG_Vision_Bussy, 1, data);
         }
     }
 }

@@ -8,9 +8,9 @@
         public int? tray { get; set; }
         public int? client_id { get; set; }
         public string? side { get; set; } = string.Empty;
-        public int? index { get; set; }
+        public int index { get; set; }
         public string? camera { get; set; } = string.Empty;
-        public int? result { get; set; }
+        public int result { get; set; }
         public int? error_code { get; set; }
         public string? image { get; set; } = string.Empty;
     }

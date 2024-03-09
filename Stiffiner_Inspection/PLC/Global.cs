@@ -1,6 +1,9 @@
-﻿namespace Stiffiner_Inspection
+﻿using Microsoft.AspNetCore.SignalR;
+using Stiffiner_Inspection.Hubs;
+
+namespace Stiffiner_Inspection
 {
-    public class Global
+    public static class Global
     {
         public static ControlPLC controlPLC = new ControlPLC();
         public enum eSampleStatus
@@ -9,5 +12,7 @@
             NG = 2,
             EMPTY = 3
         }
+
+        public static int tempValuePLC = -1;
     }
 }

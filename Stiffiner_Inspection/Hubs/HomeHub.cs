@@ -9,11 +9,5 @@ namespace Stiffiner_Inspection.Hubs
         {
 
         }
-
-        [HttpPost]
-        public async void GetCurrentStatusPLC()
-        {
-            await Clients.All.SendAsync("SetCurrentStatusPLC", 1);
-        }
     }
 }
