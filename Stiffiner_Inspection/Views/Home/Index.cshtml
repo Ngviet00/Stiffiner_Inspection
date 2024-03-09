@@ -268,8 +268,8 @@
     var ctx = document.getElementById('pie-chart').getContext('2d');
 
     // var errorCodes = @Html.Raw(Json.Serialize(ViewBag.errorCodes));
-    var labels = [];
-    var values = [];
+    var labels = ['abc', 'dss', 'ss'];
+    var values = [10, 20, 40];
 
     const backgroundColor = [
         '#7F56D9', '#F4EBFF', '#9E77ED', '#B692F6',
@@ -314,15 +314,15 @@
                     enabled: false,
                 },
                 datalabels: {
-                    formatter: (value, context) => {
-                        const datapoints = context.chart.data.datasets[0].data;
-                        function totalSum(total, datapoint) {
-                            return total + datapoint;
-                        }
-                        const totalValue = datapoints.reduce(totalSum, 0);
-                        const percentageValue = (value / totalValue * 100).toFixed(1);
-                        return `${percentageValue}%`;
-                    },
+                    // formatter: (value, context) => {
+                    //     const datapoints = context.chart.data.datasets[0].data;
+                    //     function totalSum(total, datapoint) {
+                    //         return total + datapoint;
+                    //     }
+                    //     const totalValue = datapoints.reduce(totalSum, 0);
+                    //     const percentageValue = (value / totalValue * 100).toFixed(1);
+                    //     return `${percentageValue}%`;
+                    // },
                     color: '#000000',
                     font: {
                         weight: 'bold',
@@ -336,7 +336,7 @@
         plugins: [ChartDataLabels]
     });
 
-    myPieChart.update('none');
+    // myPieChart.update('none');
 
 </script>
 
