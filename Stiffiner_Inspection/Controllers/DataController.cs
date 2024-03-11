@@ -38,7 +38,7 @@ namespace Stiffiner_Inspection.Controllers
                 await _hubContext.Clients.All.SendAsync("ReceiveData", result);
 
                 //send to status to PLC
-                Global.controlPLC.WriteDataToRegister(dataDTO.result, dataDTO.index);
+                //Global.controlPLC.WriteDataToRegister(dataDTO.result, dataDTO.index);
 
                 //event to client log
                 await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", result.Time, "Program", "Send from server to PLC");
@@ -128,6 +128,17 @@ namespace Stiffiner_Inspection.Controllers
                     Message = ex.Message
                 });
             }
+        }
+
+        [Route("test-api")]
+        [HttpGet]
+        public async Task<IActionResult> TestAPI() 
+        {
+            return Ok(new
+            {
+                status = 200,
+                message = "API Success"
+            });
         }
     }
 }

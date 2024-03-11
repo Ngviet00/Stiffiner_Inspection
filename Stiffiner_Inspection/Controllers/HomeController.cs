@@ -22,12 +22,12 @@ namespace Stiffiner_Inspection.Controllers
 
         public async Task<IActionResult> Index()
         {
-            Global.controlPLC.Connect();
+            //Global.controlPLC.Connect();
 
-            Thread threadGetCurrentPLC = new Thread(GetCurrentValuePLC);
-            threadGetCurrentPLC.IsBackground = true;
-            threadGetCurrentPLC.Name = "GET_CURRENT_STATUS_PLC";
-            threadGetCurrentPLC.Start();
+            //Thread threadGetCurrentPLC = new Thread(GetCurrentValuePLC);
+            //threadGetCurrentPLC.IsBackground = true;
+            //threadGetCurrentPLC.Name = "GET_CURRENT_STATUS_PLC";
+            //threadGetCurrentPLC.Start();
 
             //ViewBag.countOk = await _dataService.CountItemByResult(1);
             //ViewBag.countNG = await _dataService.CountItemByResult(2);
@@ -37,13 +37,13 @@ namespace Stiffiner_Inspection.Controllers
             return View();
         }
 
-        public async void GetCurrentValuePLC()
-        {
-            while (true)
-            {
-                await _hubContext.Clients.All.SendAsync("ChangeStatusPLC", Global.tempValuePLC);
-                Thread.Sleep(1000);
-            }
-        }
+        //public async void GetCurrentValuePLC()
+        //{
+        //    while (true)
+        //    {
+        //        await _hubContext.Clients.All.SendAsync("ChangeStatusPLC", Global.tempValuePLC);
+        //        Thread.Sleep(1000);
+        //    }
+        //}
     }
 }
