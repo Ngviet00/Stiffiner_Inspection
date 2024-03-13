@@ -279,7 +279,6 @@ $color_3C3C3C: #3C3C3C;
                         border-radius: 50%;
                         display: inline-block;
                     }
-
                     /*i {
                         color: #b6b9b6;
                         font-size: 9px;
@@ -460,6 +459,15 @@ $color_3C3C3C: #3C3C3C;
                         }
 
                         .ng-ok {
+
+                            .left-tray, .right-tray {
+                                flex-basis: 49%;
+
+                                span {
+                                    border-bottom: 1px solid white !important;
+                                }
+                            }
+
                             div {
                                 border-bottom: 1px solid white;
                             }

@@ -7,7 +7,7 @@
                     <h3 id="title-current-tray">Tray 03 (Inspecting)</h3>
                     <div class="current-time">
                         Inspect time: <span id="current-tray-first-input-time">13:33:02</span> -> now
-                    </div>
+                    </div>  
 
                     <div class="d-flex check-item">
                         <div class="no-number">
@@ -26,13 +26,20 @@
                                 <div class="type-camera">Line cam 2</div>
                             </div>
                             <div class="ng-ok">
-                                @for (int i = 1; i <= 20; i++)
-                                {
-                                    <div class="d-flex flex-wrap justify-content-center">
-                                        <span class="ok left-area-@i">Wait</span>
-                                        <span class="ng left-line-@i">Wait</span>
+                                <div class="d-flex justify-content-center">
+                                    <div class="d-flex flex-column left-tray">
+                                        @for (int i = 1; i <= 20; i++)
+                                        {
+                                            <span class="ok left-area-@i">Wait</span>
+                                        }
                                     </div>
-                                }
+                                    <div class="d-flex flex-column right-tray">
+                                        @for (int i = 1; i <= 20; i++)
+                                        {
+                                            <span class="ng left-line-@i">Wait</span>
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -43,13 +50,20 @@
                                 <div class="type-camera">Line cam 4</div>
                             </div>
                             <div class="ng-ok">
-                                @for (int i = 1; i <= 20; i++)
-                                {
-                                    <div class="d-flex flex-wrap justify-content-center">
-                                        <span class="ok right-area-@i">Wait</span>
-                                        <span class="ng right-line-@i">Wait</span>
+                                <div class="d-flex justify-content-center">
+                                    <div class="d-flex flex-column left-tray">
+                                        @for (int i = 1; i <= 20; i++)
+                                        {
+                                            <span class="ok right-area-@i">Wait</span>
+                                        }
                                     </div>
-                                }
+                                    <div class="d-flex flex-column right-tray">
+                                        @for (int i = 1; i <= 20; i++)
+                                        {
+                                            <span class="ng right-line-@i">Wait</span>
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -77,14 +91,24 @@
                                 <div class="type-camera">Area cam 1</div>
                                 <div class="type-camera">Line cam 2</div>
                             </div>
+
                             <div class="ng-ok">
-                                @for (int i = 1; i <= 20; i++)
-                                {
-                                    <div class="d-flex flex-wrap justify-content-center">
-                                        <span class="@(i == 6 ? "ng" : "ok")">@(i == 6 ? "NG" : "OK")</span>
-                                        <span class="ok">OK</span>
+                                <div class="d-flex justify-content-center">
+                                    <div class="d-flex flex-column left-tray" style="flex-basis: 49%">
+                                        @for (int i = 1; i <= 20; i++)
+                                        {
+                                            @*<span class="ok right-area-@i">Wait</span>*@
+                                            <span class="@(i == 6 ? "ng" : "ok")" style="border-bottom: 1px solid white !important;">@(i == 6 ? "NG" : "OK")</span>
+                                        }
                                     </div>
-                                }
+                                    <div class="d-flex flex-column right-tray" style="flex-basis: 49%">
+                                        @for (int i = 1; i <= 20; i++)
+                                        {
+                                            <span class="ok" style="border-bottom: 1px solid white !important;">OK</span>
+                                            @*<span class="ng right-line-@i">Wait</span>*@
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -95,13 +119,20 @@
                                 <div class="type-camera">Line cam 4</div>
                             </div>
                             <div class="ng-ok">
-                                @for (int i = 1; i <= 20; i++)
-                                {
-                                    <div class="d-flex flex-wrap justify-content-center">
-                                        <span class="@(i == 14 ? "ng" : "ok")">@(i == 14 ? "NG" : "OK")</span>
-                                        <span class="ok">OK</span>
+                                <div class="d-flex justify-content-center">
+                                    <div class="d-flex flex-column left-tray" style="flex-basis: 49%">
+                                        @for (int i = 1; i <= 20; i++)
+                                        {
+                                            <span class="@(i == 14 ? "ng" : "ok")" style="border-bottom: 1px solid white !important;">@(i == 14 ? "NG" : "OK")</span>
+                                        }
                                     </div>
-                                }
+                                    <div class="d-flex flex-column right-tray" style="flex-basis: 49%">
+                                        @for (int i = 1; i <= 20; i++)
+                                        {
+                                            <span class="ok" style="border-bottom: 1px solid white !important;">OK</span>
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

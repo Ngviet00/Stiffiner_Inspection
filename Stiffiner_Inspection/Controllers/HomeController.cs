@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Models;
 using Stiffiner_Inspection.Services;
-//using System.Diagnostics;
+using System.Diagnostics;
 
 namespace Stiffiner_Inspection.Controllers
 {
@@ -12,23 +12,40 @@ namespace Stiffiner_Inspection.Controllers
         private readonly IHubContext<HomeHub> _hubContext;
         private readonly DataService _dataService;
         private readonly ErrorCodeService _errorCodeService;
+        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(IHubContext<HomeHub> hubContext, DataService dataService, ErrorCodeService errorCodeService)
+        public HomeController(IHubContext<HomeHub> hubContext, DataService dataService, ErrorCodeService errorCodeService, ILogger<HomeController> logger)
         {
             _hubContext = hubContext;
             _dataService = dataService;
             _errorCodeService = errorCodeService;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
         {
+            _logger.LogError("test publish log:" + 1);
+
+            Thread test = new Thread(() =>
+            {
+                while (true)
+                {
+                    Console.WriteLine(11);
+                    _logger.LogError("duynk");
+                    Thread.Sleep(2200);
+                }
+            });
+            test.Name = "11";
+            test.IsBackground = true;
+            test.Start();
+
+            //controlPLC.Connect();
             //Global.controlPLC.Connect();
 
             //Thread threadGetCurrentPLC = new Thread(GetCurrentValuePLC);
             //threadGetCurrentPLC.IsBackground = true;
             //threadGetCurrentPLC.Name = "GET_CURRENT_STATUS_PLC";
             //threadGetCurrentPLC.Start();
-
 
             //Thread threadGetSignReset = new Thread(GetCurrentValueResetPLC);
             //threadGetSignReset.IsBackground = true;

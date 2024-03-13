@@ -13,8 +13,8 @@ namespace Stiffiner_Inspection
             EMPTY = 3
         }
 
-        public static int tempValuePLC = -1;
+        public static int tempValuePLC { get; set; } = -1;
 
-        public static int plcReset = -1;
+        public static int plcReset { get; set; } = -1;
     }
 }

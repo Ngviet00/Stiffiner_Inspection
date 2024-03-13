@@ -32,7 +32,7 @@ namespace Stiffiner_Inspection.Controllers
             try
             {
                 //save to db
-                //var result = await _dataService.Save(dataDTO);
+                var result = await _dataService.Save(dataDTO);
 
                 //event to client
                 await _hubContext.Clients.All.SendAsync("ReceiveData", dataDTO);
@@ -46,7 +46,7 @@ namespace Stiffiner_Inspection.Controllers
                 //write log to file
                 //await _dataService.SaveTimeLog(dataDTO.time, "Program", "Send from server to PLC");
 
-                return Ok(dataDTO);
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -170,6 +170,7 @@ namespace Stiffiner_Inspection.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return Ok(new
                 {
                     status = 200,
@@ -182,7 +183,7 @@ namespace Stiffiner_Inspection.Controllers
 
         [Route("test-api")]
         [HttpGet]
-        public async Task<IActionResult> TestAPI() 
+        public IActionResult TestAPI() 
         {
             return Ok(new
             {

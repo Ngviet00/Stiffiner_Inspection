@@ -1,6 +1,7 @@
-﻿using ActUtlTypeLib;
+﻿using ActUtlType64Lib;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Stiffiner_Inspection.Controllers;
 using Stiffiner_Inspection.Hubs;
 using System;
 using System.Collections.Generic;
@@ -14,11 +15,12 @@ namespace Stiffiner_Inspection
     public class ControlPLC
     {
         public EventHandler PLCEvent;
-        private ActUtlType _plc = new ActUtlType();
+        private ActUtlType64 _plc = new ActUtlType64();
         private const int _plcStation = 1;
         private bool isExist = false;
         private const int timeSleep = 1000;
         public readonly IHubContext<HomeHub> _hubContext;
+        private readonly ILogger<ControlPLC> _logger;
 
         // Register read
         private const string REG_PLC_Read_STATUS = "D20";
@@ -67,10 +69,17 @@ namespace Stiffiner_Inspection
         {
             _plc.ActLogicalStationNumber = _plcStation;
         }
+
+        public ControlPLC(ILogger<ControlPLC> logger)
+        {
+            this._logger = logger;
+        }
+
         public void Connect()
         {
             if (_plc.Open() == 0)
             {
+                _logger.LogError("success");
                 Console.WriteLine("Connected to PLC at station: " + _plcStation);
                 Thread thread = new Thread(ReadDataFromRegister);
                 thread.IsBackground = true;
@@ -79,6 +88,7 @@ namespace Stiffiner_Inspection
             }
             else
             {
+                _logger.LogError("error");
                 Console.WriteLine("Can't connected to PLC at station: " + _plcStation);
             }
         }

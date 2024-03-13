@@ -6,12 +6,20 @@ using Stiffiner_Inspection.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddEventLog();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("StiffinerInspectionContext")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("StiffinerInspectionContext"), sqlServerOptionsAction =>
+    {
+        sqlServerOptionsAction.EnableRetryOnFailure();
+    }));
 
 builder.Services.AddScoped<DataService>();
 builder.Services.AddScoped<ErrorCodeService>();

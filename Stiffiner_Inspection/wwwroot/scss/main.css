@@ -373,6 +373,12 @@
   font-weight: 600;
   color: #3C3C3C;
 }
+.wrap-content #inspection-statistical #result .current-tray .check-item .is-check-tray .ng-ok .left-tray, .wrap-content #inspection-statistical #result .current-tray .check-item .is-check-tray .ng-ok .right-tray {
+  flex-basis: 49%;
+}
+.wrap-content #inspection-statistical #result .current-tray .check-item .is-check-tray .ng-ok .left-tray span, .wrap-content #inspection-statistical #result .current-tray .check-item .is-check-tray .ng-ok .right-tray span {
+  border-bottom: 1px solid white !important;
+}
 .wrap-content #inspection-statistical #result .current-tray .check-item .is-check-tray .ng-ok div {
   border-bottom: 1px solid white;
 }
