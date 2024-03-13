@@ -8,6 +8,8 @@ const connection = new signalR.HubConnectionBuilder()
 $(function () {
     var timeouts = [null, null, null, null];
     var triggercams = [null, null, null, null];
+    var clientConnects = [null, null, null, null];
+    var currentTray = [];
 
     //start connection
     connection.start().then(() => {
@@ -21,21 +23,24 @@ $(function () {
         if (noDataResultLogRow) {
             noDataResultLogRow.remove();
         }
+        currentTray.push(data);
+        console.log('receive-data:',data);
 
         appendResultLog(data);
     });
 
     connection.on("ReceiveTimeLog", (time, type, message) => {
-        console
         const noDataTimeLogRow = $('.time-log-no-data');
 
         if (noDataTimeLogRow) {
             noDataTimeLogRow.remove();
         }
 
+        console.log('receive-time-log:', time, type, message);
+
         let result = `
             <tr>
-                <td class="max-w90">${convertDate(time)}</td>
+                <td class="max-w90">05:37:37</td>
                 <td class="max-w105">${type}</td>
                 <td>${message}</td>
             </tr>
@@ -46,18 +51,33 @@ $(function () {
 
     //event check status camera pc
     connection.on("ChangeStatusCamClient", (clientId, status) => {
+        console.log('status-cam-client:', clientId, status);
+
         clearTimeout(timeouts[clientId]);
 
-        $(".dot-cam-" + clientId).css("color", status == 1 ? '#0ad90a' : '#b6b9b6');
+        $(".dot-cam-" + clientId).css("background", status == 1 ? '#0ad90a' : '#b6b9b6');
 
         timeouts[clientId] = setTimeout(function () {
-            $(".dot-cam-" + clientId).css("color", '#b6b9b6');
+            $(".dot-cam-" + clientId).css("background", '#b6b9b6');
+        }, 3500);
+    });
+
+    //event check status camera pc
+    connection.on("ChangeClientConnect", (clientId, status) => {
+        console.log('client-connect:', clientId, status);
+
+        clearTimeout(clientConnects[clientId]);
+
+        $(".dot-connect-" + clientId).css("background", status == 1 ? '#0ad90a' : '#b6b9b6');
+
+        clientConnects[clientId] = setTimeout(function () {
+            $(".dot-connect-" + clientId).css("background", '#b6b9b6');
         }, 3500);
     });
 
     //event change plc
     connection.on("ChangeStatusPLC", (status) => {
-        console.log('test-test-client' + status);
+        console.log('test-plc:' + status);
         let _status = $('#value-plc-status');
         let _message = $('#error-plc-status');
 
@@ -86,6 +106,7 @@ $(function () {
 
     //event change system client
     connection.on("ChangeStatusSystemClient", (status, message) => {
+        console.log(status, message);
         let _status = $('#value-system-status');
         let _message = $('#error-system-status');
 
@@ -108,6 +129,7 @@ $(function () {
     });
 
     connection.on("ChangeStatusTriggerCam", (clientId) => {
+        console.log('status trigger cam:', clientId)
         clearTimeout(triggercams[clientId]);
         
         $('.dot-trigger-cam-' + clientId).css("color", '#0ad90a');
@@ -115,6 +137,20 @@ $(function () {
         triggercams[clientId] = setTimeout(() => {
             $('.dot-trigger-cam-' + clientId).css("color", '#b6b9b6');
         }, 3500)
+    });
+
+    connection.on("PLCReset", () => {
+
+        let results;
+
+        for (let i = 1; i <= 20; i++) {
+            
+        }
+
+        $('.previous-tray .checking-tray-right .ng-ok').append(results);
+
+        //set current = [];
+        currentTray = [];
     });
 
     function appendResultLog(data) {

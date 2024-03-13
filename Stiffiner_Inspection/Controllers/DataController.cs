@@ -32,21 +32,21 @@ namespace Stiffiner_Inspection.Controllers
             try
             {
                 //save to db
-                var result = await _dataService.Save(dataDTO);
+                //var result = await _dataService.Save(dataDTO);
 
                 //event to client
-                await _hubContext.Clients.All.SendAsync("ReceiveData", result);
+                await _hubContext.Clients.All.SendAsync("ReceiveData", dataDTO);
 
                 //send to status to PLC
                 //Global.controlPLC.WriteDataToRegister(dataDTO.result, dataDTO.index);
 
                 //event to client log
-                await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", result.Time, "Program", "Send from server to PLC");
+                await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", "2024-03-12T05:37:37.723Z", "Program", "Send from server to PLC");
 
                 //write log to file
                 //await _dataService.SaveTimeLog(dataDTO.time, "Program", "Send from server to PLC");
 
-                return Ok("ok");
+                return Ok(dataDTO);
             }
             catch (Exception ex)
             {
@@ -112,6 +112,7 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
+                //get from PLC
                 await _hubContext.Clients.All.SendAsync("ChangeStatusTriggerCam", client_id);
 
                 return Ok(new
@@ -129,6 +130,55 @@ namespace Stiffiner_Inspection.Controllers
                 });
             }
         }
+
+        [Route("change-client-connect")]
+        [HttpPost]
+        public async Task<IActionResult> ChangeClientConnect(int client_id, int status = 1) //1 active, 2 inactive
+        {
+            try
+            {
+                await _hubContext.Clients.All.SendAsync("ChangeClientConnect", client_id, status);
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "Send API Success"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Route("plc-reset")]
+        [HttpGet]
+        public IActionResult PLCReset()
+        {
+            try
+            {
+                return Ok(new
+                {
+                    status = 200,
+                    message = "Send API Success",
+                    result = Global.plcReset,
+                });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new
+                {
+                    status = 200,
+                    message = "Send API Success",
+                    result = -1,
+                });
+            }
+        }
+
 
         [Route("test-api")]
         [HttpGet]

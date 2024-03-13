@@ -81,8 +81,8 @@
                                 @for (int i = 1; i <= 20; i++)
                                 {
                                     <div class="d-flex flex-wrap justify-content-center">
-                                        <span class="ok ">OK</span>
-                                        <span class="ng">NG</span>
+                                        <span class="@(i == 6 ? "ng" : "ok")">@(i == 6 ? "NG" : "OK")</span>
+                                        <span class="ok">OK</span>
                                     </div>
                                 }
                             </div>
@@ -98,8 +98,8 @@
                                 @for (int i = 1; i <= 20; i++)
                                 {
                                     <div class="d-flex flex-wrap justify-content-center">
+                                        <span class="@(i == 14 ? "ng" : "ok")">@(i == 14 ? "NG" : "OK")</span>
                                         <span class="ok">OK</span>
-                                        <span class="ng">NG</span>
                                     </div>
                                 }
                             </div>
@@ -167,17 +167,17 @@
                                     <label class="label-title">PC@{@i}-Area Camera:</label>
 
                                     <span class="mx-2">
-                                        <i class="fa fa-circle dot-cam-@i" aria-hidden="true"></i>
+                                        <div class="dot-connect-@i div-status"></div>
                                         <label>Connect</label>
                                     </span>
 
                                     <span class="mx-4">
-                                        <i class="fa fa-circle dot-cam-@i" aria-hidden="true"></i>
+                                        <div class="dot-cam-@i div-status"></div>
                                         <label>CAM</label>
                                     </span>
 
                                     <span class="mx-4">
-                                        <i class="fa fa-circle dot-trigger-cam-@i" aria-hidden="true"></i>
+                                        <div class="dot-trigger-cam-@i div-status"></div>
                                         <label>
                                             Trigger
                                             CAM

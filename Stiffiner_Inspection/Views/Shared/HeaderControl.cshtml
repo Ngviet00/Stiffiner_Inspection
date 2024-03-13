@@ -20,54 +20,20 @@
 
         <div class="option-time">
             <label for="">Search</label>
-            <i class="fa fa-clock-o" aria-hidden="true"></i>
+            @*<i class="fa fa-clock-o" aria-hidden="true"></i>*@
             <select name="" id="">
                 <option value="">Start time to end time</option>
                 <option value="">2</option>
             </select>
         </div>
 
-        <a class="btn btn-setting" onclick="Meee2()">
-            <i class="fa fa-cog" aria-hidden="true"></i>
+        <a class="btn btn-setting">
+            @*<i class="fa fa-cog" aria-hidden="true"></i>*@
             Setting
         </a>
-        <a href="#" class="btn btn-primary btn-export-excel" onclick="testSendClient()">
+        <a href="#" class="btn btn-primary btn-export-excel">
             Export report
-            <i class="fa fa-arrow-right" aria-hidden="true"></i>
+            @*<i class="fa fa-arrow-right" aria-hidden="true"></i>*@
         </a>
     </div>
 </div>
-
-<script>
-    function Meee2() {
-        $.ajax({
-            url: '@Url.Action("Setdata", "Home")',
-            type: 'GET',
-            success: function (data) {
-                // Display received data
-                //$('#result').html('Name: ' + data.Name + ', Age: ' + data.Age);
-                //  alert(data);
-            },
-            error: function () {
-                // Handle errors
-                $('#result').html('Error occurred.');
-            }
-        });
-    }
-
-    function testSendClient() {
-        $.ajax({
-            url: '@Url.Action("Setdata", "Home")',
-            type: 'GET',
-            success: function (data) {
-                // Display received data
-                //$('#result').html('Name: ' + data.Name + ', Age: ' + data.Age);
-                //  alert(data);
-            },
-            error: function () {
-                // Handle errors
-                $('#result').html('Error occurred.');
-            }
-        });
-}
-</script>

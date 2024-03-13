@@ -215,9 +215,19 @@
   color: #3C3C3C;
   font-weight: 500;
 }
-.wrap-content #overview .wrap-overview #io-status span i {
-  color: #b6b9b6;
+.wrap-content #overview .wrap-overview #io-status span {
+  /*i {
+      color: #b6b9b6;
+      font-size: 9px;
+  }*/
+}
+.wrap-content #overview .wrap-overview #io-status span .div-status {
+  width: 8px;
+  height: 8px;
+  background: #b6b9b6;
   font-size: 9px;
+  border-radius: 50%;
+  display: inline-block;
 }
 .wrap-content #overview .wrap-overview #io-status span label {
   font-size: 11.5px;
