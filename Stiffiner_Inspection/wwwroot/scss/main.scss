@@ -571,26 +571,26 @@ $color_3C3C3C: #3C3C3C;
                                 border-bottom: 1px solid white;
                             }
 
-                            .ng {
+                            .ok, .ng, .wait {
                                 flex-basis: 48%;
                                 text-align: center;
-                                /*background: #E4491D;*/
-                                background: #cdcecf;
                                 border-right: 1px solid #fff;
                                 color: #fff;
                                 font-size: 11px;
                                 padding: 7px 0px;
+                                border-bottom: 1px solid white !important;
+                            }
+
+                            .ng {
+                                background: #E4491D !important;
                             }
 
                             .ok {
-                                flex-basis: 48%;
-                                text-align: center;
-                                /*background: #66b032;*/
-                                background: #cdcecf;
-                                border-right: 1px solid #fff;
-                                color: #fff;
-                                font-size: 11px;
-                                padding: 7px 0px;
+                                background: #66b032 !important;
+                            }
+
+                            .wait {
+                                background: #cdcecf !important;
                             }
                         }
                     }

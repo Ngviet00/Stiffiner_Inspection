@@ -463,25 +463,23 @@
 .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok div {
   border-bottom: 1px solid white;
 }
-.wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .ng {
+.wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .ok, .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .ng, .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .wait {
   flex-basis: 48%;
   text-align: center;
-  /*background: #E4491D;*/
-  background: #cdcecf;
   border-right: 1px solid #fff;
   color: #fff;
   font-size: 11px;
   padding: 7px 0px;
+  border-bottom: 1px solid white !important;
+}
+.wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .ng {
+  background: #E4491D !important;
 }
 .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .ok {
-  flex-basis: 48%;
-  text-align: center;
-  /*background: #66b032;*/
-  background: #cdcecf;
-  border-right: 1px solid #fff;
-  color: #fff;
-  font-size: 11px;
-  padding: 7px 0px;
+  background: #66b032 !important;
+}
+.wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .wait {
+  background: #cdcecf !important;
 }
 .wrap-content #inspection-statistical #result .previous-tray .check-item .checking-tray-left {
   border-right: none;
