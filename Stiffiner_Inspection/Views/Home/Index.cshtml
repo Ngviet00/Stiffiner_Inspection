@@ -4,7 +4,7 @@
             <h3 class="genera-title">Result</h3>
             <div class="d-flex justify-content-between">
                 <div class="current-tray">
-                    <h3 id="title-current-tray">Tray 03 (Inspecting)</h3>
+                    <h3 id="title-current-tray">Tray 01 (Inspecting)</h3>
                     <div class="current-time">
                         Inspect time: <span id="current-tray-first-input-time">13:33:02</span> -> now
                     </div>  
@@ -70,7 +70,7 @@
                 </div>
 
                 <div class="previous-tray">
-                    <h3 id="title-previous-tray">Tray 02</h3>
+                    <h3 id="title-previous-tray">Tray 0</h3>
                     <div class="previous-time">
                         Inspect time: <span id="previous-tray-first-input-time">13:33:02</span> -> 13:38:02
                     </div>
@@ -97,15 +97,13 @@
                                     <div class="d-flex flex-column left-tray" style="flex-basis: 49%">
                                         @for (int i = 1; i <= 20; i++)
                                         {
-                                            @*<span class="ok right-area-@i">Wait</span>*@
-                                            <span class="@(i == 6 ? "ng" : "ok")" style="border-bottom: 1px solid white !important;">@(i == 6 ? "NG" : "OK")</span>
+                                            <span class="ok" style="border-bottom: 1px solid white !important;">Wait</span>
                                         }
                                     </div>
                                     <div class="d-flex flex-column right-tray" style="flex-basis: 49%">
                                         @for (int i = 1; i <= 20; i++)
                                         {
-                                            <span class="ok" style="border-bottom: 1px solid white !important;">OK</span>
-                                            @*<span class="ng right-line-@i">Wait</span>*@
+                                            <span class="ok" style="border-bottom: 1px solid white !important;">Wait</span>
                                         }
                                     </div>
                                 </div>
@@ -123,13 +121,13 @@
                                     <div class="d-flex flex-column left-tray" style="flex-basis: 49%">
                                         @for (int i = 1; i <= 20; i++)
                                         {
-                                            <span class="@(i == 14 ? "ng" : "ok")" style="border-bottom: 1px solid white !important;">@(i == 14 ? "NG" : "OK")</span>
+                                            <span class="ng" style="border-bottom: 1px solid white !important;">Wait</span>
                                         }
                                     </div>
                                     <div class="d-flex flex-column right-tray" style="flex-basis: 49%">
                                         @for (int i = 1; i <= 20; i++)
                                         {
-                                            <span class="ok" style="border-bottom: 1px solid white !important;">OK</span>
+                                            <span class="ng" style="border-bottom: 1px solid white !important;">Wait</span>
                                         }
                                     </div>
                                 </div>

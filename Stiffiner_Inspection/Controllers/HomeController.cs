@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Hubs;
-using Stiffiner_Inspection.Models;
 using Stiffiner_Inspection.Services;
-using System.Diagnostics;
 
 namespace Stiffiner_Inspection.Controllers
 {

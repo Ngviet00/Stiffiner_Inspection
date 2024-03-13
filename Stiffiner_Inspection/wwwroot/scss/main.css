@@ -469,7 +469,8 @@
 .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .ng {
   flex-basis: 48%;
   text-align: center;
-  background: #E4491D;
+  /*background: #E4491D;*/
+  background: #cdcecf;
   border-right: 1px solid #fff;
   color: #fff;
   font-size: 11px;
@@ -478,7 +479,8 @@
 .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .ok {
   flex-basis: 48%;
   text-align: center;
-  background: #66b032;
+  /*background: #66b032;*/
+  background: #cdcecf;
   border-right: 1px solid #fff;
   color: #fff;
   font-size: 11px;

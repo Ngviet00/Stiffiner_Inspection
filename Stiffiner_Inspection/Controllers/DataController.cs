@@ -1,14 +1,9 @@
-﻿using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Models.DTO.Data;
-using Stiffiner_Inspection.Models.Entity;
 using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
-using System.IO;
-using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Stiffiner_Inspection.Controllers
 {
