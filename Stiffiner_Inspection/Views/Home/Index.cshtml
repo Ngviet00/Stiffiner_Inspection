@@ -148,13 +148,13 @@
                             <div class="lbl-tray-total">
                                 Tray total
                             </div>
-                            <div class="lbl-number">02</div>
+                            <div class="lbl-number">0</div>
                         </div>
 
                         <div class="second-row d-flex align-items-center justify-content-between mb-1">
                             <div class="title">Total</div>
                             <div class="w-100 total">
-                                05<span class="">EA</span>
+                                0<span class="">EA</span>
                             </div>
                         </div>
 
@@ -163,9 +163,9 @@
                             <div class="title">OK</div>
                             <div class="w-100 total">
                                 <div class="d-inline-block">
-                                    56<span>EA</span>
+                                    0<span>EA</span>
                                 </div>
-                                <span class="percent">60%</span>
+                                <span class="percent">0%</span>
                             </div>
                         </div>
 
@@ -173,16 +173,16 @@
                             <div class="title">NG</div>
                             <div class="w-100 total">
                                 <div class="d-inline-block">
-                                    56<span>EA</span>
+                                    0<span>EA</span>
                                 </div>
-                                <span class="percent">31.7%</span>
+                                <span class="percent">0%</span>
                             </div>
                         </div>
 
                         <div class="second-row d-flex align-items-center justify-content-between mb-1">
                             <div class="title">Empty</div>
                             <div class="w-100 total">
-                                05<span class="">EA</span>
+                                0<span class="">EA</span>
                             </div>
                         </div>
                     </div>
@@ -235,7 +235,7 @@
                 <div class="total-error">
                     <h3 id="title">Error Detect</h3>
                     <div class="total">
-                        Total <span>30</span> detect
+                        Total <span>0</span> detect
                     </div>
                 </div>
 
@@ -297,8 +297,8 @@
     var ctx = document.getElementById('pie-chart').getContext('2d');
 
     // var errorCodes = @Html.Raw(Json.Serialize(ViewBag.errorCodes));
-    var labels = ['abc', 'dss', 'ss'];
-    var values = [10, 20, 40];
+    var labels = ['NG TYPE'];
+    var values = [100];
 
     const backgroundColor = [
         '#7F56D9', '#F4EBFF', '#9E77ED', '#B692F6',
@@ -343,15 +343,15 @@
                     enabled: false,
                 },
                 datalabels: {
-                    // formatter: (value, context) => {
-                    //     const datapoints = context.chart.data.datasets[0].data;
-                    //     function totalSum(total, datapoint) {
-                    //         return total + datapoint;
-                    //     }
-                    //     const totalValue = datapoints.reduce(totalSum, 0);
-                    //     const percentageValue = (value / totalValue * 100).toFixed(1);
-                    //     return `${percentageValue}%`;
-                    // },
+                     formatter: (value, context) => {
+                         const datapoints = context.chart.data.datasets[0].data;
+                         function totalSum(total, datapoint) {
+                             return total + datapoint;
+                         }
+                         const totalValue = datapoints.reduce(totalSum, 0);
+                         const percentageValue = (value / totalValue * 100).toFixed(1);
+                         return `${percentageValue}%`;
+                     },
                     color: '#000000',
                     font: {
                         weight: 'bold',

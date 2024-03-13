@@ -400,9 +400,6 @@
   font-size: 11px;
   padding: 7px 0px;
 }
-.wrap-content #inspection-statistical #result .current-tray .check-item .is-check-tray .ng-ok:hover {
-  cursor: pointer;
-}
 .wrap-content #inspection-statistical #result .current-tray .check-item .checking-tray-left {
   border-right: none;
 }
