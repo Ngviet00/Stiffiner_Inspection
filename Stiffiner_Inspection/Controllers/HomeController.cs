@@ -2,6 +2,7 @@ using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Hubs;
+using Stiffiner_Inspection.Models.DTO.Data;
 using Stiffiner_Inspection.Services;
 
 namespace Stiffiner_Inspection.Controllers
@@ -29,6 +30,8 @@ namespace Stiffiner_Inspection.Controllers
             threadGetCurrentPLC.IsBackground = true;
             threadGetCurrentPLC.Name = "GET_CURRENT_STATUS_PLC";
             threadGetCurrentPLC.Start();
+
+            //Global.controlPLC.WriteDataToRegister(1, 0);
 
             //Thread threadGetSignReset = new Thread(GetCurrentValueResetPLC);
             //threadGetSignReset.IsBackground = true;

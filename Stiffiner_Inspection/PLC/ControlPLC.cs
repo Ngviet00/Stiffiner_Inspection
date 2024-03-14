@@ -86,7 +86,6 @@ namespace Stiffiner_Inspection
                 int valueReset = 0;
                 _plc.ReadDeviceBlock(REG_PLC_Read_STATUS, 1, out valueReaded);
                 _plc.ReadDeviceBlock(REG_PLC_READ_NEW_TRAY, 1, out valueReset);
-
                 SetStatusOfMachine(valueReaded);
 
                 Global.valuePLC = isDisconnected ? 4 : valueReaded;
