@@ -25,7 +25,7 @@ namespace Stiffiner_Inspection.Controllers
         {
             Global.controlPLC.Connect();
 
-            //Thread read plc
+            //Thread read value plc
             Thread threadGetCurrentPLC = new Thread(GetValuePLC);
             threadGetCurrentPLC.IsBackground = true;
             threadGetCurrentPLC.Name = "GET_CURRENT_STATUS_PLC";
