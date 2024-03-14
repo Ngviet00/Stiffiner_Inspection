@@ -1,20 +1,17 @@
 ﻿using ActUtlType64Lib;
 using log4net;
-using Microsoft.AspNetCore.SignalR;
-using Stiffiner_Inspection.Controllers;
-using Stiffiner_Inspection.Hubs;
 using System.Text.RegularExpressions;
 
 namespace Stiffiner_Inspection
 {
     public class ControlPLC
     {
-        public EventHandler PLCEvent;
+        public EventHandler? PLCEvent;
+
         private ActUtlType64 _plc = new ActUtlType64();
         private const int _plcStation = 1;
         private bool isExist = false;
         private const int timeSleep = 1000;
-        public readonly IHubContext<HomeHub> _hubContext;
         private readonly ILog _logger = LogManager.GetLogger(typeof(ControlPLC));
 
         // Register read
@@ -28,20 +25,16 @@ namespace Stiffiner_Inspection
         private const int REG_PLC_Start = 900;
         private const string REG_Vision_Bussy = "M420";
 
-
         //machine status
         private const int bit_Start = 0;
         private const int bit_Stop = 1;
         private const int bit_Alarm = 2;
-        private bool isStart = false;
-        private bool isStop = false;
-        private bool isAlarm = false;
-        private bool isEMG = false;
 
-        public bool IsStart { get => isStart; set => isStart = value; }
-        public bool IsStop { get => isStop; set => isStop = value; }
-        public bool IsAlarm { get => isAlarm; set => isAlarm = value; }
-        public bool IsEMG { get => isEMG; set => isEMG = value; }
+        private bool isStart { get; set; } = false;
+        private bool isStop { get; set; } = false;
+        private bool isAlarm { get; set; } = false;
+        private bool isEMG { get; set; } = false;
+        private bool isDisconnected { get; set; } = false;
 
         public string AlarmMessage
         {
@@ -67,11 +60,12 @@ namespace Stiffiner_Inspection
 
         public void Connect()
         {
-            _logger.Error("đã vào hàm connect");
             if (_plc.Open() == 0)
             {
-                _logger.Error("connected plc success");
-                Console.WriteLine("Connected to PLC at station: " + _plcStation);
+                _logger.Info("Connect successfully PLC!");
+                Console.WriteLine("Connect successfully PLC!");
+
+                //Thread read data status PLC from register
                 Thread thread = new Thread(ReadDataFromRegister);
                 thread.IsBackground = true;
                 thread.Name = "REG_PLC_STATUS";
@@ -79,8 +73,8 @@ namespace Stiffiner_Inspection
             }
             else
             {
-                _logger.Error("failed connected plc");
-                Console.WriteLine("Can't connected to PLC at station: " + _plcStation);
+                _logger.Error("PLC has been connected!");
+                Console.WriteLine("PLC has been connected!");
             }
         }
 
@@ -92,13 +86,11 @@ namespace Stiffiner_Inspection
                 int valueReset = 0;
                 _plc.ReadDeviceBlock(REG_PLC_Read_STATUS, 1, out valueReaded);
                 _plc.ReadDeviceBlock(REG_PLC_READ_NEW_TRAY, 1, out valueReset);
+
                 SetStatusOfMachine(valueReaded);
 
-                Global.tempValuePLC = valueReaded;
+                Global.valuePLC = isDisconnected ? 4 : valueReaded;
                 Global.plcReset = valueReset;
-                Console.WriteLine(Global.tempValuePLC);
-
-                _logger.Error("value-plc-" + Global.tempValuePLC);
 
                 Thread.Sleep(timeSleep);
             }
@@ -106,7 +98,7 @@ namespace Stiffiner_Inspection
 
         private void SetStatusOfMachine(int binary)
         {
-            isAlarm = isStart = isStop = isEMG = false;
+            isAlarm = isStart = isStop = isEMG = isDisconnected =  false;
 
             switch (binary)
             {
@@ -123,11 +115,11 @@ namespace Stiffiner_Inspection
                     isAlarm = true;
                     break;
                 default:
+                    isDisconnected = true;
                     break;
             }
 
-            Console.WriteLine(string.Format("EMG: {0} - Start: {1} - Stop: {2} - Alarm: {3}", isEMG, isStart, isStop, isAlarm));
-
+            Console.WriteLine(string.Format("EMG: {0} - Start: {1} - Stop: {2} - Alarm: {3} - Default: {4}", isEMG, isStart, isStop, isAlarm, isDisconnected));
         }
 
         public void WriteDataToRegister(int data, int index)

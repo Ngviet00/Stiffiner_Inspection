@@ -10,7 +10,8 @@
             NG = 2,
             EMPTY = 3
         }
-        public static int tempValuePLC { get; set; } = -1;
+
+        public static int valuePLC { get; set; } = 4;
 
         public static int plcReset { get; set; } = -1;
     }
