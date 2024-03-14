@@ -24,28 +24,14 @@ namespace Stiffiner_Inspection.Controllers
         {
             _logger.Error("dsadsa");
 
-
             //_logger.LogError("test publish log:" + 1);
-
-            //Thread test = new Thread(() =>
-            //{
-            //    while (true)
-            //    {
-            //        Console.WriteLine(11);
-            //        _logger.LogError("duynk");
-            //        Thread.Sleep(2200);
-            //    }
-            //});
-            //test.Name = "11";
-            //test.IsBackground = true;
-            //test.Start();
 
             Global.controlPLC.Connect();
 
-            //Thread threadGetCurrentPLC = new Thread(GetCurrentValuePLC);
-            //threadGetCurrentPLC.IsBackground = true;
-            //threadGetCurrentPLC.Name = "GET_CURRENT_STATUS_PLC";
-            //threadGetCurrentPLC.Start();
+            Thread threadGetCurrentPLC = new Thread(GetCurrentValuePLC);
+            threadGetCurrentPLC.IsBackground = true;
+            threadGetCurrentPLC.Name = "GET_CURRENT_STATUS_PLC";
+            threadGetCurrentPLC.Start();
 
             //Thread threadGetSignReset = new Thread(GetCurrentValueResetPLC);
             //threadGetSignReset.IsBackground = true;
@@ -65,6 +51,7 @@ namespace Stiffiner_Inspection.Controllers
             while (true)
             {
                 await _hubContext.Clients.All.SendAsync("ChangeStatusPLC", Global.tempValuePLC);
+                Console.WriteLine("11get-current-value-plc" + Global.tempValuePLC);
                 Thread.Sleep(1000);
             }
         }

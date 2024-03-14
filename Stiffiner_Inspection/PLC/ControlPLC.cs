@@ -96,6 +96,9 @@ namespace Stiffiner_Inspection
 
                 Global.tempValuePLC = valueReaded;
                 Global.plcReset = valueReset;
+                Console.WriteLine(Global.tempValuePLC);
+
+                _logger.Error("value-plc-" + Global.tempValuePLC);
 
                 Thread.Sleep(timeSleep);
             }
