@@ -1,3 +1,4 @@
+using log4net.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Stiffiner_Inspection.Contexts;
@@ -5,7 +6,6 @@ using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -28,6 +28,9 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Data", Version = "v1" });
 });
+
+var log4netConfig = new FileInfo("log4net.config");
+XmlConfigurator.Configure(log4netConfig);
 
 var app = builder.Build();
 

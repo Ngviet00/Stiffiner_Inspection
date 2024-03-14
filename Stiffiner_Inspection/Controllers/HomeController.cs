@@ -1,3 +1,4 @@
+using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Hubs;
@@ -10,35 +11,36 @@ namespace Stiffiner_Inspection.Controllers
         private readonly IHubContext<HomeHub> _hubContext;
         private readonly DataService _dataService;
         private readonly ErrorCodeService _errorCodeService;
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILog _logger = LogManager.GetLogger(typeof(HomeController));
 
-        public HomeController(IHubContext<HomeHub> hubContext, DataService dataService, ErrorCodeService errorCodeService, ILogger<HomeController> logger)
+        public HomeController(IHubContext<HomeHub> hubContext, DataService dataService, ErrorCodeService errorCodeService)
         {
             _hubContext = hubContext;
             _dataService = dataService;
             _errorCodeService = errorCodeService;
-            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
         {
-            _logger.LogError("test publish log:" + 1);
+            _logger.Error("dsadsa");
 
-            Thread test = new Thread(() =>
-            {
-                while (true)
-                {
-                    Console.WriteLine(11);
-                    _logger.LogError("duynk");
-                    Thread.Sleep(2200);
-                }
-            });
-            test.Name = "11";
-            test.IsBackground = true;
-            test.Start();
 
-            //controlPLC.Connect();
-            //Global.controlPLC.Connect();
+            //_logger.LogError("test publish log:" + 1);
+
+            //Thread test = new Thread(() =>
+            //{
+            //    while (true)
+            //    {
+            //        Console.WriteLine(11);
+            //        _logger.LogError("duynk");
+            //        Thread.Sleep(2200);
+            //    }
+            //});
+            //test.Name = "11";
+            //test.IsBackground = true;
+            //test.Start();
+
+            Global.controlPLC.Connect();
 
             //Thread threadGetCurrentPLC = new Thread(GetCurrentValuePLC);
             //threadGetCurrentPLC.IsBackground = true;

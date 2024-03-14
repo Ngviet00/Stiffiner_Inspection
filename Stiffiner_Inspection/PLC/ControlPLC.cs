@@ -1,14 +1,9 @@
 ﻿using ActUtlType64Lib;
-using Microsoft.AspNetCore.Mvc;
+using log4net;
 using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Controllers;
 using Stiffiner_Inspection.Hubs;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
 using System.Text.RegularExpressions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Stiffiner_Inspection
 {
@@ -20,7 +15,7 @@ namespace Stiffiner_Inspection
         private bool isExist = false;
         private const int timeSleep = 1000;
         public readonly IHubContext<HomeHub> _hubContext;
-        private readonly ILogger<ControlPLC> _logger;
+        private readonly ILog _logger = LogManager.GetLogger(typeof(ControlPLC));
 
         // Register read
         private const string REG_PLC_Read_STATUS = "D20";
@@ -70,16 +65,12 @@ namespace Stiffiner_Inspection
             _plc.ActLogicalStationNumber = _plcStation;
         }
 
-        public ControlPLC(ILogger<ControlPLC> logger)
-        {
-            this._logger = logger;
-        }
-
         public void Connect()
         {
+            _logger.Error("đã vào hàm connect");
             if (_plc.Open() == 0)
             {
-                _logger.LogError("success");
+                _logger.Error("connected plc success");
                 Console.WriteLine("Connected to PLC at station: " + _plcStation);
                 Thread thread = new Thread(ReadDataFromRegister);
                 thread.IsBackground = true;
@@ -88,7 +79,7 @@ namespace Stiffiner_Inspection
             }
             else
             {
-                _logger.LogError("error");
+                _logger.Error("failed connected plc");
                 Console.WriteLine("Can't connected to PLC at station: " + _plcStation);
             }
         }

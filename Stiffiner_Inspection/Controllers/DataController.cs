@@ -165,12 +165,10 @@ namespace Stiffiner_Inspection.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
                 return Ok(new
                 {
-                    status = 200,
-                    message = "Send API Success",
-                    result = -1,
+                    status = 500,
+                    message = ex.Message,
                 });
             }
         }
