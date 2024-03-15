@@ -157,30 +157,6 @@ namespace Stiffiner_Inspection.Controllers
         //    }
         //}
 
-        //[Route("change-client-connect")]
-        //[HttpPost]
-        //public async Task<IActionResult> ChangeClientConnect(int client_id, int status = 1) //1 active, 2 inactive
-        //{
-        //    try
-        //    {
-        //        await _hubContext.Clients.All.SendAsync("ChangeClientConnect", client_id, status);
-
-        //        return Ok(new
-        //        {
-        //            status = 200,
-        //            message = "Send API Success"
-        //        });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, new ErrorResponse
-        //        {
-        //            Status = 500,
-        //            Message = ex.Message
-        //        });
-        //    }
-        //}
-
         [Route("plc-reset")]
         [HttpGet]
         public IActionResult PLCReset()
