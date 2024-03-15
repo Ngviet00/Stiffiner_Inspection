@@ -6,6 +6,10 @@ $color_5: #4F5AED;
 $color_3C3C3C: #3C3C3C;
 
 .wrap-content {
+    .cam-is-active {
+        background: #0ad90a !important;
+    }
+
     .genera-title {
         color: $color_black;
         font-weight: 700;

@@ -1,4 +1,7 @@
-﻿.wrap-content .genera-title {
+﻿.wrap-content .cam-is-active {
+  background: #0ad90a !important;
+}
+.wrap-content .genera-title {
   color: #000000;
   font-weight: 700;
   font-size: 14px;

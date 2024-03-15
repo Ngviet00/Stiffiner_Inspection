@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Models.DTO.Data;
+using Stiffiner_Inspection.Models.Entity;
 using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
 
@@ -11,13 +12,16 @@ namespace Stiffiner_Inspection.Controllers
     [ApiController]
     public class DataController : Controller
     {
-        protected readonly DataService _dataService;
+        private readonly DataService _dataService;
+        private readonly StatusCAMService _statusCAMService;
+        
         private readonly IHubContext<HomeHub> _hubContext;
 
-        public DataController(DataService dataService, IHubContext<HomeHub> hubContext)
+        public DataController(DataService dataService, StatusCAMService statusCAMService, IHubContext<HomeHub> hubContext)
         {
             _dataService = dataService;
             _hubContext = hubContext;
+            _statusCAMService = statusCAMService;
         }
 
         [Route("save-data")]
@@ -29,14 +33,15 @@ namespace Stiffiner_Inspection.Controllers
                 //save to db
                 var result = await _dataService.Save(dataDTO);
 
-                //event to client
-                await _hubContext.Clients.All.SendAsync("ReceiveData", dataDTO);
-
+                //check save
                 //send to status to PLC
                 //Global.controlPLC.WriteDataToRegister(dataDTO.result, dataDTO.index);
 
+                //event to client
+                await _hubContext.Clients.All.SendAsync("ReceiveData", dataDTO);
+
                 //event to client log
-                await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", "2024-03-12T05:37:37.723Z", "Program", "Send from server to PLC");
+                await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", dataDTO.time, "Program", "Send signals from Server to PLC");
 
                 //write log to file
                 //await _dataService.SaveTimeLog(dataDTO.time, "Program", "Send from server to PLC");
@@ -53,18 +58,44 @@ namespace Stiffiner_Inspection.Controllers
             }
         }
 
-        [Route("change-status-cam-client")]
+        [Route("change-cam")]
         [HttpPost]
-        public async Task<IActionResult> ChangeStatusCamClient(int client_id, int status = 1) //1 active, 2 inactive
+        public async Task<IActionResult> ChangeCAM(StatusCAM statusCAM)
         {
             try
             {
-                await _hubContext.Clients.All.SendAsync("ChangeStatusCamClient", client_id, status);
+                await _statusCAMService.UpdateStatusCAM(statusCAM);
+
+                await _hubContext.Clients.All.SendAsync("ChangeCAM", statusCAM);
 
                 return Ok(new
                 {
                     status = 200,
-                    message = "Send API Success"
+                    message = "Change CAM successfully!"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Route("change-client-connect")]
+        [HttpPost]
+        public async Task<IActionResult> ChangeClientConnect(ClientConnectDto clientConnectDto) //1 active, 2 inactive
+        {
+            try
+            {
+                await _hubContext.Clients.All.SendAsync("ChangeClientConnect", clientConnectDto);
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "Change Client successfully"
                 });
             }
             catch (Exception ex)
@@ -101,54 +132,54 @@ namespace Stiffiner_Inspection.Controllers
             }
         }
 
-        [Route("change-status-trigger-cam")]
-        [HttpPost]
-        public async Task<IActionResult> ChangeStatusTriggerCam(int client_id) //1:running, 2: pause, 3: error - with message
-        {
-            try
-            {
-                //get from PLC
-                await _hubContext.Clients.All.SendAsync("ChangeStatusTriggerCam", client_id);
+        //[Route("change-status-trigger-cam")]
+        //[HttpPost]
+        //public async Task<IActionResult> ChangeStatusTriggerCam(int client_id) //1:running, 2: pause, 3: error - with message
+        //{
+        //    try
+        //    {
+        //        //get from PLC
+        //        await _hubContext.Clients.All.SendAsync("ChangeStatusTriggerCam", client_id);
 
-                return Ok(new
-                {
-                    status = 200,
-                    message = "Success"
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ErrorResponse
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
-            }
-        }
+        //        return Ok(new
+        //        {
+        //            status = 200,
+        //            message = "Success"
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new ErrorResponse
+        //        {
+        //            Status = 500,
+        //            Message = ex.Message
+        //        });
+        //    }
+        //}
 
-        [Route("change-client-connect")]
-        [HttpPost]
-        public async Task<IActionResult> ChangeClientConnect(int client_id, int status = 1) //1 active, 2 inactive
-        {
-            try
-            {
-                await _hubContext.Clients.All.SendAsync("ChangeClientConnect", client_id, status);
+        //[Route("change-client-connect")]
+        //[HttpPost]
+        //public async Task<IActionResult> ChangeClientConnect(int client_id, int status = 1) //1 active, 2 inactive
+        //{
+        //    try
+        //    {
+        //        await _hubContext.Clients.All.SendAsync("ChangeClientConnect", client_id, status);
 
-                return Ok(new
-                {
-                    status = 200,
-                    message = "Send API Success"
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ErrorResponse
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
-            }
-        }
+        //        return Ok(new
+        //        {
+        //            status = 200,
+        //            message = "Send API Success"
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new ErrorResponse
+        //        {
+        //            Status = 500,
+        //            Message = ex.Message
+        //        });
+        //    }
+        //}
 
         [Route("plc-reset")]
         [HttpGet]
@@ -165,24 +196,12 @@ namespace Stiffiner_Inspection.Controllers
             }
             catch (Exception ex)
             {
-                return Ok(new
+                return StatusCode(500, new ErrorResponse
                 {
-                    status = 500,
-                    message = ex.Message,
+                    Status = 500,
+                    Message = ex.Message
                 });
             }
-        }
-
-
-        [Route("test-api")]
-        [HttpGet]
-        public IActionResult TestAPI() 
-        {
-            return Ok(new
-            {
-                status = 200,
-                message = "API Success"
-            });
         }
     }
 }

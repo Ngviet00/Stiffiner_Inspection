@@ -26,6 +26,12 @@ $(function () {
         'EMPTY': 3,
     });
 
+    const SYSTEM_STATUS_CLIENT = Object.freeze({
+        'RUNNING': 1,
+        'PAUSE': 2,
+        'ERROR': 3,
+    });
+
     //connection start
     connection.start()
         .then(() => {
@@ -53,46 +59,31 @@ $(function () {
             noDataTimeLogRow.remove();
         }
 
-        let result = `
+        $("#time-log table tbody").prepend(`
             <tr>
-                <td class="max-w90">05:37:37</td>
+                <td class="max-w90">${convertDate(time)}</td>
                 <td class="max-w105">${type}</td>
                 <td>${message}</td>
             </tr>
-        `;
-
-        $("#time-log table tbody").prepend(result);
+        `);
     });
 
     //event check status camera pc
-    connection.on("ChangeStatusCamClient", (clientId, status) => {
-        console.log('status-cam-client:', clientId, status);
-
-        clearTimeout(timeouts[clientId]);
-
-        $(".dot-cam-" + clientId).css("background", status == 1 ? '#0ad90a' : '#b6b9b6');
-
-        timeouts[clientId] = setTimeout(function () {
-            $(".dot-cam-" + clientId).css("background", '#b6b9b6');
-        }, 3500);
+    connection.on("ChangeCAM", (data) => {
+        $(".dot-cam-" + data.id).removeClass('cam-is-active').css("background", data.status == 1 ? '#0ad90a' : '#b6b9b6');
     });
 
     //event check status camera pc
-    connection.on("ChangeClientConnect", (clientId, status) => {
-        console.log('client-connect:', clientId, status);
-
-        clearTimeout(clientConnects[clientId]);
-
-        $(".dot-connect-" + clientId).css("background", status == 1 ? '#0ad90a' : '#b6b9b6');
-
-        clientConnects[clientId] = setTimeout(function () {
-            $(".dot-connect-" + clientId).css("background", '#b6b9b6');
+    connection.on("ChangeClientConnect", (data) => {
+        clearTimeout(clientConnects[data.client_id])
+        $(".dot-connect-" + data.client_id).css("background", data.status == 1 ? '#0ad90a' : '#b6b9b6')
+        clientConnects[data.client_id] = setTimeout(function () {
+            $(".dot-connect-" + data.client_id).css("background", '#b6b9b6')
         }, 3500);
     });
 
     //event change plc
     connection.on("ChangeStatusPLC", (status) => {
-
         let _status = $('#value-plc-status');
         let _message = $('#error-plc-status')
         
@@ -100,44 +91,48 @@ $(function () {
 
         if (status === STATUS_PLC.DISCONNECTED) {
             _status.css("color", "#222222").css("background", "#E6E6E6").text("Disconnect");
+            return;
         }
 
         if (status === STATUS_PLC.ALARM) {
             _status.css("color", "#3C3C3C").css("background", "#FFCA08").text("Alarm");
+            return;
         }
 
         if (status === STATUS_PLC.EMG) {
             _status.css("color", "#E34440").css("background", "#FD53083D").text("EMG");
+            return;
         }
 
         if (status === STATUS_PLC.START) {
             _status.css("color", "#ffffff").css("background", "#49A31D").text("Start");
+            return;
         }
 
         if (status === STATUS_PLC.STOP) {
             _status.css("color", "#ffffff").css("background", "#E4491D").text("Stop");
+            return;
         }
     });
 
     //event change system client
     connection.on("ChangeStatusSystemClient", (status, message) => {
-        console.log(status, message);
         let _status = $('#value-system-status');
         let _message = $('#error-system-status');
 
-        status === 3 ? _message.removeClass('d-none') : _message.addClass('d-none');
+        status === SYSTEM_STATUS_CLIENT.ERROR ? _message.removeClass('d-none') : _message.addClass('d-none');
 
-        if (status === 1) {
+        if (status === SYSTEM_STATUS_CLIENT.RUNNING) {
             _status.css("color", "#ffffff").css("background", "#49A31D").text("Running");
             _message.addClass('d-none');
         }
 
-        if (status === 2) {
+        if (status === SYSTEM_STATUS_CLIENT.PAUSE) {
             _status.css("color", "#344054").css("background", "#F2F4F7").text("Pause");
             _message.addClass('d-none');
         }
 
-        if (status === 3) {
+        if (status === SYSTEM_STATUS_CLIENT.ERROR) {
             _status.css("color", "#E34440").css("background", "#FD53083D").text("Error");
             _message.removeClass('d-none').text(message);
         }
@@ -156,7 +151,7 @@ $(function () {
     });
 
     function appendResultLog(data) {
-        let result = `
+        $("#result-log table tbody").prepend(`
             <tr>
                 <td>${convertDate(data.time)}</td >
                 <td class="text-capitalize">${data.model}</td>
@@ -165,24 +160,25 @@ $(function () {
                 <td>${data.index}</td>
                 <td class="text-capitalize">${data.camera}</td>
                 <td class="status-item ${data.result === 1 ? "text-success" : "text-danger"}">
-                    ${data.result === 1 ? "OK" : "NG"}
+                    ${data.result == 1 ? "OK" : (data.result == 2 ? "NG" : (data.result == 3 ? "EMPTY" : "")) }
                 </td>
                 <td class="detail-error">${data.errorDetection ?? "-"}</td>
             </tr>
-        `;
-
-        $("#result-log table tbody").prepend(result);
+        `);
 
         if (data.result === STATUS_RESULT.OK) {
             $(`.${data.side}-${data.camera}-${data.index}`).css("background", "#66b032").text("OK");
+            return;
         }
 
         if (data.result === STATUS_RESULT.NG) {
             $(`.${data.side}-${data.camera}-${data.index}`).css("background", "#e4491d").text("NG");
+            return;
         }
 
         if (data.result === STATUS_RESULT.EMPTY) {
             $(`.${data.side}-${data.camera}-${data.index}`).css("background", "#9F9F9F").text("Empty");
+            return;
         }
     }
 

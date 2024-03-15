@@ -194,33 +194,44 @@ namespace Stiffiner_Inspection.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Stiffiner_Inspection.Models.Entity.TimeLog", b =>
+            modelBuilder.Entity("Stiffiner_Inspection.Models.Entity.StatusCAM", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("int")
                         .HasColumnName("id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Message")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("message");
-
-                    b.Property<DateTime?>("Time")
-                        .HasMaxLength(255)
-                        .HasColumnType("datetime2")
-                        .HasColumnName("time");
-
-                    b.Property<string>("Type")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("type");
+                    b.Property<int?>("Status")
+                        .HasColumnType("int")
+                        .HasColumnName("status");
 
                     b.HasKey("Id");
 
-                    b.ToTable("time_logs");
+                    b.ToTable("status_cam");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Status = 0
+                        });
                 });
 #pragma warning restore 612, 618
         }

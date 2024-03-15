@@ -8,7 +8,6 @@
                     <div class="current-time">
                         Inspect time: <span id="current-tray-first-input-time">13:33:02</span> -> now
                     </div>  
-
                     <div class="d-flex check-item">
                         <div class="no-number">
                             <div class="empty-row">0</div>
@@ -203,9 +202,8 @@
                                         <div class="dot-connect-@i div-status"></div>
                                         <label>Connect</label>
                                     </span>
-
                                     <span class="mx-4">
-                                        <div class="dot-cam-@i div-status"></div>
+                                        <div class="dot-cam-@i div-status @(ViewBag.statusCams[i-1].Status == 1 ? "cam-is-active" : "")"></div>
                                         <label>CAM</label>
                                     </span>
 
@@ -300,9 +298,9 @@
     // Get the canvas element
     var ctx = document.getElementById('pie-chart').getContext('2d');
 
-    // var errorCodes = @Html.Raw(Json.Serialize(ViewBag.errorCodes));
-    var labels = ['NG TYPE'];
-    var values = [100];
+    var errorCodes = @Html.Raw(Json.Serialize(ViewBag.errorCodes));
+    var labels = [];
+    var values = [];
 
     const backgroundColor = [
         '#7F56D9', '#F4EBFF', '#9E77ED', '#B692F6',
@@ -312,12 +310,12 @@
         '#D6BBFB'
     ]
 
-     //errorCodes.forEach(function (item) {
+     errorCodes.forEach(function (item) {
 
-     //    item.id > 10 ? values.push(item.id * 3) : "";
+         item.id > 10 ? values.push(item.id * 3) : "";
 
-     //    labels.push(`${item.errorContent.toUpperCase()}`);
-     //});
+         labels.push(`${item.errorContent.toUpperCase()}`);
+     });
 
     var myPieChart = new Chart(ctx, {
         type: 'pie',

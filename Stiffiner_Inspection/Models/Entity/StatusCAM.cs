@@ -3,15 +3,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Stiffiner_Inspection.Models.Entity
 {
-    [Table("error_code")]
-    public class ErrorCode
+    [Table("status_cam")]
+    public class StatusCAM
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("id", TypeName = "bigint")]
+        [Column("id", TypeName = "int")]
         public long Id { get; set; }
 
-        [Column("error_content"), MaxLength(255)]
-        public string? ErrorContent { get; set; } = string.Empty;
+        [Column("status")]
+        public int? Status { get; set; } = 0;
     }
 }

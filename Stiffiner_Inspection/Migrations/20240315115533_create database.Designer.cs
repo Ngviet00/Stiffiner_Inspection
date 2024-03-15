@@ -12,8 +12,8 @@ using Stiffiner_Inspection.Contexts;
 namespace Stiffiner_Inspection.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240308015058_add column image")]
-    partial class addcolumnimage
+    [Migration("20240315115533_create database")]
+    partial class createdatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -89,6 +89,112 @@ namespace Stiffiner_Inspection.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("data");
+                });
+
+            modelBuilder.Entity("Stiffiner_Inspection.Models.Entity.ErrorCode", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("ErrorContent")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("error_content");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("error_code");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            ErrorContent = "black dot"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            ErrorContent = "dirty"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            ErrorContent = "glue"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            ErrorContent = "ng sus position"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            ErrorContent = "ng hole"
+                        },
+                        new
+                        {
+                            Id = 6L,
+                            ErrorContent = "ng tape position"
+                        },
+                        new
+                        {
+                            Id = 7L,
+                            ErrorContent = "scratch"
+                        },
+                        new
+                        {
+                            Id = 8L,
+                            ErrorContent = "sus black dot"
+                        },
+                        new
+                        {
+                            Id = 9L,
+                            ErrorContent = "white dot"
+                        },
+                        new
+                        {
+                            Id = 10L,
+                            ErrorContent = "white line particle"
+                        },
+                        new
+                        {
+                            Id = 11L,
+                            ErrorContent = "dent-tray1"
+                        },
+                        new
+                        {
+                            Id = 12L,
+                            ErrorContent = "dent-tray2"
+                        },
+                        new
+                        {
+                            Id = 13L,
+                            ErrorContent = "deform"
+                        },
+                        new
+                        {
+                            Id = 14L,
+                            ErrorContent = "importinted"
+                        },
+                        new
+                        {
+                            Id = 15L,
+                            ErrorContent = "curl tape"
+                        },
+                        new
+                        {
+                            Id = 16L,
+                            ErrorContent = "curl sus"
+                        },
+                        new
+                        {
+                            Id = 17L,
+                            ErrorContent = "ng tape"
+                        });
                 });
 
             modelBuilder.Entity("Stiffiner_Inspection.Models.Entity.TimeLog", b =>
