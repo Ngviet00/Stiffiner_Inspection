@@ -5,7 +5,7 @@
         public int id { get; set; }
         public DateTime? time { get; set; }
         public string? model { get; set; } = string.Empty;
-        public int? tray { get; set; }
+        public string? tray { get; set; }
         public int? client_id { get; set; }
         public string? side { get; set; } = string.Empty;
         public int index { get; set; }

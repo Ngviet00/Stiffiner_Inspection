@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using log4net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Models.DTO.Data;
@@ -14,7 +15,8 @@ namespace Stiffiner_Inspection.Controllers
     {
         private readonly DataService _dataService;
         private readonly StatusCAMService _statusCAMService;
-        
+        private readonly ILog _logger = LogManager.GetLogger(typeof(DataController));
+
         private readonly IHubContext<HomeHub> _hubContext;
 
         public DataController(DataService dataService, StatusCAMService statusCAMService, IHubContext<HomeHub> hubContext)
@@ -30,21 +32,28 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
-                //save to db
-                var result = await _dataService.Save(dataDTO);
-
-                //check save
-                //send to status to PLC
-                //Global.controlPLC.WriteDataToRegister(dataDTO.result, dataDTO.index);
-
                 //event to client
                 await _hubContext.Clients.All.SendAsync("ReceiveData", dataDTO);
 
                 //event to client log
                 await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", dataDTO.time, "Program", "Send signals from Server to PLC");
 
-                //write log to file
-                //await _dataService.SaveTimeLog(dataDTO.time, "Program", "Send from server to PLC");
+                //save to db
+                var result = await _dataService.Save(dataDTO);
+
+                //find pair
+                var findPair = await _dataService.FindPair(result);
+
+                if (findPair is not null)
+                {
+                    int position = _dataService.GetPosition(findPair.Index, findPair.ClientId);
+                    int rs = _dataService.GetResult(result.Result, findPair.Result);
+                    
+                    Global.controlPLC.WriteDataToRegister(rs, position);
+                    _logger.Error("send to PLc-result-" + rs + "-position-"+position);
+                }
+
+                _logger.Error("Time Log: " + dataDTO.time + "-Program-Send from server to PLC");
 
                 return Ok(result);
             }
@@ -65,7 +74,6 @@ namespace Stiffiner_Inspection.Controllers
             try
             {
                 await _statusCAMService.UpdateStatusCAM(statusCAM);
-
                 await _hubContext.Clients.All.SendAsync("ChangeCAM", statusCAM);
 
                 return Ok(new
@@ -119,7 +127,7 @@ namespace Stiffiner_Inspection.Controllers
                 return Ok(new
                 {
                     status = 200,
-                    message = "Success"
+                    message = "Change system status successfully"
                 });
             }
             catch (Exception ex)
@@ -132,31 +140,6 @@ namespace Stiffiner_Inspection.Controllers
             }
         }
 
-        //[Route("change-status-trigger-cam")]
-        //[HttpPost]
-        //public async Task<IActionResult> ChangeStatusTriggerCam(int client_id) //1:running, 2: pause, 3: error - with message
-        //{
-        //    try
-        //    {
-        //        //get from PLC
-        //        await _hubContext.Clients.All.SendAsync("ChangeStatusTriggerCam", client_id);
-
-        //        return Ok(new
-        //        {
-        //            status = 200,
-        //            message = "Success"
-        //        });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, new ErrorResponse
-        //        {
-        //            Status = 500,
-        //            Message = ex.Message
-        //        });
-        //    }
-        //}
-
         [Route("plc-reset")]
         [HttpGet]
         public IActionResult PLCReset()
@@ -167,7 +150,7 @@ namespace Stiffiner_Inspection.Controllers
                 {
                     status = 200,
                     message = "Send API Success",
-                    result = Global.plcReset,
+                    result = Global.resetPLC,
                 });
             }
             catch (Exception ex)

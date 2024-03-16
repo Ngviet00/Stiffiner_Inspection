@@ -13,6 +13,6 @@
 
         public static int valuePLC { get; set; } = 4;
 
-        public static int plcReset { get; set; } = -1;
+        public static int resetPLC { get; set; } = -1;
     }
 }

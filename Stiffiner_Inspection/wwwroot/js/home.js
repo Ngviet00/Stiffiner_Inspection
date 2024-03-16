@@ -6,11 +6,9 @@ const connection = new signalR.HubConnectionBuilder()
     .build();
 
 $(function () {
-    
-    var timeouts = [null, null, null, null];
     var triggercams = [null, null, null, null];
     var clientConnects = [null, null, null, null];
-    var currentTray = [];
+    var previousTray = [];
 
     const STATUS_PLC = Object.freeze({
         'EMG': 0,
@@ -48,7 +46,7 @@ $(function () {
             noDataResultLogRow.remove();
         }
 
-        currentTray.push(data);
+        previousTray.push(data);
 
         appendResultLog(data);
     });
@@ -138,6 +136,7 @@ $(function () {
         }
     });
 
+    //event change trigger cam
     connection.on("ChangeStatusTriggerCam", (clientId) => {
         clearTimeout(triggercams[clientId]);
         $('.dot-trigger-cam-' + clientId).css("color", '#0ad90a');
@@ -146,9 +145,76 @@ $(function () {
         }, 3500)
     });
 
+    //plc reset
     connection.on("PLCReset", () => {
-        console.log('reset PLC');
+        if (previousTray.length == 80) {
+            appendPreviousTray();
+        }
+        
+        resetCurrentTray();
+        previousTray = [];
     });
+
+    function appendPreviousTray() {
+        let client1 = "";
+        let client2 = "";
+        let client3 = "";
+        let client4 = "";
+
+        previousTray.forEach(item => {
+            if (item.client_id == 1) {
+                client1 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
+                    ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
+                </span>`;
+                return;
+            }
+
+            if (item.client_id == 2) {
+                client2 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
+                    ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
+                </span>`;
+                return;
+            }
+
+            if(item.client_id == 3) {
+                client3 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
+                    ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
+                </span>`;
+                return;
+            }
+
+            if(item.client_id == 4) {
+                client4 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
+                    ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
+                </span>`;
+                return;
+            }
+        });
+
+        $('#result .previous-tray .checking-tray-left .ng-ok .left-tray').empty().append(client1)
+        $('#result .previous-tray .checking-tray-left .ng-ok .right-tray').empty().append(client2)
+        $('#result .previous-tray .checking-tray-right .ng-ok .left-tray').empty().append(client3)
+        $('#result .previous-tray .checking-tray-right .ng-ok .right-tray').empty().append(client4)
+    }
+
+    function resetCurrentTray() {
+        let client1 = '';
+        let client2 = '';
+        let client3 = '';
+        let client4 = '';
+
+        for (let i = 1; i <= 20; i++) {
+            client1 += `<span class="ok left-area-${i}">Wait</span>`;
+            client2 += `<span class="ng left-line-${i}">Wait</span>`;
+            client3 += `<span class="ok right-area-${i}">Wait</span>`;
+            client4 += `<span class="ng right-line-${i}">Wait</span>`;
+        }
+
+        $('#result .current-tray .checking-tray-left .ng-ok .left-tray').empty().append(client1)
+        $('#result .current-tray .checking-tray-left .ng-ok .right-tray').empty().append(client2)
+        $('#result .current-tray .checking-tray-right .ng-ok .left-tray').empty().append(client3)
+        $('#result .current-tray .checking-tray-right .ng-ok .right-tray').empty().append(client4)
+    }
 
     function appendResultLog(data) {
         $("#result-log table tbody").prepend(`

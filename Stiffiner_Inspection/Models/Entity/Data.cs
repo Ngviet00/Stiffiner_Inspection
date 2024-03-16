@@ -17,8 +17,8 @@ namespace Stiffiner_Inspection.Models.Entity
         [Column("model"), MaxLength(255)]
         public string? Model { get; set; } = string.Empty;
 
-        [Column("tray")]
-        public int? Tray { get; set; }
+        [Column("tray"), MaxLength(255)]
+        public string? Tray { get; set; }
 
         [Column("client_id")]
         public int? ClientId { get; set; }

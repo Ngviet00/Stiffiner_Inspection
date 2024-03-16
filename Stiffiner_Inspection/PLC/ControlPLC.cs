@@ -18,7 +18,7 @@ namespace Stiffiner_Inspection
         private const string REG_PLC_Read_STATUS = "D20";
         private const string REG_PLC_Read_ALARM_MESSAGE = "D2400";
         private const int ALARM_MESSAGE_LEGHT = 40;
-        private const string REG_PLC_READ_NEW_TRAY = "M2002";
+        private const string REG_PLC_RESET = "M2002";
 
         // Register Write
         private const string REG_PLC_Write = "D";
@@ -83,13 +83,13 @@ namespace Stiffiner_Inspection
             while (!isExist)
             {
                 int valueReaded = 0;
-                int valueReset = 0;
+                int resetPLC = 0;
                 _plc.ReadDeviceBlock(REG_PLC_Read_STATUS, 1, out valueReaded);
-                _plc.ReadDeviceBlock(REG_PLC_READ_NEW_TRAY, 1, out valueReset);
+                _plc.ReadDeviceBlock(REG_PLC_RESET, 1, out resetPLC);
                 SetStatusOfMachine(valueReaded);
 
                 Global.valuePLC = isDisconnected ? 4 : valueReaded;
-                Global.plcReset = valueReset;
+                Global.resetPLC = resetPLC;
 
                 Thread.Sleep(timeSleep);
             }

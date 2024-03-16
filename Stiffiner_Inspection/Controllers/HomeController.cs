@@ -29,21 +29,22 @@ namespace Stiffiner_Inspection.Controllers
 
         public async Task<IActionResult> Index()
         {
+            _logger.Error("Home Index");
             Global.controlPLC.Connect();
 
             //Thread read value plc
-            Thread threadGetCurrentPLC = new Thread(GetValuePLC);
-            threadGetCurrentPLC.IsBackground = true;
-            threadGetCurrentPLC.Name = "GET_CURRENT_STATUS_PLC";
-            threadGetCurrentPLC.Start();
+            Thread threadValuePLC = new Thread(GetValuePLC);
+            threadValuePLC.IsBackground = true;
+            threadValuePLC.Name = "GET_CURRENT_STATUS_PLC";
+            threadValuePLC.Start();
 
-            //Thread threadGetSignReset = new Thread(GetCurrentValueResetPLC);
-            //threadGetSignReset.IsBackground = true;
-            //threadGetSignReset.Name = "GET_SIGN_RESET_PLC";
-            //threadGetSignReset.Start();
+            Thread threadPLCReset = new Thread(PLCReset);
+            threadPLCReset.IsBackground = true;
+            threadPLCReset.Name = "PLC_RESET";
+            threadPLCReset.Start();
 
             ViewBag.errorCodes = await _errorCodeService.GetAll();
-            ViewBag.statusCams = await _statusCAMService.GetFourStatusCAM();
+            ViewBag.statusCams = await _statusCAMService.GetAll();
 
             return View();
         }
@@ -52,22 +53,23 @@ namespace Stiffiner_Inspection.Controllers
         {
             while (true)
             {
+                _logger.Error("Current Value PLC: " + Global.valuePLC);
                 await _hubContext.Clients.All.SendAsync("ChangeStatusPLC", Global.valuePLC);
                 Thread.Sleep(1000);
             }
         }
 
-        //public async void GetCurrentValueResetPLC()
-        //{
-        //    while(true) 
-        //    {
-        //        if (Global.plcReset != -1)
-        //        {
-        //            await _hubContext.Clients.All.SendAsync("PLCReset", Global.plcReset);
-        //        }
-                
-        //        Thread.Sleep(1000);
-        //    }
-        //}
+        public async void PLCReset()
+        {
+            while (true)
+            {
+                //if (Global.plcReset != -1)
+                //{
+                //    await _hubContext.Clients.All.SendAsync("PLCReset", Global.plcReset);
+                //}
+                Console.WriteLine("reset-plc");
+                Thread.Sleep(1500);
+            }
+        }
     }
 }
