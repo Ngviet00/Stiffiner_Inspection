@@ -63,12 +63,9 @@ namespace Stiffiner_Inspection.Controllers
         {
             while (true)
             {
-                //if (Global.plcReset != -1)
-                //{
-                //    await _hubContext.Clients.All.SendAsync("PLCReset", Global.plcReset);
-                //}
-                Console.WriteLine("reset-plc");
-                Thread.Sleep(1500);
+                //read data status reset PLC from PLC => send to client
+                await _hubContext.Clients.All.SendAsync("PLCReset", Global.resetPLC);
+                Thread.Sleep(1000);
             }
         }
     }

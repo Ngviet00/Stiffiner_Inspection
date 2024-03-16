@@ -146,7 +146,7 @@ $(function () {
     });
 
     //plc reset
-    connection.on("PLCReset", () => {
+    connection.on("PLCReset", (data) => {
         if (previousTray.length == 80) {
             appendPreviousTray();
         }

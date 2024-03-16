@@ -32,28 +32,5 @@ namespace Stiffiner_Inspection.Services
         {
             return await _dbContext.StatusCAM.ToListAsync();
         }
-
-        //public async Task<List<StatusCAM>> GetFourStatusCAM()
-        //{
-        //    try
-        //    {
-        //        var query = @"
-        //            SELECT id, status FROM status_cam WHERE Id = 1
-        //            UNION ALL
-        //            SELECT id, status FROM status_cam WHERE Id = 2
-        //            UNION ALL
-        //            SELECT id, status FROM status_cam WHERE Id = 3
-        //            UNION ALL
-        //            SELECT id, status FROM status_cam WHERE Id = 4"
-        //        ;
-
-        //        return await _dbContext.StatusCAM.FromSqlRaw(query).ToListAsync();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.Error("Get status CAM failed: " + ex.Message);
-        //        throw;
-        //    }
-        //}
     }
 }
