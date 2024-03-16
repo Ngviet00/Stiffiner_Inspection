@@ -146,14 +146,14 @@ $(function () {
     });
 
     //plc reset
-    //connection.on("PLCReset", (data) => {
-    //    if (previousTray.length == 80) {
-    //        appendPreviousTray();
-    //    }
+    connection.on("PLCReset", (data) => {
+        //if (previousTray.length == 80) {
+        //    appendPreviousTray();
+        //}
         
-    //    resetCurrentTray();
-    //    previousTray = [];
-    //});
+        //resetCurrentTray();
+        //previousTray = [];
+    });
 
     function appendPreviousTray() {
         let client1 = "";
