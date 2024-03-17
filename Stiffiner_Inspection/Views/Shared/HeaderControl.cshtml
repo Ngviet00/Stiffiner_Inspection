@@ -17,13 +17,36 @@
             </select>
         </div>
 
-        <a class="btn btn-setting">
-            @*<i class="fa fa-cog" aria-hidden="true"></i>*@
+        <button type="button" class="btn btn-setting" data-toggle="modal" data-target="#exampleModal">
             Setting
-        </a>
+        </button>
+
         <a href="#" class="btn btn-primary btn-export-excel">
             Export report
-            @*<i class="fa fa-arrow-right" aria-hidden="true"></i>*@
         </a>
+
+        <!-- Modal setting -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title fw-bold" style="font-size: 18px;" id="exampleModalLabel">Setting</h4>
+                        <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                            X
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <label>Model:</label>
+                        <select class="custom-select custom-select-sm" style="outline: none;padding: 5px;">
+                            <option value="1" selected>Stiffiner</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary">Apply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

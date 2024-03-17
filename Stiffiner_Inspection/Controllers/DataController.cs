@@ -50,7 +50,7 @@ namespace Stiffiner_Inspection.Controllers
                     int rs = _dataService.GetResult(result.Result, findPair.Result);
                     
                     Global.controlPLC.WriteDataToRegister(rs, position);
-                    _logger.Error("send to PLc-result-" + rs + "-position-"+position);
+                    _logger.Error("Send to PLc result: " + rs + ", position: "+position);
                 }
 
                 _logger.Error("Time Log: " + dataDTO.time + "-Program-Send from server to PLC");
@@ -94,7 +94,7 @@ namespace Stiffiner_Inspection.Controllers
 
         [Route("change-client-connect")]
         [HttpPost]
-        public async Task<IActionResult> ChangeClientConnect(ClientConnectDto clientConnectDto) //1 active, 2 inactive
+        public async Task<IActionResult> ChangeClientConnect(ClientConnectDto clientConnectDto)
         {
             try
             {
@@ -118,11 +118,11 @@ namespace Stiffiner_Inspection.Controllers
 
         [Route("change-status-system-client")]
         [HttpPost]
-        public async Task<IActionResult> ChangeStatusSystemClient(int status, string? message) //1:running, 2: pause, 3: error - with message
+        public async Task<IActionResult> ChangeStatusSystemClient(SystemClientDto dto) //1:running, 2: pause, 3: error - with message
         {
             try
             {
-                await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", status, message);
+                await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", dto.Status, dto.Message);
 
                 return Ok(new
                 {
@@ -151,6 +151,30 @@ namespace Stiffiner_Inspection.Controllers
                     status = 200,
                     message = "Send API Success",
                     result = Global.resetPLC,
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Route("config")]
+        [HttpGet]
+        public IActionResult GetConfig()
+        {
+            try
+            {
+                return Ok(new
+                {
+                    status = 200,
+                    message = "Send API Success",
+                    type_model= 1,
+                    model = "Stiffiner"
                 });
             }
             catch (Exception ex)

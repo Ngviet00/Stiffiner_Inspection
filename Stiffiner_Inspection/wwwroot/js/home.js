@@ -73,10 +73,10 @@ $(function () {
 
     //event check status camera pc
     connection.on("ChangeClientConnect", (data) => {
-        clearTimeout(clientConnects[data.client_id])
-        $(".dot-connect-" + data.client_id).css("background", data.status == 1 ? '#0ad90a' : '#b6b9b6')
-        clientConnects[data.client_id] = setTimeout(function () {
-            $(".dot-connect-" + data.client_id).css("background", '#b6b9b6')
+        clearTimeout(clientConnects[data.id])
+        $(".dot-connect-" + data.id).css("background", data.status == 1 ? '#0ad90a' : '#b6b9b6')
+        clientConnects[data.id] = setTimeout(function () {
+            $(".dot-connect-" + data.id).css("background", '#b6b9b6')
         }, 3500);
     });
 
@@ -154,6 +154,38 @@ $(function () {
         //resetCurrentTray();
         //previousTray = [];
     });
+
+    connection.on("TriggerCam1", (value) => {
+        clearTimeout(triggercams[value]);
+        $('.dot-trigger-cam-' + value).css("color", '#0ad90a');
+        triggercams[value] = setTimeout(() => {
+            $('.dot-trigger-cam-' + value).css("color", '#b6b9b6');
+        }, 3500)
+    })
+
+    connection.on("TriggerCam2", (value) => {
+        clearTimeout(triggercams[value]);
+        $('.dot-trigger-cam-' + value).css("color", '#0ad90a');
+        triggercams[value] = setTimeout(() => {
+            $('.dot-trigger-cam-' + value).css("color", '#b6b9b6');
+        }, 3500)
+    })
+
+    connection.on("TriggerCam3", (value) => {
+        clearTimeout(triggercams[value]);
+        $('.dot-trigger-cam-' + value).css("color", '#0ad90a');
+        triggercams[value] = setTimeout(() => {
+            $('.dot-trigger-cam-' + value).css("color", '#b6b9b6');
+        }, 3500)
+    })
+
+    connection.on("TriggerCam4", (value) => {
+        clearTimeout(triggercams[value]);
+        $('.dot-trigger-cam-' + value).css("color", '#0ad90a');
+        triggercams[value] = setTimeout(() => {
+            $('.dot-trigger-cam-' + value).css("color", '#b6b9b6');
+        }, 3500)
+    })
 
     function appendPreviousTray() {
         let client1 = "";

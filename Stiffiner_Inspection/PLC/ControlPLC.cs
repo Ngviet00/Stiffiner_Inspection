@@ -20,6 +20,11 @@ namespace Stiffiner_Inspection
         private const int ALARM_MESSAGE_LEGHT = 40;
         private const string REG_PLC_RESET = "M2002";
 
+        private const string REG_TRIGGER_CAM_1 = "D2600";
+        private const string REG_TRIGGER_CAM_2 = "D2601";
+        private const string REG_TRIGGER_CAM_3 = "D2602";
+        private const string REG_TRIGGER_CAM_4 = "D2603";
+
         // Register Write
         private const string REG_PLC_Write = "D";
         private const int REG_PLC_Start = 900;
@@ -84,8 +89,27 @@ namespace Stiffiner_Inspection
             {
                 int valueReaded = 0;
                 int resetPLC = 0;
+
+                int triggerCam1 = 0;
+                int triggerCam2 = 0;
+                int triggerCam3 = 0;
+                int triggerCam4 = 0;
+
                 _plc.ReadDeviceBlock(REG_PLC_Read_STATUS, 1, out valueReaded);
                 _plc.ReadDeviceBlock(REG_PLC_RESET, 1, out resetPLC);
+
+                //read trigger cam 1
+                _plc.ReadDeviceBlock(REG_TRIGGER_CAM_1, 1, out triggerCam1);
+
+                //read trigger cam 2
+                _plc.ReadDeviceBlock(REG_TRIGGER_CAM_2, 1, out triggerCam2);
+
+                //read trigger cam 3
+                _plc.ReadDeviceBlock(REG_TRIGGER_CAM_3, 1, out triggerCam3);
+
+                //read trigger cam 4
+                _plc.ReadDeviceBlock(REG_TRIGGER_CAM_4, 1, out triggerCam4);
+
                 SetStatusOfMachine(valueReaded);
 
                 Global.valuePLC = isDisconnected ? 4 : valueReaded;

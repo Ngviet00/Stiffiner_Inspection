@@ -56,10 +56,10 @@ namespace Stiffiner_Inspection.Services
         {
             if (clientId == CLIENT_3 || clientId == CLIENT_4)
             {
-                return 21 - (int)index;
+                return (int)index - 1;
             }
 
-            return (int)index + 20;
+            return (int)index + 19;
         }
 
         public int GetResult(int? result1, int? result2)

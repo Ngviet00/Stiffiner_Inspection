@@ -1,8 +1,8 @@
 ﻿namespace Stiffiner_Inspection.Models.DTO.Data
 {
-    public class ClientConnectDto
+    public class SystemClientDto
     {
-        public int Id { get; set; }
         public int Status { get; set; }
+        public string? Message { get; set; } = string.Empty;
     }
 }

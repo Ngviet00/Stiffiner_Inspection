@@ -1,6 +1,7 @@
 ﻿using log4net;
 using Microsoft.EntityFrameworkCore;
 using Stiffiner_Inspection.Contexts;
+using Stiffiner_Inspection.Models.DTO.Data;
 using Stiffiner_Inspection.Models.Entity;
 
 namespace Stiffiner_Inspection.Services
