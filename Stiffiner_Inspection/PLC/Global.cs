@@ -11,9 +11,17 @@
             EMPTY = 3
         }
 
+        public static int resetClient { get; set; } = 0;
+
         public static int valuePLC { get; set; } = 4;
 
-        public static int resetPLC { get; set; } = -1;
+        public static int resetPLC1 { get; set; } = 0;
+
+        public static int resetPLC2 { get; set; } = 0;
+
+        public static int resetPLC3 { get; set; } = 0;
+
+        public static int resetPLC4 { get; set; } = 0;
 
         public static int triggerCAM1 { get; set; } = 0;
 

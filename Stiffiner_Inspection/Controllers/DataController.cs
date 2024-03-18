@@ -6,6 +6,8 @@ using Stiffiner_Inspection.Models.DTO.Data;
 using Stiffiner_Inspection.Models.Entity;
 using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
+using System;
+using System.Threading.Tasks;
 
 namespace Stiffiner_Inspection.Controllers
 {
@@ -69,12 +71,11 @@ namespace Stiffiner_Inspection.Controllers
 
         [Route("change-cam")]
         [HttpPost]
-        public async Task<IActionResult> ChangeCAM(StatusCAM statusCAM)
+        public async Task<IActionResult> ChangeCAM(int client_id, int status = 1)
         {
             try
             {
-                await _statusCAMService.UpdateStatusCAM(statusCAM);
-                await _hubContext.Clients.All.SendAsync("ChangeCAM", statusCAM);
+                await _hubContext.Clients.All.SendAsync("ChangeCAM", client_id, status);
 
                 return Ok(new
                 {
@@ -92,37 +93,13 @@ namespace Stiffiner_Inspection.Controllers
             }
         }
 
-        [Route("change-client-connect")]
-        [HttpPost]
-        public async Task<IActionResult> ChangeClientConnect(ClientConnectDto clientConnectDto)
-        {
-            try
-            {
-                await _hubContext.Clients.All.SendAsync("ChangeClientConnect", clientConnectDto);
-
-                return Ok(new
-                {
-                    status = 200,
-                    message = "Change Client successfully"
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ErrorResponse
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
-            }
-        }
-
         [Route("change-status-system-client")]
         [HttpPost]
-        public async Task<IActionResult> ChangeStatusSystemClient(SystemClientDto dto) //1:running, 2: pause, 3: error - with message
+        public async Task<IActionResult> ChangeStatusSystemClient(int status, string? message) //1:running, 2: pause, 3: error - with message
         {
             try
             {
-                await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", dto.Status, dto.Message);
+                await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", status, message);
 
                 return Ok(new
                 {
@@ -140,17 +117,84 @@ namespace Stiffiner_Inspection.Controllers
             }
         }
 
-        [Route("plc-reset")]
+        [Route("get-reset-plc")]
         [HttpGet]
-        public IActionResult PLCReset()
+        public async Task<IActionResult> ResetPLC(int clientId)
         {
             try
             {
+                int result = 0;
+
+                if (clientId == 1)
+                {
+                    result = Global.resetPLC1;
+                } 
+
+                if (clientId == 2)
+                {
+                    result = Global.resetPLC2;
+                }
+
+                if (clientId == 3)
+                {
+                    result = Global.resetPLC3;
+                }
+
+                if (clientId == 4)
+                {
+                    result = Global.resetPLC4;
+                }
+
+                await _hubContext.Clients.All.SendAsync("ChangeClientConnect", clientId);
+
                 return Ok(new
                 {
                     status = 200,
                     message = "Send API Success",
-                    result = Global.resetPLC,
+                    result = result
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Route("post-reset-plc")]
+        [HttpPost]
+        public async Task<IActionResult> SaveResetPLC(int clientId)
+        {
+            try 
+            {
+                if (clientId == 1)
+                {
+                    Global.resetPLC1 = 0;
+                    await _hubContext.Clients.All.SendAsync("PLCReset", 1);
+                }
+
+                if (clientId == 2)
+                {
+                    Global.resetPLC2 = 0;
+                }
+
+                if (clientId == 3)
+                {
+                    Global.resetPLC3 = 0;
+                }
+
+                if (clientId == 4)
+                {
+                    Global.resetPLC4 = 0;
+                }
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "Send API Success",
                 });
             }
             catch (Exception ex)
@@ -173,7 +217,7 @@ namespace Stiffiner_Inspection.Controllers
                 {
                     status = 200,
                     message = "Send API Success",
-                    type_model= 1,
+                    type_model = 1,
                     model = "Stiffiner"
                 });
             }

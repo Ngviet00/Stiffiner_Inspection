@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Services;
+using System;
+using System.Threading;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Stiffiner_Inspection.Controllers
@@ -39,35 +41,42 @@ namespace Stiffiner_Inspection.Controllers
             threadValuePLC.Name = "GET_CURRENT_STATUS_PLC";
             threadValuePLC.Start();
 
+            //Thread reset client
+
+            Thread resetClient = new Thread(ResetClient);
+            resetClient.IsBackground = true;
+            resetClient.Name = "RESET_CLIENT";
+            resetClient.Start();
+
             //reset plc
-            Thread threadPLCReset = new Thread(PLCReset);
-            threadPLCReset.IsBackground = true;
-            threadPLCReset.Name = "PLC_RESET";
-            threadPLCReset.Start();
+            //Thread threadPLCReset = new Thread(PLCReset);
+            //threadPLCReset.IsBackground = true;
+            //threadPLCReset.Name = "PLC_RESET";
+            //threadPLCReset.Start();
 
             //trigger cam 1
-            Thread triggercam1 = new Thread(TriggerCam1);
-            triggercam1.IsBackground = true;
-            triggercam1.Name = "trigger_cam_1";
-            triggercam1.Start();
+            //Thread triggercam1 = new Thread(TriggerCam1);
+            //triggercam1.IsBackground = true;
+            //triggercam1.Name = "trigger_cam_1";
+            //triggercam1.Start();
 
-            //trigger cam 2
-            Thread triggerCam2 = new Thread(TriggerCam2);
-            triggerCam2.IsBackground = true;
-            triggerCam2.Name = "TRIGGER_CAM_2";
-            triggerCam2.Start();
+            ////trigger cam 2
+            //Thread triggerCam2 = new Thread(TriggerCam2);
+            //triggerCam2.IsBackground = true;
+            //triggerCam2.Name = "TRIGGER_CAM_2";
+            //triggerCam2.Start();
 
-            //trigger cam3
-            Thread triggerCam3 = new Thread(TriggerCam3);
-            triggerCam3.IsBackground = true;
-            triggerCam3.Name = "TRIGGER_CAM_3";
-            triggerCam3.Start();
+            ////trigger cam3
+            //Thread triggerCam3 = new Thread(TriggerCam3);
+            //triggerCam3.IsBackground = true;
+            //triggerCam3.Name = "TRIGGER_CAM_3";
+            //triggerCam3.Start();
 
-            //trigger cam 4
-            Thread triggerCam4 = new Thread(TriggerCam4);
-            triggerCam4.IsBackground = true;
-            triggerCam4.Name = "TRIGGER_CAM_4";
-            triggerCam4.Start();
+            ////trigger cam 4
+            //Thread triggerCam4 = new Thread(TriggerCam4);
+            //triggerCam4.IsBackground = true;
+            //triggerCam4.Name = "TRIGGER_CAM_4";
+            //triggerCam4.Start();
 
             ViewBag.errorCodes = await _errorCodeService.GetAll();
             ViewBag.statusCams = await _statusCAMService.GetAll();
@@ -75,25 +84,40 @@ namespace Stiffiner_Inspection.Controllers
             return View();
         }
 
+        public async void ResetClient()
+        {
+            while (true)
+            {
+                if (Global.resetClient == 1)
+                {
+                    Console.WriteLine("reset client");
+                    await _hubContext.Clients.All.SendAsync("PLCReset", Global.resetClient);
+                }
+                
+                Thread.Sleep(100);
+            }
+        }
+
         public async void GetValuePLC()
         {
             while (true)
             {
-                _logger.Error("Current Value PLC: " + Global.valuePLC);
+                _logger.Error("Value-PLC:" + Global.valuePLC);
+                //_logger.Error("Current Value PLC: " + Global.valuePLC);
                 await _hubContext.Clients.All.SendAsync("ChangeStatusPLC", Global.valuePLC);
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
             }
         }
 
-        public async void PLCReset()
-        {
-            while (true)
-            {
-                //read data status reset PLC from PLC => send to client
-                await _hubContext.Clients.All.SendAsync("PLCReset", Global.resetPLC);
-                Thread.Sleep(1000);
-            }
-        }
+        //public async void PLCReset()
+        //{
+        //    while (true)
+        //    {
+        //        //Console.WriteLine("plc-reset:" + Global.resetPLC);
+        //        //await _hubContext.Clients.All.SendAsync("PLCReset", Global.resetPLC);
+        //        //Thread.Sleep(200);
+        //    }
+        //}
 
         public async void TriggerCam1()
         {

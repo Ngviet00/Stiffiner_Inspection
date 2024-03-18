@@ -6,6 +6,7 @@ const connection = new signalR.HubConnectionBuilder()
     .build();
 
 $(function () {
+    var timeouts = [null, null, null, null];
     var triggercams = [null, null, null, null];
     var clientConnects = [null, null, null, null];
     var previousTray = [];
@@ -67,21 +68,28 @@ $(function () {
     });
 
     //event check status camera pc
-    connection.on("ChangeCAM", (data) => {
-        $(".dot-cam-" + data.id).removeClass('cam-is-active').css("background", data.status == 1 ? '#0ad90a' : '#b6b9b6');
+    connection.on("ChangeCAM", (client_id, status) => {
+        clearTimeout(timeouts[client_id]);
+
+        $(".dot-cam-" + client_id).removeClass('cam-is-active').css("background", status == 1 ? '#0ad90a' : '#b6b9b6');
+
+        timeouts[client_id] = setTimeout(function () {
+            $(".dot-cam-" + client_id).css("background", '#b6b9b6');
+        }, 3500);
     });
 
     //event check status camera pc
-    connection.on("ChangeClientConnect", (data) => {
-        clearTimeout(clientConnects[data.id])
-        $(".dot-connect-" + data.id).css("background", data.status == 1 ? '#0ad90a' : '#b6b9b6')
-        clientConnects[data.id] = setTimeout(function () {
-            $(".dot-connect-" + data.id).css("background", '#b6b9b6')
+    connection.on("ChangeClientConnect", (clientId) => {
+        clearTimeout(clientConnects[clientId])
+        $(".dot-connect-" + clientId).css("background", "#0ad90a")
+        clientConnects[clientId] = setTimeout(function () {
+            $(".dot-connect-" + clientId).css("background", '#b6b9b6')
         }, 3500);
     });
 
     //event change plc
     connection.on("ChangeStatusPLC", (status) => {
+        console.log("status:" + status);
         let _status = $('#value-plc-status');
         let _message = $('#error-plc-status')
         
@@ -146,13 +154,18 @@ $(function () {
     });
 
     //plc reset
-    connection.on("PLCReset", (data) => {
-        //if (previousTray.length == 80) {
-        //    appendPreviousTray();
-        //}
-        
-        //resetCurrentTray();
-        //previousTray = [];
+    connection.on("PLCReset", (value) => {
+        console.log('reset', value, previousTray);
+
+        if (value == 1) {
+            //appendPreviousTray();
+            if (previousTray.length == 80) {
+                appendPreviousTray();
+            }
+            
+            resetCurrentTray();
+            previousTray = [];
+        }
     });
 
     connection.on("TriggerCam1", (value) => {
