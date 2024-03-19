@@ -10,6 +10,7 @@ $(function () {
     var triggercams = [null, null, null, null];
     var clientConnects = [null, null, null, null];
     var previousTray = [];
+    var resetPLC = 1;
 
     const STATUS_PLC = Object.freeze({
         'EMG': 0,
@@ -154,17 +155,13 @@ $(function () {
     });
 
     //plc reset
-    connection.on("PLCReset", (value) => {
-        console.log('reset', value, previousTray);
-
-        if (value == 1) {
-            //appendPreviousTray();
-            if (previousTray.length == 80) {
-                appendPreviousTray();
-            }
-            
+    connection.on("PLCReset", async (value) => {
+        if (value == 1 && resetPLC == 1) {
+            resetPLC++;
             resetCurrentTray();
-            previousTray = [];
+            appendPreviousTray();
+        } else {
+            resetPLC = 1;
         }
     });
 
@@ -201,45 +198,72 @@ $(function () {
     })
 
     function appendPreviousTray() {
+
         let client1 = "";
         let client2 = "";
         let client3 = "";
         let client4 = "";
 
-        previousTray.forEach(item => {
-            if (item.client_id == 1) {
-                client1 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
-                    ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
-                </span>`;
-                return;
-            }
+        if (previousTray.length == 80) {
+            previousTray.forEach(item => {
+                if (item.client_id == 1) {
+                    client1 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
+                ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
+            </span>`;
+                    return;
+                }
 
-            if (item.client_id == 2) {
-                client2 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
-                    ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
-                </span>`;
-                return;
-            }
+                if (item.client_id == 2) {
+                    client2 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
+                ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
+            </span>`;
+                    return;
+                }
 
-            if(item.client_id == 3) {
-                client3 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
-                    ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
-                </span>`;
-                return;
-            }
+                if (item.client_id == 3) {
+                    client3 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
+                ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
+            </span>`;
+                    return;
+                }
 
-            if(item.client_id == 4) {
-                client4 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
-                    ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
-                </span>`;
-                return;
+                if (item.client_id == 4) {
+                    client4 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
+                ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
+            </span>`;
+                    return;
+                }
+            });
+        } else {
+            for (let i = 1; i <= 80; i++) {
+                if (i <= 20) {
+                    client1 += `<span class="wait">Wait</span>`;
+                    return;
+                }
+
+                if (i > 20 && i <= 40) {
+                    client2 += `<span class="wait">Wait</span>`;
+                    return;
+                }
+
+                if (i > 40 && i <= 60) {
+                    client3 += `<span class="wait">Wait</span>`;
+                    return;
+                }
+
+                if (i > 60 && i <= 80) {
+                    client4 += `<span class="wait">Wait</span>`;
+                    return;
+                }
             }
-        });
+        }
 
         $('#result .previous-tray .checking-tray-left .ng-ok .left-tray').empty().append(client1)
         $('#result .previous-tray .checking-tray-left .ng-ok .right-tray').empty().append(client2)
         $('#result .previous-tray .checking-tray-right .ng-ok .left-tray').empty().append(client3)
-        $('#result .previous-tray .checking-tray-right .ng-ok .right-tray').empty().append(client4)
+        $('#result .previous-tray .checking-tray-right .ng-ok .right-tray').empty().append(client4)  
+
+        previousTray = [];
     }
 
     function resetCurrentTray() {

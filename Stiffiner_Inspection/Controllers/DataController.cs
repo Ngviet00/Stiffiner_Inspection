@@ -7,6 +7,7 @@ using Stiffiner_Inspection.Models.Entity;
 using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
 using System;
+using System.IO.Ports;
 using System.Threading.Tasks;
 
 namespace Stiffiner_Inspection.Controllers
@@ -19,6 +20,9 @@ namespace Stiffiner_Inspection.Controllers
         private readonly StatusCAMService _statusCAMService;
         private readonly ILog _logger = LogManager.GetLogger(typeof(DataController));
 
+        private SerialPort _lightControl1;
+        private SerialPort _lightControl2;
+
         private readonly IHubContext<HomeHub> _hubContext;
 
         public DataController(DataService dataService, StatusCAMService statusCAMService, IHubContext<HomeHub> hubContext)
@@ -26,6 +30,22 @@ namespace Stiffiner_Inspection.Controllers
             _dataService = dataService;
             _hubContext = hubContext;
             _statusCAMService = statusCAMService;
+
+            _lightControl1 = new SerialPort("COM4", 115200);
+            _lightControl2 = new SerialPort("COM5", 115200);
+
+            if (!_lightControl1.IsOpen)
+            {
+                _lightControl1.Open();
+            }
+
+            if (_lightControl2.IsOpen)
+            {
+                _lightControl2.Open();
+            }
+
+            //_lightControl1.Close();
+            //_lightControl2.Close();
         }
 
         [Route("save-data")]
@@ -173,7 +193,6 @@ namespace Stiffiner_Inspection.Controllers
                 if (clientId == 1)
                 {
                     Global.resetPLC1 = 0;
-                    await _hubContext.Clients.All.SendAsync("PLCReset", 1);
                 }
 
                 if (clientId == 2)
@@ -220,6 +239,46 @@ namespace Stiffiner_Inspection.Controllers
                     type_model = 1,
                     model = "Stiffiner"
                 });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Route("open-test-light")]
+        [HttpGet]
+        public IActionResult TestLight()
+        {
+            try
+            {
+                //toggle light
+                Console.WriteLine("test-toggle light");
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Route("close-light")]
+        [HttpGet]
+        public IActionResult CloseLight()
+        {
+            try
+            {
+                //toggle light
+                Console.WriteLine("open-test-toggle light");
+                return Ok();
             }
             catch (Exception ex)
             {

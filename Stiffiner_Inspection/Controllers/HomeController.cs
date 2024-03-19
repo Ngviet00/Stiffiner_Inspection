@@ -6,6 +6,8 @@ using Stiffiner_Inspection.Services;
 using System;
 using System.Threading;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.IO.Ports;
+using static Stiffiner_Inspection.Global;
 
 namespace Stiffiner_Inspection.Controllers
 {
@@ -16,6 +18,9 @@ namespace Stiffiner_Inspection.Controllers
         private readonly ErrorCodeService _errorCodeService;
         private readonly StatusCAMService _statusCAMService;
         private readonly ILog _logger = LogManager.GetLogger(typeof(HomeController));
+
+        private static SerialPort _lightControl1;
+        private static SerialPort _lightControl2;
 
         public HomeController(
             IHubContext<HomeHub> hubContext,
@@ -34,6 +39,7 @@ namespace Stiffiner_Inspection.Controllers
         {
             _logger.Error("Home Index");
             Global.controlPLC.Connect();
+            //Global.controlPLC.PLCPushStart += PLCPushStartEvent;
 
             //Thread read value plc
             Thread threadValuePLC = new Thread(GetValuePLC);
@@ -41,59 +47,94 @@ namespace Stiffiner_Inspection.Controllers
             threadValuePLC.Name = "GET_CURRENT_STATUS_PLC";
             threadValuePLC.Start();
 
-            //Thread reset client
-
+            //reset client
             Thread resetClient = new Thread(ResetClient);
             resetClient.IsBackground = true;
             resetClient.Name = "RESET_CLIENT";
             resetClient.Start();
 
-            //reset plc
-            //Thread threadPLCReset = new Thread(PLCReset);
-            //threadPLCReset.IsBackground = true;
-            //threadPLCReset.Name = "PLC_RESET";
-            //threadPLCReset.Start();
-
-            //trigger cam 1
-            //Thread triggercam1 = new Thread(TriggerCam1);
-            //triggercam1.IsBackground = true;
-            //triggercam1.Name = "trigger_cam_1";
-            //triggercam1.Start();
-
-            ////trigger cam 2
-            //Thread triggerCam2 = new Thread(TriggerCam2);
-            //triggerCam2.IsBackground = true;
-            //triggerCam2.Name = "TRIGGER_CAM_2";
-            //triggerCam2.Start();
-
-            ////trigger cam3
-            //Thread triggerCam3 = new Thread(TriggerCam3);
-            //triggerCam3.IsBackground = true;
-            //triggerCam3.Name = "TRIGGER_CAM_3";
-            //triggerCam3.Start();
-
-            ////trigger cam 4
-            //Thread triggerCam4 = new Thread(TriggerCam4);
-            //triggerCam4.IsBackground = true;
-            //triggerCam4.Name = "TRIGGER_CAM_4";
-            //triggerCam4.Start();
+            Thread toggleLight = new Thread(ToggleLightControl);
+            toggleLight.IsBackground = true;
+            toggleLight.Name = "RESET_CLIENT";
+            toggleLight.Start();
 
             ViewBag.errorCodes = await _errorCodeService.GetAll();
             ViewBag.statusCams = await _statusCAMService.GetAll();
 
+            _lightControl1 = new SerialPort("COM4", 115200);
+            _lightControl2 = new SerialPort("COM5", 115200);
+
+            string[] availablePorts = SerialPort.GetPortNames();
+
+            if (!Array.Exists(availablePorts, p => p == "COM4"))
+            {
+
+            }
+
+            if (!Array.Exists(availablePorts, p => p == "COM5"))
+            {
+
+            }
+
+
+            if (!_lightControl1.IsOpen )
+            {
+                lightControl1.Open();
+            }
+
+            if (!_lightControl2.IsOpen)
+            {
+                _lightControl2.Open();
+            }
+
             return View();
+        }
+
+        //private void PLCPushStartEvent(object sender, EventArgs e)
+        //{
+        //    Console.WriteLine("den sang");
+        //}
+
+        public void ToggleLightControl()
+        {
+
+        }
+
+        //private void SwitchLights(bool v)
+        //{
+        //    if (v)
+        //    {
+        //        _lightControl1.WriteLine("@SI00/255/255/255/255");
+        //        _lightControl2.WriteLine("@SI00/255/255/255/255");
+        //    }
+        //    else
+        //    {
+        //        _lightControl1.WriteLine("@SI00/0/0/0/0");
+        //        _lightControl2.WriteLine("@SI00/0/0/0/0");
+        //    }
+        //}
+
+        public void ToggleLight()
+        {
+            //while (true)
+            //{
+            //    if (Global.toggleLight)
+            //    {
+            //        SwitchLights(true);
+            //    }
+            //    else
+            //    {
+            //        SwitchLights(false);
+            //    }
+            //    Thread.Sleep(100);
+            //}
         }
 
         public async void ResetClient()
         {
             while (true)
             {
-                if (Global.resetClient == 1)
-                {
-                    Console.WriteLine("reset client");
-                    await _hubContext.Clients.All.SendAsync("PLCReset", Global.resetClient);
-                }
-                
+                await _hubContext.Clients.All.SendAsync("PLCReset", Global.resetClient);
                 Thread.Sleep(100);
             }
         }
@@ -108,16 +149,6 @@ namespace Stiffiner_Inspection.Controllers
                 Thread.Sleep(100);
             }
         }
-
-        //public async void PLCReset()
-        //{
-        //    while (true)
-        //    {
-        //        //Console.WriteLine("plc-reset:" + Global.resetPLC);
-        //        //await _hubContext.Clients.All.SendAsync("PLCReset", Global.resetPLC);
-        //        //Thread.Sleep(200);
-        //    }
-        //}
 
         public async void TriggerCam1()
         {

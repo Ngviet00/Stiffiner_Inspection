@@ -19,12 +19,7 @@ namespace Stiffiner_Inspection
         // Register read
         private const string REG_PLC_Read_STATUS = "D20";
         private const string REG_PLC_RefeshData = "M2010";
-
-        // Register read
-        //private const string REG_PLC_Read_STATUS = "D20";
-        //private const string REG_PLC_Read_ALARM_MESSAGE = "D2400";
-        //private const int ALARM_MESSAGE_LEGHT = 40;
-        private const string REG_PLC_RESET = "M2002";
+        private const string REG_PLC_EndInspection = "M2008";
 
         private const string REG_TRIGGER_CAM_1 = "D2600";
         private const string REG_TRIGGER_CAM_2 = "D2601";
@@ -36,40 +31,14 @@ namespace Stiffiner_Inspection
         private const int REG_PLC_Start = 900;
         private const string REG_Vision_Bussy = "M420";
 
-        //machine status
-        //private const int bit_Start = 0;
-        //private const int bit_Stop = 1;
-        //private const int bit_Alarm = 2;
-
-        //private bool isStart { get; set; } = false;
-        //private bool isStop { get; set; } = false;
-        //private bool isAlarm { get; set; } = false;
-        //private bool isEMG { get; set; } = false;
-        //private bool isDisconnected { get; set; } = false;
-
-        //public string AlarmMessage
-        //{
-        //    get
-        //    {
-        //        int[] data = new int[ALARM_MESSAGE_LEGHT];
-        //        _plc.ReadDeviceBlock(REG_PLC_Read_ALARM_MESSAGE, ALARM_MESSAGE_LEGHT, out data[0]);
-        //        string str = "";
-        //        for (int i = 0; i < data.Length; i++)
-        //        {
-        //            Byte[] buf = BitConverter.GetBytes(data[i]);
-        //            str += System.Text.Encoding.ASCII.GetString(buf);
-        //        }
-        //        str = Regex.Replace(str, "[^A-Za-z0-9 ]", ""); ;
-        //        return str;
-        //    }
-        //}
-
         private bool isStart = false;
         private bool isEMG = false;
         private bool isStop = false;
         private bool isAlarm = false;
 
         public EventHandler PLCPushStart;
+        public EventHandler PLCEndIns;
+
         public bool IsStart { get => isStart; set => isStart = value; }
         public bool IsStop { get => isStop; set => isStop = value; }
         public bool IsAlarm { get => isAlarm; set => isAlarm = value; }
@@ -93,31 +62,16 @@ namespace Stiffiner_Inspection
                 thread1.IsBackground = true;
                 thread1.Name = "ReadEventStartFromPLC";
                 thread1.Start();
-
-                //Thread thread2 = new Thread(ReadEventResetFromPLC);
-                //thread2.IsBackground = true;
-                //thread2.Name = "ReadEventResetFromPLC";
-                //thread2.Start();
-
-
-
-                //_logger.Info("Connect successfully PLC!");
-                //Console.WriteLine("Connect successfully PLC!");
-
-                //Thread read data status PLC from register
-                //Thread thread = new Thread(ReadDataFromRegister);
-                //thread.IsBackground = true;
-                //thread.Name = "REG_PLC_STATUS";
-                //thread.Start();
             }
             else
             {
-                _logger.Error("PLC has been connected!");
-                Console.WriteLine("PLC has been connected!");
+                _logger.Error("Can not connect to PLC");
+                Console.WriteLine("Can not connect to PLC");
             }
         }
 
         bool isStartHistory = false;
+        bool isEndHistory = false;
 
         private void ReadDataFromRegister()
         {
@@ -130,39 +84,6 @@ namespace Stiffiner_Inspection
                 Global.valuePLC = valueReaded;
                 Thread.Sleep(timeSleep);
             }
-
-            //while (!isExist)
-            //{
-            //    int valueReaded = 0;
-            //    int resetPLC = 0;
-
-            //    int triggerCam1 = 0;
-            //    int triggerCam2 = 0;
-            //    int triggerCam3 = 0;
-            //    int triggerCam4 = 0;
-
-            //    _plc.ReadDeviceBlock(REG_PLC_Read_STATUS, 1, out valueReaded);
-            //    _plc.ReadDeviceBlock(REG_PLC_RESET, 1, out resetPLC);
-
-            //    //read trigger cam 1
-            //    _plc.ReadDeviceBlock(REG_TRIGGER_CAM_1, 1, out triggerCam1);
-
-            //    //read trigger cam 2
-            //    _plc.ReadDeviceBlock(REG_TRIGGER_CAM_2, 1, out triggerCam2);
-
-            //    //read trigger cam 3
-            //    _plc.ReadDeviceBlock(REG_TRIGGER_CAM_3, 1, out triggerCam3);
-
-            //    //read trigger cam 4
-            //    _plc.ReadDeviceBlock(REG_TRIGGER_CAM_4, 1, out triggerCam4);
-
-            //    SetStatusOfMachine(valueReaded);
-
-            //    Global.valuePLC = isDisconnected ? 4 : valueReaded;
-            //    Global.resetPLC = resetPLC;
-
-            //    Thread.Sleep(timeSleep);
-            //}
         }
 
         private void ReadEventStartFromPLC()
@@ -176,18 +97,31 @@ namespace Stiffiner_Inspection
                 //kiem tra neu start nhan thi gui cho clent tin hieu star de clear tray
                 if (!isStartHistory && valueReaded == 1)
                 {
-                    Console.WriteLine("start restart here");
                     Global.resetPLC1 = 1;
                     Global.resetPLC2 = 1;
                     Global.resetPLC3 = 1;
                     Global.resetPLC4 = 1;
                     Global.resetClient = 1;
-                    isStartHistory = true;
+                    Global.toggleLight = true;
+
+                    isStartHistory = true;                    
                     if (PLCPushStart != null) PLCPushStart(this, EventArgs.Empty);
                 } else
                 {
                     Global.resetClient = 0;
-                    Console.WriteLine("Ko start restart here");
+                }
+
+                // Check End Insection signal
+                valueReaded = 0;
+                _plc.GetDevice(REG_PLC_EndInspection, out valueReaded);
+                if (valueReaded == 0) isEndHistory = false;
+                //kiem tra neu start nhan thi gui cho clent tin hieu star de clear tray
+                if (!isEndHistory && valueReaded == 1)
+                {
+                    Console.WriteLine("wf-test-Stop-plc");
+                    isEndHistory = true;
+                    Global.toggleLight = false;
+                    if (PLCEndIns != null) PLCEndIns(this, EventArgs.Empty);
                 }
 
                 Thread.Sleep(timeSleep);
@@ -215,29 +149,6 @@ namespace Stiffiner_Inspection
                 default:
                     break;
             }
-
-            //isAlarm = isStart = isStop = isEMG = isDisconnected =  false;
-
-            //switch (binary)
-            //{
-            //    case 0:
-            //        isEMG = true;
-            //        break;
-            //    case 1:
-            //        isStart = true;
-            //        break;
-            //    case 2:
-            //        isStop = true;
-            //        break;
-            //    case 3:
-            //        isAlarm = true;
-            //        break;
-            //    default:
-            //        isDisconnected = true;
-            //        break;
-            //}
-
-            //Console.WriteLine(string.Format("EMG: {0} - Start: {1} - Stop: {2} - Alarm: {3} - Default: {4}", isEMG, isStart, isStop, isAlarm, isDisconnected));
         }
 
         public void WriteDataToRegister(int data, int index)

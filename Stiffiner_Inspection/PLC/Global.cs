@@ -1,8 +1,14 @@
-﻿namespace Stiffiner_Inspection
+﻿using System.IO.Ports;
+
+namespace Stiffiner_Inspection
 {
     public static class Global
     {
         public static ControlPLC controlPLC = new ControlPLC();
+
+        public static SerialPort lightControl1 = new SerialPort("COM4", 115200);
+
+        public static SerialPort lightControl2 = new SerialPort("COM4", 115200);
 
         public enum eSampleStatus
         {
@@ -30,5 +36,7 @@
         public static int triggerCAM3 { get; set; } = 0;
 
         public static int triggerCAM4 { get; set; } = 0;
+
+        public static bool toggleLight { get; set; } = false;    
     }
 }
