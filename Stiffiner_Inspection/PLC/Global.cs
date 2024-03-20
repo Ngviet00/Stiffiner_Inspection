@@ -1,14 +1,10 @@
-﻿using System.IO.Ports;
+﻿using System.Collections;
 
 namespace Stiffiner_Inspection
 {
     public static class Global
     {
         public static ControlPLC controlPLC = new ControlPLC();
-
-        public static SerialPort lightControl1 = new SerialPort("COM4", 115200);
-
-        public static SerialPort lightControl2 = new SerialPort("COM4", 115200);
 
         public enum eSampleStatus
         {
@@ -29,14 +25,10 @@ namespace Stiffiner_Inspection
 
         public static int resetPLC4 { get; set; } = 0;
 
-        public static int triggerCAM1 { get; set; } = 0;
+        public static ArrayList TrayLeft = new ArrayList();
 
-        public static int triggerCAM2 { get; set; } = 0;
+        public static ArrayList TrayRight = new ArrayList();
 
-        public static int triggerCAM3 { get; set; } = 0;
-
-        public static int triggerCAM4 { get; set; } = 0;
-
-        public static bool toggleLight { get; set; } = false;    
+        public static string TrayUnique = DateTime.Now.ToString("yyyyMMddHHmmssff");
     }
 }

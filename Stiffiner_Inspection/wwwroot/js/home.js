@@ -157,6 +157,10 @@ $(function () {
     //plc reset
     connection.on("PLCReset", async (value) => {
         if (value == 1 && resetPLC == 1) {
+            let number = $('.lbl-number').html();
+            number = parseInt(number) + 1;
+            $('.lbl-number').html(number);
+
             resetPLC++;
             resetCurrentTray();
             appendPreviousTray();
@@ -195,7 +199,7 @@ $(function () {
         triggercams[value] = setTimeout(() => {
             $('.dot-trigger-cam-' + value).css("color", '#b6b9b6');
         }, 3500)
-    })
+    });
 
     function appendPreviousTray() {
 

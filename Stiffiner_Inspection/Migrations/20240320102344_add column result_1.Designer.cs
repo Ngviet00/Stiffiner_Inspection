@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Stiffiner_Inspection.Contexts;
 
@@ -11,9 +12,11 @@ using Stiffiner_Inspection.Contexts;
 namespace Stiffiner_Inspection.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240320102344_add column result_1")]
+    partial class addcolumnresult_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,10 +47,6 @@ namespace Stiffiner_Inspection.Migrations
                         .HasColumnType("int")
                         .HasColumnName("error_code");
 
-                    b.Property<int?>("Flag")
-                        .HasColumnType("int")
-                        .HasColumnName("flag");
-
                     b.Property<string>("Image")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
@@ -65,10 +64,6 @@ namespace Stiffiner_Inspection.Migrations
                     b.Property<int?>("Result")
                         .HasColumnType("int")
                         .HasColumnName("result");
-
-                    b.Property<int?>("Result1")
-                        .HasColumnType("int")
-                        .HasColumnName("result_1");
 
                     b.Property<string>("Side")
                         .HasMaxLength(255)

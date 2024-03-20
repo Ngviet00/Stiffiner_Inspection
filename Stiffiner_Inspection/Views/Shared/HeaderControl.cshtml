@@ -9,13 +9,9 @@
     </div>
 
     <div id="action" class="d-flex align-items-center">
-        <div class="option-time">
-            <label for="">Search</label>
-            @*<i class="fa fa-clock-o" aria-hidden="true"></i>*@
-            <select name="" id="">
-                <option value="">Start time to end time</option>
-            </select>
-        </div>
+        <button type="button" class="btn btn-setting" data-toggle="modal" data-target="#modelSearch">
+            Search
+        </button>
 
         <button type="button" class="btn btn-setting" data-toggle="modal" data-target="#exampleModal">
             Setting
@@ -26,6 +22,30 @@
         </a>
 
         <!-- Modal setting -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title fw-bold" style="font-size: 18px;" id="exampleModalLabel">Setting</h4>
+                        <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                            X
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <label>Model:</label>
+                        <select class="custom-select custom-select-sm" style="outline: none;padding: 5px;">
+                            <option value="1" selected>Stiffiner</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary">Apply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal search -->
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">

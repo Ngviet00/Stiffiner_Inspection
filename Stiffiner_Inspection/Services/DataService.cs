@@ -2,6 +2,7 @@
 using Stiffiner_Inspection.Contexts;
 using Stiffiner_Inspection.Models.DTO.Data;
 using Stiffiner_Inspection.Models.Entity;
+using System.ComponentModel;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -89,24 +90,9 @@ namespace Stiffiner_Inspection.Services
                 : (data?.ClientId == CLIENT_3 || data?.ClientId == CLIENT_4 ? (data.ClientId == CLIENT_3 ? CLIENT_4 : CLIENT_3) : 0);
         }
 
-        public async void GetMaxTray()
+        public async Task<int> GetTotalTray()
         {
-
-        }
-
-        public async void GetTotal()
-        {
-
-        }
-
-        public async void GetTotalOk()
-        {
-
-        }
-
-        public async void GetEmpty()
-        {
-
+            return await _dbContext.Data.CountAsync();
         }
     }
 }

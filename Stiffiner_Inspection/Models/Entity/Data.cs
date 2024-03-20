@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Stiffiner_Inspection.Models.Entity
@@ -35,6 +36,9 @@ namespace Stiffiner_Inspection.Models.Entity
         [Column("result")]
         public int? Result { get; set; }
 
+        [Column("result_1")]
+        public int? Result1 { get; set; }
+
         [Column("error_code")]
         public int? ErrorCode { get; set; }
 
@@ -46,5 +50,8 @@ namespace Stiffiner_Inspection.Models.Entity
 
         [Column("time_end")]
         public DateTime? TimeEnd { get; set; }
+
+        [Column("flag")]
+        public int? Flag { get; set; }
     }
 }

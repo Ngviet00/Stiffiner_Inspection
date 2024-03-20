@@ -3,12 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Models.DTO.Data;
-using Stiffiner_Inspection.Models.Entity;
 using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
-using System;
-using System.IO.Ports;
-using System.Threading.Tasks;
 
 namespace Stiffiner_Inspection.Controllers
 {
@@ -19,10 +15,6 @@ namespace Stiffiner_Inspection.Controllers
         private readonly DataService _dataService;
         private readonly StatusCAMService _statusCAMService;
         private readonly ILog _logger = LogManager.GetLogger(typeof(DataController));
-
-        private SerialPort _lightControl1;
-        private SerialPort _lightControl2;
-
         private readonly IHubContext<HomeHub> _hubContext;
 
         public DataController(DataService dataService, StatusCAMService statusCAMService, IHubContext<HomeHub> hubContext)
@@ -30,22 +22,6 @@ namespace Stiffiner_Inspection.Controllers
             _dataService = dataService;
             _hubContext = hubContext;
             _statusCAMService = statusCAMService;
-
-            _lightControl1 = new SerialPort("COM4", 115200);
-            _lightControl2 = new SerialPort("COM5", 115200);
-
-            if (!_lightControl1.IsOpen)
-            {
-                _lightControl1.Open();
-            }
-
-            if (_lightControl2.IsOpen)
-            {
-                _lightControl2.Open();
-            }
-
-            //_lightControl1.Close();
-            //_lightControl2.Close();
         }
 
         [Route("save-data")]
@@ -60,6 +36,17 @@ namespace Stiffiner_Inspection.Controllers
                 //event to client log
                 await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", dataDTO.time, "Program", "Send signals from Server to PLC");
 
+                //push to collection, check and send to PLC position and result
+                //if (dataDTO.client_id == 1 || dataDTO.client_id == 2)
+                //{
+                //    Global.TrayLeft.Add(dataDTO);
+                //} else
+                //{
+                //    Global.TrayRight.Add(dataDTO);
+                //}
+
+                //save db
+
                 //save to db
                 var result = await _dataService.Save(dataDTO);
 
@@ -70,9 +57,9 @@ namespace Stiffiner_Inspection.Controllers
                 {
                     int position = _dataService.GetPosition(findPair.Index, findPair.ClientId);
                     int rs = _dataService.GetResult(result.Result, findPair.Result);
-                    
+
                     Global.controlPLC.WriteDataToRegister(rs, position);
-                    _logger.Error("Send to PLc result: " + rs + ", position: "+position);
+                    _logger.Error("Send to PLc result: " + rs + ", position: " + position);
                 }
 
                 _logger.Error("Time Log: " + dataDTO.time + "-Program-Send from server to PLC");
@@ -186,7 +173,7 @@ namespace Stiffiner_Inspection.Controllers
 
         [Route("post-reset-plc")]
         [HttpPost]
-        public async Task<IActionResult> SaveResetPLC(int clientId)
+        public IActionResult SaveResetPLC(int clientId)
         {
             try 
             {
@@ -239,46 +226,6 @@ namespace Stiffiner_Inspection.Controllers
                     type_model = 1,
                     model = "Stiffiner"
                 });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ErrorResponse
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
-            }
-        }
-
-        [Route("open-test-light")]
-        [HttpGet]
-        public IActionResult TestLight()
-        {
-            try
-            {
-                //toggle light
-                Console.WriteLine("test-toggle light");
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ErrorResponse
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
-            }
-        }
-
-        [Route("close-light")]
-        [HttpGet]
-        public IActionResult CloseLight()
-        {
-            try
-            {
-                //toggle light
-                Console.WriteLine("open-test-toggle light");
-                return Ok();
             }
             catch (Exception ex)
             {

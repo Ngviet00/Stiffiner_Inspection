@@ -4,10 +4,7 @@
             <h3 class="genera-title">Result</h3>
             <div class="d-flex justify-content-between">
                 <div class="current-tray">
-                    <h3 id="title-current-tray">Tray 1 (Inspecting)</h3>
-                    <div class="current-time">
-                        Inspect time: <span id="current-tray-first-input-time">13:33:02</span> -> now
-                    </div>  
+                    <h3 id="title-current-tray">Inspecting</h3>
                     <div class="d-flex check-item">
                         <div class="no-number">
                             <div class="empty-row">0</div>
@@ -69,10 +66,7 @@
                 </div>
 
                 <div class="previous-tray">
-                    <h3 id="title-previous-tray">Tray 0</h3>
-                    <div class="previous-time">
-                        Inspect time: <span id="previous-tray-first-input-time">13:33:02</span> -> 13:38:02
-                    </div>
+                    <h3 id="title-previous-tray">Previous</h3>
 
                     <div class="d-flex check-item">
                         <div class="no-number">
@@ -151,13 +145,13 @@
                             <div class="lbl-tray-total">
                                 Tray total
                             </div>
-                            <div class="lbl-number">1</div>
+                            <div class="lbl-number">@ViewBag.TotalTray</div>
                         </div>
 
                         <div class="second-row d-flex align-items-center justify-content-between mb-1">
                             <div class="title">Total</div>
                             <div class="w-100 total">
-                                3<span class="">EA</span>
+                                @ViewBag.TotalItem<span class="">EA</span>
                             </div>
                         </div>
 
@@ -166,9 +160,9 @@
                             <div class="title">OK</div>
                             <div class="w-100 total">
                                 <div class="d-inline-block">
-                                    4<span>EA</span>
+                                    39<span>EA</span>
                                 </div>
-                                <span class="percent">0%</span>
+                                <span class="percent">99%</span>
                             </div>
                         </div>
 
@@ -176,16 +170,16 @@
                             <div class="title">NG</div>
                             <div class="w-100 total">
                                 <div class="d-inline-block">
-                                    0<span>EA</span>
+                                    1<span>EA</span>
                                 </div>
-                                <span class="percent">0%</span>
+                                <span class="percent">1%</span>
                             </div>
                         </div>
 
                         <div class="second-row d-flex align-items-center justify-content-between mb-1">
                             <div class="title">Empty</div>
                             <div class="w-100 total">
-                                1<span class="">EA</span>
+                                0<span class="">EA</span>
                             </div>
                         </div>
                     </div>
@@ -202,17 +196,9 @@
                                         <div class="dot-connect-@i div-status"></div>
                                         <label>Connect</label>
                                     </span>
-                                    <span class="mx-4">
-                                        <div class="dot-cam-@i div-status @(ViewBag.statusCams[i-1].Status == 1 ? "cam-is-active" : "")"></div>
+                                    <span class="mx-5">
+                                        <div class="dot-cam-@i div-status"></div>
                                         <label>CAM</label>
-                                    </span>
-
-                                    <span class="mx-4">
-                                        <div class="dot-trigger-cam-@i div-status"></div>
-                                        <label>
-                                            Trigger
-                                            CAM
-                                        </label>
                                     </span>
                                 </div>
                             }
@@ -235,10 +221,10 @@
 
             <div class="statistical-chart mt-4 d-flex">
                 <div class="total-error">
-                    <h3 id="title">Error Detect</h3>
+                    @* <h3 id="title">Error Detect</h3>
                     <div class="total">
                         Total <span>0</span> detect
-                    </div>
+                    </div> *@
                 </div>
 
                 <div class="chart">
@@ -299,23 +285,24 @@
     var ctx = document.getElementById('pie-chart').getContext('2d');
 
     var errorCodes = @Html.Raw(Json.Serialize(ViewBag.errorCodes));
-    var labels = [];
-    var values = [];
+    var labels = ["OK", "NG", "Empty"];
+    var values = [65,20,15];
 
     const backgroundColor = [
-        '#7F56D9', '#F4EBFF', '#9E77ED', '#B692F6',
-        '#D6BBFB', '#E9D7FE', '#7F56D9', '#F4EBFF',
-        '#9E77ED', '#B692F6', '#D6BBFB', '#E9D7FE',
-        '#7F56D9', '#F4EBFF', '#9E77ED', '#B692F6',
-        '#D6BBFB'
+        '#BE7B72', '#FDAF7B', '#824D74',
+        // '#B692F6',
+        // '#D6BBFB', '#E9D7FE', '#7F56D9', '#F4EBFF',
+        // '#9E77ED', '#B692F6', '#D6BBFB', '#E9D7FE',
+        // '#7F56D9', '#F4EBFF', '#9E77ED', '#B692F6',
+        // '#D6BBFB'
     ]
 
-     errorCodes.forEach(function (item) {
+     // errorCodes.forEach(function (item) {
 
-         item.id > 10 ? values.push(item.id * 3) : "";
+     //     item.id > 10 ? values.push(item.id * 3) : "";
 
-         labels.push(`${item.errorContent.toUpperCase()}`);
-     });
+     //     labels.push(`${item.errorContent.toUpperCase()}`);
+     // });
 
     var myPieChart = new Chart(ctx, {
         type: 'pie',
