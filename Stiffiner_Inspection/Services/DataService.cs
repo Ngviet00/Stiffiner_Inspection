@@ -26,6 +26,16 @@ namespace Stiffiner_Inspection.Services
 
         public async Task<Data> Save(DataDTO dataDTO)
         {
+            //check exists
+            var entity = await _dbContext.Data.FirstOrDefaultAsync(e => e.Tray == Global.TrayUnique && );
+                await YourDbContext.YourEntities.FirstOrDefaultAsync(e => e.Id == entity.Id);
+            if ()
+            {
+
+            } else
+            {
+
+            }
             var data = new Data
             {
                 Id = dataDTO.id,
