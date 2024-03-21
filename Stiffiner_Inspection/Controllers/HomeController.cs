@@ -30,21 +30,21 @@ namespace Stiffiner_Inspection.Controllers
 
         public async Task<IActionResult> Index()
         {
-            Global.controlPLC.Connect();
+            //Global.controlPLC.Connect();
 
-            //Thread read value plc
-            Thread threadValuePLC = new Thread(GetValuePLC);
-            threadValuePLC.IsBackground = true;
-            threadValuePLC.Name = "GET_CURRENT_STATUS_PLC";
-            threadValuePLC.Start();
+            ////Thread read value plc
+            //Thread threadValuePLC = new Thread(GetValuePLC);
+            //threadValuePLC.IsBackground = true;
+            //threadValuePLC.Name = "GET_CURRENT_STATUS_PLC";
+            //threadValuePLC.Start();
 
-            //reset client
-            Thread resetClient = new Thread(ResetClient);
-            resetClient.IsBackground = true;
-            resetClient.Name = "RESET_CLIENT";
-            resetClient.Start();
+            ////reset client
+            //Thread resetClient = new Thread(ResetClient);
+            //resetClient.IsBackground = true;
+            //resetClient.Name = "RESET_CLIENT";
+            //resetClient.Start();
 
-            double totalTray = await _dataService.GetTotalTray();
+            double totalTray = await _dataService.CountTotal();
             ViewBag.TotalTray = Math.Floor(totalTray / 80.0);
             ViewBag.TotalItem = totalTray / 2;
 

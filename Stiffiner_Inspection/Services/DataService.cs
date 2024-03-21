@@ -2,7 +2,6 @@
 using Stiffiner_Inspection.Contexts;
 using Stiffiner_Inspection.Models.DTO.Data;
 using Stiffiner_Inspection.Models.Entity;
-using System.ComponentModel;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -24,18 +23,8 @@ namespace Stiffiner_Inspection.Services
             _dbContext = dbContext;
         }
 
-        public async Task<Data> Save(DataDTO dataDTO)
+        public async Task<Data?> Save(DataDTO dataDTO) //1
         {
-            //check exists
-            var entity = await _dbContext.Data.FirstOrDefaultAsync(e => e.Tray == Global.TrayUnique && );
-                await YourDbContext.YourEntities.FirstOrDefaultAsync(e => e.Id == entity.Id);
-            if ()
-            {
-
-            } else
-            {
-
-            }
             var data = new Data
             {
                 Id = dataDTO.id,
@@ -45,8 +34,8 @@ namespace Stiffiner_Inspection.Services
                 ClientId = dataDTO.client_id,
                 Side = dataDTO.side,
                 Index = dataDTO.index,
-                Camera = dataDTO.camera,
                 Result = dataDTO.result,
+                Camera = dataDTO.camera,
                 ErrorCode = dataDTO.error_code,
             };
 
@@ -54,7 +43,120 @@ namespace Stiffiner_Inspection.Services
             await _dbContext.SaveChangesAsync();
 
             return data;
+
+            //var clientIdPair = GetClientIdPair(dataDTO); //2
+
+            ////find 2
+            //var entity = _dbContext.Data.FirstOrDefaultAsync(e => e.Tray == dataDTO.tray && e.Index == dataDTO.index && e.ClientId == clientIdPair);
+
+            //if (entity is not null)
+            //{
+            //    //update
+            //    //send to PLC
+
+
+            //    // Update other properties as needed
+            //    // Optionally, mark entity as modified if needed
+            //    _dbContext.Entry(entity).State = EntityState.Modified;
+
+            //    Global.controlPLC.WriteDataToRegister(1, 1);
+
+            //    return entity;
+            //}
+            //else
+            //{
+            //    //save to db
+            //    var data = new Data
+            //    {
+            //        Id = dataDTO.id,
+            //        Time = dataDTO.time,
+            //        Model = dataDTO.model,
+            //        Tray = dataDTO.tray,
+            //        ClientId = dataDTO.client_id,
+            //        Side = dataDTO.side,
+            //        Index = dataDTO.index,
+            //        Result = dataDTO.result,
+            //        Camera = dataDTO.camera,
+            //        ErrorCode = dataDTO.error_code,
+            //    };
+
+            //    if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_3)
+            //    {
+            //        data.Result = dataDTO.result;
+            //    } else
+            //    {
+            //        data.Result1 = dataDTO.result;
+            //    }
+
+            //    await _dbContext.Data.AddAsync(data);
+
+            //    return data;
+            //}
+
+            //await _dbContext.SaveChangesAsync();
+
+            //return null;
+
+            ////return dataDTO;
         }
+
+        //public async Task<Data?> SaveV2(DataDTO dataDTO) //1
+        //{
+        //    var clientIdPair = GetClientIdPair(dataDTO); //2
+
+        //    //find 2
+        //    var entity = _dbContext.Data.FirstOrDefaultAsync(e => e.Tray == dataDTO.tray && e.Index == dataDTO.index && e.ClientId == clientIdPair);
+
+        //    if (entity is not null)
+        //    {
+        //        //update
+        //        //send to PLC
+
+
+        //        // Update other properties as needed
+        //        // Optionally, mark entity as modified if needed
+        //        _dbContext.Entry(entity).State = EntityState.Modified;
+
+        //        Global.controlPLC.WriteDataToRegister(1, 1);
+
+        //        return entity;
+        //    }
+        //    else
+        //    {
+        //        //save to db
+        //        var data = new Data
+        //        {
+        //            Id = dataDTO.id,
+        //            Time = dataDTO.time,
+        //            Model = dataDTO.model,
+        //            Tray = dataDTO.tray,
+        //            ClientId = dataDTO.client_id,
+        //            Side = dataDTO.side,
+        //            Index = dataDTO.index,
+        //            Camera = dataDTO.camera,
+        //            ErrorCode = dataDTO.error_code,
+        //        };
+
+        //        if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_3)
+        //        {
+        //            data.Result = dataDTO.result;
+        //        }
+        //        else
+        //        {
+        //            data.Result1 = dataDTO.result;
+        //        }
+
+        //        await _dbContext.Data.AddAsync(data);
+
+        //        return data;
+        //    }
+
+        //    await _dbContext.SaveChangesAsync();
+
+        //    return null;
+
+        //    //return dataDTO;
+        //}
 
         public async Task<Data> FindPair(Data? data)
         {
@@ -100,9 +202,44 @@ namespace Stiffiner_Inspection.Services
                 : (data?.ClientId == CLIENT_3 || data?.ClientId == CLIENT_4 ? (data.ClientId == CLIENT_3 ? CLIENT_4 : CLIENT_3) : 0);
         }
 
-        public async Task<int> GetTotalTray()
+        public int GetClientIdPair(DataDTO dataDTO)
+        {   
+            switch (dataDTO.client_id)
+            {
+                case CLIENT_1:
+                    return CLIENT_2;
+                case CLIENT_2:
+                    return CLIENT_1;
+                case CLIENT_3:
+                    return CLIENT_4;
+                default:
+                    return CLIENT_3;
+            }
+        }
+
+        public async Task<int> CountTotal()
         {
             return await _dbContext.Data.CountAsync();
+        }
+
+        public async Task<int> CountOK()
+        {
+            return await _dbContext.Data.Where(e => e.Result1 == OK && e.Result == OK).CountAsync();
+        }
+
+        public async Task<int> CountNG()
+        {
+            return await _dbContext.Data.Where(e => e.Result1 == NG || e.Result == NG).CountAsync();
+        }
+
+        public async Task<int> CountEmpty()
+        {
+            return await _dbContext.Data.Where(e => e.Result1 == EMPTY || e.Result == EMPTY).CountAsync();
+        }
+
+        public async Task<String> GetMaxTray()
+        {
+            return "";
         }
     }
 }
