@@ -36,16 +36,8 @@ namespace Stiffiner_Inspection.Controllers
                 //event to client log
                 await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", dataDTO.time, "Program", "Send signals from Server to PLC");
 
-                //push to collection, check and send to PLC position and result
-                //if (dataDTO.client_id == 1 || dataDTO.client_id == 2)
-                //{
-                //    Global.TrayLeft.Add(dataDTO);
-                //} else
-                //{
-                //    Global.TrayRight.Add(dataDTO);
-                //}
-
-                //save db
+                //save, check and send to PLC
+                await _dataService.Save(dataDTO);
 
                 //save to db
                 var result = await _dataService.Save(dataDTO);

@@ -12,6 +12,7 @@ namespace Stiffiner_Inspection.Contexts
         public DbSet<Data> Data { get; set; }
         public DbSet<ErrorCode> ErrorCodes { get; set; }
         public DbSet<StatusCAM> StatusCAM { get; set; }
+        public DbSet<Image> Images { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

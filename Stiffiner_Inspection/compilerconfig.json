@@ -10,5 +10,9 @@
   {
     "outputFile": "wwwroot/scss/main.css",
     "inputFile": "wwwroot/scss/main.scss"
+  },
+  {
+    "outputFile": "wwwroot/scss/history.css",
+    "inputFile": "wwwroot/scss/history.scss"
   }
 ]

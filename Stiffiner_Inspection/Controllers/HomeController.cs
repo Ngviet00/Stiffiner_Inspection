@@ -30,7 +30,7 @@ namespace Stiffiner_Inspection.Controllers
 
         public async Task<IActionResult> Index()
         {
-            Global.controlPLC.Connect();
+            //Global.controlPLC.Connect();
 
             //Thread read value plc
             Thread threadValuePLC = new Thread(GetValuePLC);
@@ -48,7 +48,7 @@ namespace Stiffiner_Inspection.Controllers
             ViewBag.TotalTray = Math.Floor(totalTray / 80.0);
             ViewBag.TotalItem = totalTray / 2;
 
-            Console.WriteLine(Global.TrayUnique);
+            //Console.WriteLine(Global.TrayUnique);
 
             //ViewBag.errorCodes = await _errorCodeService.GetAll();
             //ViewBag.statusCams = await _statusCAMService.GetAll();
@@ -73,6 +73,11 @@ namespace Stiffiner_Inspection.Controllers
                 await _hubContext.Clients.All.SendAsync("ChangeStatusPLC", Global.valuePLC);
                 Thread.Sleep(timeSleep);
             }
+        }
+
+        public async Task<IActionResult> History()
+        {
+            return View();
         }
     }
 }

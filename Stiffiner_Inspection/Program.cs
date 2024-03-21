@@ -19,7 +19,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("StiffinerInspectionContext"), sqlServerOptionsAction =>
     {
         sqlServerOptionsAction.EnableRetryOnFailure();
-    }));
+    })
+);
 
 builder.Services.AddScoped<DataService>();
 builder.Services.AddScoped<ErrorCodeService>();

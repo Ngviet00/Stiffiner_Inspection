@@ -27,7 +27,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Migrations\" />
 		<Folder Include="Files\" />
 		<Folder Include="wwwroot\image\" />
 		<Folder Include="wwwroot\font-awesome\" />
@@ -56,7 +55,7 @@
 
 	<ItemGroup>
 	  <Reference Include="Interop.ActUtlType64Lib">
-	    <HintPath>C:\Users\Server\Desktop\Interop.ActUtlType64Lib.dll</HintPath>
+	    <HintPath>C:\Users\Admin\Desktop\Interop.ActUtlType64Lib.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 

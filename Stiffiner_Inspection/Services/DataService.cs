@@ -2,7 +2,6 @@
 using Stiffiner_Inspection.Contexts;
 using Stiffiner_Inspection.Models.DTO.Data;
 using Stiffiner_Inspection.Models.Entity;
-using System.ComponentModel;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -26,22 +25,12 @@ namespace Stiffiner_Inspection.Services
 
         public async Task<Data> Save(DataDTO dataDTO)
         {
-            //check exists
-            var entity = await _dbContext.Data.FirstOrDefaultAsync(e => e.Tray == Global.TrayUnique && );
-                await YourDbContext.YourEntities.FirstOrDefaultAsync(e => e.Id == entity.Id);
-            if ()
-            {
-
-            } else
-            {
-
-            }
             var data = new Data
             {
                 Id = dataDTO.id,
                 Time = dataDTO.time,
                 Model = dataDTO.model,
-                Tray = dataDTO.tray,
+                Tray = Global.TrayUnique,
                 ClientId = dataDTO.client_id,
                 Side = dataDTO.side,
                 Index = dataDTO.index,
@@ -60,7 +49,7 @@ namespace Stiffiner_Inspection.Services
         {
             int clientId = GetClientIdFindPair(data);
 
-            return await _dbContext.Data.Where(e => e.Tray == data.Tray && e.ClientId == clientId && e.Index == data.Index).FirstOrDefaultAsync();
+            return await _dbContext.Data.Where(e => e.Tray == Global.TrayUnique && e.ClientId == clientId && e.Index == data.Index).FirstOrDefaultAsync();
         }
 
         public int GetPosition(int? index, int? clientId)
