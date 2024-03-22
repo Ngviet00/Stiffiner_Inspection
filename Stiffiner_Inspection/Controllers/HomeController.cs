@@ -44,7 +44,8 @@ namespace Stiffiner_Inspection.Controllers
             //resetClient.Name = "RESET_CLIENT";
             //resetClient.Start();
 
-            double totalTray = await _dataService.CountTotal();
+            double totalTray = 0;
+
             ViewBag.TotalTray = Math.Floor(totalTray / 80.0);
             ViewBag.TotalItem = totalTray / 2;
 

@@ -126,7 +126,7 @@
   font-size: 13px;
   color: #767676;
   font-weight: 700;
-  min-width: 30px;
+  min-width: 60px;
 }
 .wrap-content #overview .wrap-overview .counting-status .second-row .total {
   font-size: 24px;
@@ -141,7 +141,7 @@
   font-size: 13px;
   color: #767676;
   font-weight: 700;
-  min-width: 30px;
+  min-width: 60px;
 }
 .wrap-content #overview .wrap-overview .counting-status .third-row .total {
   font-size: 24px;
@@ -171,7 +171,7 @@
   font-size: 13px;
   color: #767676;
   font-weight: 700;
-  min-width: 30px;
+  min-width: 60px;
 }
 .wrap-content #overview .wrap-overview .counting-status .fourth-row .total {
   font-size: 24px;

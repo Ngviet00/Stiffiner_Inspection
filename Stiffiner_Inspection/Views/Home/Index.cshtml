@@ -143,9 +143,16 @@
                         <div class="first-row d-flex align-items-center justify-content-between">
                             <div class="lbl-counting">Counting</div>
                             <div class="lbl-tray-total">
-                                Tray total
+                                Target
                             </div>
-                            <div class="lbl-number">@ViewBag.TotalTray</div>
+                            <div class="lbl-number">2000<span style="font-size: 14px;">EA</span></div>
+                        </div>
+
+                        <div class="second-row d-flex align-items-center justify-content-between mb-1">
+                            <div class="title">Tray Total</div>
+                            <div class="w-100 total">
+                                0
+                            </div>
                         </div>
 
                         <div class="second-row d-flex align-items-center justify-content-between mb-1">
@@ -154,7 +161,6 @@
                                 @ViewBag.TotalItem<span class="">EA</span>
                             </div>
                         </div>
-
 
                         <div class="third-row d-flex align-items-center justify-content-between mb-1">
                             <div class="title">OK</div>
@@ -200,6 +206,11 @@
                                         <div class="dot-cam-@i div-status"></div>
                                         <label>CAM</label>
                                     </span>
+
+                                    <span class="mx-4">
+                                        <div class="dot-deep-core-@i div-status"></div>
+                                        <label>Deep Learning</label>
+                                    </span>
                                 </div>
                             }
 
@@ -219,7 +230,7 @@
                 </div>
             </div>
 
-            <div class="statistical-chart mt-4 d-flex">
+            <div class="statistical-chart mt-4 d-flex justify-content-center">
                 <div class="total-error">
                     @* <h3 id="title">Error Detect</h3>
                     <div class="total">

@@ -1,5 +1,4 @@
-﻿using log4net;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Models.DTO.Data;
@@ -13,15 +12,12 @@ namespace Stiffiner_Inspection.Controllers
     public class DataController : Controller
     {
         private readonly DataService _dataService;
-        private readonly StatusCAMService _statusCAMService;
-        private readonly ILog _logger = LogManager.GetLogger(typeof(DataController));
         private readonly IHubContext<HomeHub> _hubContext;
 
-        public DataController(DataService dataService, StatusCAMService statusCAMService, IHubContext<HomeHub> hubContext)
+        public DataController(DataService dataService, IHubContext<HomeHub> hubContext)
         {
             _dataService = dataService;
             _hubContext = hubContext;
-            _statusCAMService = statusCAMService;
         }
 
         [Route("save-data")]
@@ -30,31 +26,20 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
+                //update tray of DTO to Global Tray
+                dataDTO.tray = Global.TrayUnique;
+
                 //event to client
                 await _hubContext.Clients.All.SendAsync("ReceiveData", dataDTO);
 
                 //event to client log
                 await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", dataDTO.time, "Program", "Send signals from Server to PLC");
 
-                //save, check and send to PLC
-                await _dataService.Save(dataDTO);
-
                 //save to db
                 var result = await _dataService.Save(dataDTO);
 
-                //find pair
-                var findPair = await _dataService.FindPair(result);
-
-                if (findPair is not null)
-                {
-                    int position = _dataService.GetPosition(findPair.Index, findPair.ClientId);
-                    int rs = _dataService.GetResult(result.Result, findPair.Result);
-
-                    Global.controlPLC.WriteDataToRegister(rs, position);
-                    _logger.Error("Send to PLc result: " + rs + ", position: " + position);
-                }
-
-                _logger.Error("Time Log: " + dataDTO.time + "-Program-Send from server to PLC");
+                //send to PLC
+                _dataService.SendToPLC(dataDTO);
 
                 return Ok(result);
             }
@@ -193,6 +178,30 @@ namespace Stiffiner_Inspection.Controllers
                 {
                     status = 200,
                     message = "Send API Success",
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Route("deep-core")]
+        [HttpPost]
+        public async Task<IActionResult> DeepCore(int client_id, int status = 1)
+        {
+            try
+            {
+                await _hubContext.Clients.All.SendAsync("deepcore", client_id, status);
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "Change deep core successfully!"
                 });
             }
             catch (Exception ex)

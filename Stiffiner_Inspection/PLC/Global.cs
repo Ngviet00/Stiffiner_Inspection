@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Stiffiner_Inspection.Models.DTO.Data;
+using System.Collections;
 
 namespace Stiffiner_Inspection
 {
@@ -25,10 +26,10 @@ namespace Stiffiner_Inspection
 
         public static int resetPLC4 { get; set; } = 0;
 
-        public static ArrayList TrayLeft = new ArrayList();
-
-        public static ArrayList TrayRight = new ArrayList();
-
         public static string TrayUnique = DateTime.Now.ToString("yyyyMMddHHmmssff");
+
+        public static List<DataDTO> TrayLeft = new List<DataDTO>();
+
+        public static List<DataDTO> TrayRight = new List<DataDTO>(); 
     }
 }

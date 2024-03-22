@@ -18,17 +18,13 @@
     @if (action != "History")
     {
         <div id="action" class="d-flex align-items-center">
-            <button type="button" class="btn btn-setting" data-toggle="modal" data-target="#modelSearch">
-                Search
-            </button>
+            @*<button type="button" class="btn btn-setting" data-toggle="modal" data-target="#modelSearch">
+            Search
+        </button>*@
 
             <button type="button" class="btn btn-setting" data-toggle="modal" data-target="#exampleModal">
                 Setting
             </button>
-
-            <a href="#" class="btn btn-primary btn-export-excel">
-                Export report
-            </a>
 
             <!-- Modal setting -->
             <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -54,26 +50,31 @@
                 </div>
             </div>
 
-            <!-- Modal search -->
-            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <button type="button" class="btn btn-primary btn-export-excel" data-toggle="modal" data-target="#exampleModal1">
+                Setting Target
+            </button>
+
+            <!-- Modal setting -->
+            <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title fw-bold" style="font-size: 18px;" id="exampleModalLabel">Setting</h4>
+                            <h4 class="modal-title fw-bold" style="font-size: 18px;" id="exampleModalLabel">Setting Target</h4>
                             <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
                                 X
                             </button>
                         </div>
-                        <div class="modal-body">
-                            <label>Model:</label>
-                            <select class="custom-select custom-select-sm" style="outline: none;padding: 5px;">
-                                <option value="1" selected>Stiffiner</option>
-                            </select>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary">Apply</button>
-                        </div>
+                        <form action="/" method="post">
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="target" placeholder="2000">
+                                </div>
+                            </div>
+                            <div class="modal-footer" style="border-top: none">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary">Apply</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

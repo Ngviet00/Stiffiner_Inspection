@@ -7,6 +7,7 @@ const connection = new signalR.HubConnectionBuilder()
 
 $(function () {
     var timeouts = [null, null, null, null];
+    var deepcores = [null, null, null, null];
     var triggercams = [null, null, null, null];
     var clientConnects = [null, null, null, null];
     var previousTray = [];
@@ -76,6 +77,17 @@ $(function () {
 
         timeouts[client_id] = setTimeout(function () {
             $(".dot-cam-" + client_id).css("background", '#b6b9b6');
+        }, 3500);
+    });
+
+    //event check status camera pc
+    connection.on("deepcore", (client_id, status) => {
+        clearTimeout(deepcores[client_id]);
+
+        $(".dot-deep-core-" + client_id).css("background", status == 1 ? '#0ad90a' : '#b6b9b6');
+
+        deepcores[client_id] = setTimeout(function () {
+            $(".dot-deep-core-" + client_id).css("background", '#b6b9b6');
         }, 3500);
     });
 
@@ -169,38 +181,6 @@ $(function () {
         }
     });
 
-    connection.on("TriggerCam1", (value) => {
-        clearTimeout(triggercams[value]);
-        $('.dot-trigger-cam-' + value).css("color", '#0ad90a');
-        triggercams[value] = setTimeout(() => {
-            $('.dot-trigger-cam-' + value).css("color", '#b6b9b6');
-        }, 3500)
-    })
-
-    connection.on("TriggerCam2", (value) => {
-        clearTimeout(triggercams[value]);
-        $('.dot-trigger-cam-' + value).css("color", '#0ad90a');
-        triggercams[value] = setTimeout(() => {
-            $('.dot-trigger-cam-' + value).css("color", '#b6b9b6');
-        }, 3500)
-    })
-
-    connection.on("TriggerCam3", (value) => {
-        clearTimeout(triggercams[value]);
-        $('.dot-trigger-cam-' + value).css("color", '#0ad90a');
-        triggercams[value] = setTimeout(() => {
-            $('.dot-trigger-cam-' + value).css("color", '#b6b9b6');
-        }, 3500)
-    })
-
-    connection.on("TriggerCam4", (value) => {
-        clearTimeout(triggercams[value]);
-        $('.dot-trigger-cam-' + value).css("color", '#0ad90a');
-        triggercams[value] = setTimeout(() => {
-            $('.dot-trigger-cam-' + value).css("color", '#b6b9b6');
-        }, 3500)
-    });
-
     function appendPreviousTray() {
 
         let client1 = "";
@@ -262,10 +242,10 @@ $(function () {
             }
         }
 
-        $('#result .previous-tray .checking-tray-left .ng-ok .left-tray').empty().append(client1)
-        $('#result .previous-tray .checking-tray-left .ng-ok .right-tray').empty().append(client2)
-        $('#result .previous-tray .checking-tray-right .ng-ok .left-tray').empty().append(client3)
-        $('#result .previous-tray .checking-tray-right .ng-ok .right-tray').empty().append(client4)  
+        $('#result .previous-tray .checking-tray-left .ng-ok .left-tray').html(client1)
+        $('#result .previous-tray .checking-tray-left .ng-ok .right-tray').html(client2)
+        $('#result .previous-tray .checking-tray-right .ng-ok .left-tray').html(client3)
+        $('#result .previous-tray .checking-tray-right .ng-ok .right-tray').html(client4)
 
         previousTray = [];
     }

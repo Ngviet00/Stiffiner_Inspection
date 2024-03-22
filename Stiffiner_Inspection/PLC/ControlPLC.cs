@@ -22,7 +22,7 @@ namespace Stiffiner_Inspection
         // Register Write
         private const string REG_PLC_Write = "D";
         private const int REG_PLC_Start = 900;
-        private const string REG_Vision_Bussy = "M420";
+        private const string REG_Vision_Bussy = "M240";
 
         private bool isStart = false;
         private bool isEMG = false;
@@ -90,9 +90,16 @@ namespace Stiffiner_Inspection
                     Global.resetPLC2 = 1;
                     Global.resetPLC3 = 1;
                     Global.resetPLC4 = 1;
+
                     Global.resetClient = 1;
+
                     TurnOnLightControl();
+
                     Global.TrayUnique = DateTime.Now.ToString("yyyyMMddHHmmssff");
+
+                    Global.TrayLeft.Clear();
+                    Global.TrayRight.Clear();
+
                     isStartHistory = true;
                 } else
                 {
