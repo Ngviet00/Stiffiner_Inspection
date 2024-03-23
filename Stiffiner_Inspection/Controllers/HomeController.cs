@@ -44,10 +44,23 @@ namespace Stiffiner_Inspection.Controllers
             //resetClient.Name = "RESET_CLIENT";
             //resetClient.Start();
 
-            double totalTray = 0;
 
-            ViewBag.TotalTray = Math.Floor(totalTray / 80.0);
-            ViewBag.TotalItem = totalTray / 2;
+            //ViewBag.TotalTray = Math.Floor(totalTray / 80.0);
+            //ViewBag.TotalItem = totalTray / 2;
+            //ViewBag.Total = await _dataService.GetTotal();
+            ViewBag.TotalTray = await _dataService.GetTotalTray();
+            ViewBag.TotalEmpty = await _dataService.GetTotalEmpty();
+            int allOK = await _dataService.GettotalOK();
+            ViewBag.TotalOK = allOK;
+            Double total = await _dataService.GetTotal();
+            ViewBag.Total = total;
+            int allNG = await _dataService.GettotalNG(); ;
+            ViewBag.TotalNG = allNG;            
+            Double PercentOK = Math.Round((allOK / total) * 100, 2);
+            ViewBag.PercentOK = PercentOK;
+            Double PercentNG = Math.Round((allNG / total) * 100, 2);
+            ViewBag.PercentNG = PercentNG;
+            ViewBag.CurrTargetQty = await _dataService.GetCurrentTargetQty();
 
             //Console.WriteLine(Global.TrayUnique);
 

@@ -145,20 +145,20 @@
                             <div class="lbl-tray-total">
                                 Target
                             </div>
-                            <div class="lbl-number">2000<span style="font-size: 14px;">EA</span></div>
+                            <div class="lbl-number">@ViewBag.CurrTargetQty<span style="font-size: 14px;">EA</span></div>
                         </div>
 
                         <div class="second-row d-flex align-items-center justify-content-between mb-1">
                             <div class="title">Tray Total</div>
                             <div class="w-100 total">
-                                0
+                                @ViewBag.TotalTray
                             </div>
                         </div>
 
                         <div class="second-row d-flex align-items-center justify-content-between mb-1">
                             <div class="title">Total</div>
                             <div class="w-100 total">
-                                @ViewBag.TotalItem<span class="">EA</span>
+                                @ViewBag.Total<span class="">EA</span>
                             </div>
                         </div>
 
@@ -166,9 +166,9 @@
                             <div class="title">OK</div>
                             <div class="w-100 total">
                                 <div class="d-inline-block">
-                                    39<span>EA</span>
+                                    @ViewBag.TotalOK<span>EA</span>
                                 </div>
-                                <span class="percent">99%</span>
+                                <span class="percent">@ViewBag.PercentOK %</span>
                             </div>
                         </div>
 
@@ -176,16 +176,16 @@
                             <div class="title">NG</div>
                             <div class="w-100 total">
                                 <div class="d-inline-block">
-                                    1<span>EA</span>
+                                    @ViewBag.TotalNG<span>EA</span>
                                 </div>
-                                <span class="percent">1%</span>
+                                <span class="percent">@ViewBag.PercentNG %</span>
                             </div>
                         </div>
 
                         <div class="second-row d-flex align-items-center justify-content-between mb-1">
                             <div class="title">Empty</div>
                             <div class="w-100 total">
-                                0<span class="">EA</span>
+                                @ViewBag.TotalEmpty<span class="">EA</span>
                             </div>
                         </div>
                     </div>
