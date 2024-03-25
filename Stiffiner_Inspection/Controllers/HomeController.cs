@@ -49,18 +49,25 @@ namespace Stiffiner_Inspection.Controllers
             //ViewBag.TotalItem = totalTray / 2;
             //ViewBag.Total = await _dataService.GetTotal();
             ViewBag.TotalTray = await _dataService.GetTotalTray();
-            ViewBag.TotalEmpty = await _dataService.GetTotalEmpty();
+            int allEMPTY = await _dataService.GetTotalEmpty();
+            ViewBag.TotalEmpty = allEMPTY;
             int allOK = await _dataService.GettotalOK();
             ViewBag.TotalOK = allOK;
             Double total = await _dataService.GetTotal();
             ViewBag.Total = total;
             int allNG = await _dataService.GettotalNG(); ;
-            ViewBag.TotalNG = allNG;            
+            ViewBag.TotalNG = allNG;
             Double PercentOK = Math.Round((allOK / total) * 100, 2);
             ViewBag.PercentOK = PercentOK;
             Double PercentNG = Math.Round((allNG / total) * 100, 2);
             ViewBag.PercentNG = PercentNG;
             ViewBag.CurrTargetQty = await _dataService.GetCurrentTargetQty();
+            //ViewBag.PercentChartEmpty = Math.Round(allEMPTY / (total + allEMPTY) * 100, 2);
+
+            ViewBag.PercentChartOK = total == 0 ? 0 : Math.Round(allOK / (total + allEMPTY) * 100, 1);
+            ViewBag.PercentChartNG = total == 0 ? 0 : Math.Round(allNG / (total + allEMPTY) * 100, 1);
+            ViewBag.PercentChartEmpty = total == 0 ? 0 : Math.Round(100 - ViewBag.PercentChartNG - ViewBag.PercentChartOK, 1);
+
 
             //Console.WriteLine(Global.TrayUnique);
 
