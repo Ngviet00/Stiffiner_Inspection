@@ -90,16 +90,8 @@ namespace Stiffiner_Inspection
                     Global.resetPLC2 = 1;
                     Global.resetPLC3 = 1;
                     Global.resetPLC4 = 1;
-
                     Global.resetClient = 1;
-
                     TurnOnLightControl();
-
-                    Global.TrayUnique = DateTime.Now.ToString("yyyyMMddHHmmssff");
-
-                    Global.TrayLeft.Clear();
-                    Global.TrayRight.Clear();
-
                     isStartHistory = true;
                 } else
                 {

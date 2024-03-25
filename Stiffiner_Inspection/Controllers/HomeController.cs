@@ -27,6 +27,13 @@ namespace Stiffiner_Inspection.Controllers
 
         public async Task<IActionResult> Index()
         {
+            
+            //get global current targetId
+
+            //get global current tray
+
+
+
             //Global.controlPLC.Connect();
 
             ////Thread read value plc

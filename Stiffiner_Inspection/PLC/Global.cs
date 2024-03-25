@@ -26,10 +26,6 @@ namespace Stiffiner_Inspection
 
         public static int resetPLC4 { get; set; } = 0;
 
-        public static string TrayUnique = DateTime.Now.ToString("yyyyMMddHHmmssff");
-
-        public static List<DataDTO> TrayLeft = new List<DataDTO>();
-
-        public static List<DataDTO> TrayRight = new List<DataDTO>(); 
+        public static int currentTray = 1;
     }
 }

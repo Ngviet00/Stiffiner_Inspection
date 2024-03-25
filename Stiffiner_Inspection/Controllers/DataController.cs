@@ -26,17 +26,16 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
-                //update tray of DTO to Global Tray
-                dataDTO.tray = Global.TrayUnique;
-
-                //event to client
+                //gửi lên web realtime sự kiện result log
                 await _hubContext.Clients.All.SendAsync("ReceiveData", dataDTO);
 
-                //event to client log
+                //gửi lên web realtime timelog
                 await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", dataDTO.time, "Program", "Send signals from Server to PLC");
 
-                //save to db
+                //lưu db
                 var result = await _dataService.Save(dataDTO);
+
+                //check
 
                 //send to PLC
                 _dataService.SendToPLC(dataDTO);
