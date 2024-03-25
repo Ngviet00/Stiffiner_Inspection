@@ -10,34 +10,18 @@
                         </div>
                         <span class="btn-next-tray"> > </span>
                     </div>
-                    <div class="d-flex check-item">
+                    <div class="d-flex check-item justify-content-center">
                         <div class="is-check-tray checking-tray-left">
                             <div class="title-cam text-center mb-1">Left</div>
                             <div class="ng-ok">
-                                <div class="d-flex justify-content-center flex-column">
-                                    @for (int i = 1; i <= 20; i++)
-                                    {
-                                        <div class="result-left-tray" style="background: #E4491D;">
-                                            <span class="position">@(20 + i)</span>
-                                            <span class="result">OK</span>
-                                        </div>
-                                    }
-                                </div>
+                                <div class="d-flex justify-content-center flex-column" id="rs-left"></div>
                             </div>
                         </div>
 
                         <div class="is-check-tray checking-tray-right">
                             <div class="title-cam text-center mb-1">Right</div>
                             <div class="ng-ok">
-                                <div class="d-flex justify-content-center flex-column">
-                                    @for (int i = 1; i <= 20; i++)
-                                    {
-                                        <div class="result-left-tray" style="background: #66B032;">
-                                            <span class="position">@i</span>
-                                            <span class="result">OK</span>
-                                        </div>
-                                    }
-                                </div>
+                                <div class="d-flex justify-content-center flex-column" id="rs-right"></div>
                             </div>
                         </div>
                     </div>
@@ -46,6 +30,12 @@
                 <div class="image">
                     <div>
                         <h3 id="type-item-stiffiner">Area Camera</h3>
+                        
+                        <div class="no-data">
+                            <span>No data</span><br />
+                            <span>Please click to NG item to view error details</span>
+                        </div>
+
                         <div class="error-image mt-4">
                             @for (int i = 1; i <= 3; i++)
                             {
@@ -55,6 +45,10 @@
                     </div>
                     <div>
                         <h3 id="type-item-stiffiner">Line Camera</h3>
+                        <div class="no-data">
+                            <span>No data</span><br />
+                            <span>Please click to NG item to view error details</span>
+                        </div>
                         <div class="error-image mt-4">
                             @for (int i = 1; i <= 1; i++)
                             {
@@ -71,11 +65,11 @@
                         <span class="information">Information</span> <br />
 
                         <span class="position">
-                            Position: <b>4</b>
+                            Position: <b class="b-position">-</b>
                         </span>
                         <br />
                         <span class="side">
-                            Side: <b>Left</b>
+                            Side: <b class="b-side">-</b>
                         </span>
                     </div>
 
@@ -99,7 +93,7 @@
                             }
                         </div>
                     </div>
-                       
+
                 </div>
             </div>
         </div>
@@ -107,5 +101,50 @@
 </div>
 
 @section Scripts {
+    <script>
+        const data = @Html.Raw(Json.Serialize(ViewBag.GroupedData));
+
+        if (data.length > 0) {
+            console.log(data[0]);
+            let rsLeft = '';
+            let rsRight = '';
+
+            data[0].forEach(function (item, key) {
+                if (key < 20) {
+                    rsRight += `
+                        <div class="result-left-tray" onclick="showItem(${item.id}, ${key})" style="background: ${item.resultArea == 1 && item.resultLine == 1 ? '#66B032' : (item.resultArea == 3 && item.resultLine == 3 ? '#B5B5B5' : '#E4491D')}">
+                            <span class="position">${key + 1}</span>
+                            <span class="result">
+                            ${item.resultArea == 1 && item.resultLine == 1 ? 'OK' : (item.resultArea == 3 && item.resultLine == 3 ? 'Empty' : 'NG')}
+                            </span>
+                        </div>
+                    `
+                } else {
+                    rsLeft += `
+                        <div class="result-left-tray" onclick="showItem(${item.id}, ${key}, ${item.resultArea}, ${item.resultLine})" style="background: ${item.resultArea == 1 && item.resultLine == 1 ? '#66B032' : (item.resultArea == 3 && item.resultLine == 3 ? '#B5B5B5' : '#E4491D')}">
+                            <span class="position">${key + 1}</span>
+                            <span class="result">
+                                ${item.resultArea == 1 && item.resultLine == 1 ? 'OK' : (item.resultArea == 3 && item.resultLine == 3 ? 'Empty' : 'NG')}
+                            </span>
+                        </div>
+                    `
+                }
+            });
+
+            $('#rs-left').html(rsLeft);
+            $('#rs-right').html(rsRight);
+        }
+
+        function showItem(id, key, rsArea, rsLine) {
+            $('.b-position').html(key + 1);
+            $('.b-side').html(key >= 20 ? 'Left' : 'Right');
+
+            if () {
+
+            }
+        }
+
+
+    </script>
     <script src="~/js/history.js"></script>
 }

@@ -1,7 +1,4 @@
-﻿using Stiffiner_Inspection.Models.DTO.Data;
-using System.Collections;
-
-namespace Stiffiner_Inspection
+﻿namespace Stiffiner_Inspection
 {
     public static class Global
     {
@@ -26,6 +23,8 @@ namespace Stiffiner_Inspection
 
         public static int resetPLC4 { get; set; } = 0;
 
-        public static int currentTray = 1;
+        public static int currentTray { get; set; } = 15;
+
+        public static int currentTargetId { get; set; } = 15;
     }
 }

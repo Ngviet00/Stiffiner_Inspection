@@ -1,9 +1,8 @@
 ﻿using Stiffiner_Inspection.Contexts;
 using Stiffiner_Inspection.Models.DTO.Data;
 using Stiffiner_Inspection.Models.Entity;
-using Microsoft.Data.SqlClient;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Ajax.Utilities;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -19,24 +18,47 @@ namespace Stiffiner_Inspection.Services
         const int OK = 1;
         const int NG = 2;
         const int EMPTY = 3;
-        string connectionString = "Data Source=192.168.0.119;Initial Catalog=DBTest;User ID=DBTest;Password=DBTest;Integrated Security=False;Trust Server Certificate=True";
 
         public DataService(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<Data?>? Save(DataDTO dataDTO)
+        public async Task<Data> Save(DataDTO dataDTO)
         {
-            //get target Id and assign to Global, get tray from targetId
+            //tìm đối của client
+            var pairClientId = GetClientIdPair(dataDTO);
 
-            var clientId = GetClientIdPair(dataDTO);
+            //check exist
+            var existEntity = await _dbContext.Data.Where(e => e.TargetId == Global.currentTargetId && e.Tray == Global.currentTray && e.ClientId == pairClientId).FirstOrDefaultAsync();
 
-            var existEntity = _dbContext.Data.FirstOrDefaultAsync(e => e.TargetId == 1 && e.Tray == 1 && e.ClientId == clientId);
-
-            if (existEntity is not null)
+            if (existEntity != null)
             {
-                //update result
+                if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_3)
+                {
+                    existEntity.ResultArea = dataDTO.result;
+                }
+                else
+                {
+                    existEntity.ResultLine = dataDTO.result;
+                }
+
+                if (dataDTO.result == NG)
+                {
+                    //save image
+                    await SaveImage(existEntity, dataDTO.image);
+
+                    //save error
+                    await SaveError(existEntity, dataDTO.error);
+                }
+
+                var position = GetPosition(dataDTO.index, dataDTO.client_id);
+                var rs = GetResult(existEntity.ResultArea, existEntity.ResultLine);
+                Global.controlPLC.WriteDataToRegister(rs, position);
+
+                await _dbContext.SaveChangesAsync();
+
+                return existEntity;
             } else
             {
                 var data = new Data
@@ -47,91 +69,77 @@ namespace Stiffiner_Inspection.Services
                     Tray = dataDTO.tray,
                     ClientId = dataDTO.client_id,
                     Side = dataDTO.side,
-                    Index = dataDTO.index,
                     Camera = dataDTO.camera,
+                    TargetId = Global.currentTargetId
                 };
 
-                //if else update result line,
-                //result camera
+                //set index từ 1 đến 40 tính từ bên phải, từ trên xuống dưới
+                data.Index = dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2 ? dataDTO.index + 20 : dataDTO.index;
 
-                //if error => save to table error
-                //if error => save image
-
+                //client là 1 hoặc 3 là cam area, client 2 hoặc 4 là cam line
+                if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_3)
+                {
+                    data.ResultArea = dataDTO.result;
+                }
+                else
+                {
+                    data.ResultLine = dataDTO.result;
+                }
 
                 await _dbContext.Data.AddAsync(data);
+                await _dbContext.SaveChangesAsync();
+
+                //nếu như là NG thì sẽ lưu lỗi vào bảng error và lưu hình ảnh vào bảng image
+                if (dataDTO.result == NG)
+                {
+                    //save image
+                    await SaveImage(data, dataDTO.image);
+
+                    //save error
+                    await SaveError(data, dataDTO.error);
+                }
+
+                return data;
             }
-            //kiem tra
-            //neu ton tai thì update, send to PLC, save image, error neu có
-
-            //khong thi lưu mới db, nếu có lỗi thì save image, error nếu có
-
-            //var data = new Data
-            //{
-            //    Id = dataDTO.id,
-            //    Time = dataDTO.time,
-            //    Model = dataDTO.model,
-            //    Tray = dataDTO.tray,
-            //    ClientId = dataDTO.client_id,
-            //    Side = dataDTO.side,
-            //    Index = dataDTO.index,
-            //    Camera = dataDTO.camera,
-            //};
-
-            //await _dbContext.Data.AddAsync(data);
-
-            //save image
-
-            //save error
-
-
-            await _dbContext.SaveChangesAsync();
-            return null;
-            //return data;
         }
 
-        public void SendToPLC(DataDTO dataDTO)
+        private async Task SaveImage(Data data, string listImgs)
         {
-            //client 1, 2 thêm vào tray left, còn lại tray right
-            //if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2)
-            //{
-            //    Global.TrayLeft.Add(dataDTO);
-            //}
-            //else
-            //{
-            //    Global.TrayRight.Add(dataDTO);
-            //}
+            List<Image> listImages = new List<Image>();
 
-            //tìm cặp của client id, ex: dataDto.client_id == 1 => 2, 3 => 4 và ngược lại
-            var clientIdPair = GetClientIdPair(dataDTO);
+            string[] imgs = listImgs.Split(',');
 
-            //if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2)
-            //{
-            //    var existItem = Global.TrayLeft.Find(obj => obj.tray == dataDTO.tray && obj.index == dataDTO.index && obj.client_id == clientIdPair);
-            //    if (existItem is not null)
-            //    {
-            //        //nếu có cặp => lấy kết quả, vị trí và gửi cho PLC
-            //        var rs = GetResult(existItem.result, dataDTO.result);
-            //        var position = GetPosition(existItem.index, existItem?.client_id);
-            //        Global.controlPLC.WriteDataToRegister(position, rs);
-            //        //add execl
-            //    }
-            //}
-            //else
-            //{
-            //    var existItem = Global.TrayRight.Find(obj => obj.tray == dataDTO.tray && obj.index == dataDTO.index && obj.client_id == clientIdPair);
-            //    if (existItem is not null)
-            //    {
-            //        var rs = GetResult(existItem.result, dataDTO.result);
-            //        var position = GetPosition(existItem.index, existItem?.client_id);
-            //        Global.controlPLC.WriteDataToRegister(position, rs);
-            //    }
-            //}
+            foreach (string item in imgs)
+            {
+                listImages.Add(new Image
+                {
+                    DataId = data.Id,
+                    Path = item,
+                });
+            }
 
-            ////nếu như client inspection xong, set PLC trạng thái done
-            //if (Global.TrayLeft.Count == 40 && Global.TrayRight.Count == 40)
-            //{
-            //    Global.controlPLC.VisionBusy(true);
-            //}
+            await _dbContext.Images.AddRangeAsync(listImages);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task SaveError(Data data, string listErrors)
+        {
+            List<Error> listErrs = new List<Error>();
+
+            string[] errors = listErrors.Split(',');
+
+            foreach (string item in errors)
+            {
+                listErrs.Add(new Error
+                {
+                    DataId = data.Id,
+                    Description = item,
+                    Type = data.ClientId == CLIENT_1 || data.ClientId == CLIENT_3 ? 1 : 2, //(1,3 type area, 2,4 type line)
+                });
+            }
+
+            await _dbContext.Errors.AddRangeAsync(listErrs);
+            await _dbContext.SaveChangesAsync();
         }
 
         public int GetPosition(int index, int? clientId)
@@ -177,201 +185,104 @@ namespace Stiffiner_Inspection.Services
             }
         }
 
-        public async Task<int> GetCurrentTargetID()
+        public async Task<long> GetCurrentTargetID()
         {
-            //using (var connection = new SqlConnection(connectionString))
-            //{
-            //    int currentTargetID = 0;
-            //    connection.Open();
-            //    using (var command = connection.CreateCommand())
-            //    {
-            //        command.CommandText = "select DISTINCT Target_id  from Targets t where current_Qty <= Target_id ";
-            //        var currTarget = await command.ExecuteScalarAsync();
-            //        if (currTarget != null)
-            //        {
-            //            currentTargetID = Convert.ToInt32(currTarget);
-            //        }
-            //        return currentTargetID;
-            //    }
-            //}
-            return 0;
+            long maxTargetId = _dbContext.Targets.Max(t => t.TargetId);
+
+            return maxTargetId;
         }
-        public async Task<int> GetCurrentTargetQty()
+
+        public async Task<int> GetCurrentTargetQty(long currTargetid)
         {
-            return 0;
-            int Targetqty = 0;
-            var currTarget = await GetCurrentTargetID();
-            using (var connection = new SqlConnection(connectionString))
+            int targetQty = 0;
+
+            var target = await _dbContext.Targets
+                .Where(t => t.TargetId == currTargetid)
+                .Select(t => t.Target_qty)
+                .FirstOrDefaultAsync();
+
+            if (target != null)
             {
-                connection.Open();
-                
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandText = "select Target_Qty  from Targets t where t.target_id =@targetid";
-                    command.Parameters.AddWithValue("@targetid", currTarget);
-                    var currTargetQty = await command.ExecuteScalarAsync();
-                    if (currTargetQty != null)
-                    {
-                        Targetqty = Convert.ToInt32(currTargetQty);
-                    }
-                    return Targetqty;
-                }
+                targetQty = target;
             }
 
-        }
-        
+            return targetQty;
 
-        public async Task<int> GetTotal()
+        }
+        public async Task<int> GetTotal(long targetId)
+        {
+            int totalCount = _dbContext.Data
+            .Where(d => d.TargetId == targetId &&
+                        d.ResultArea != null && d.ResultArea != 3 &&
+                        d.ResultLine != null && d.ResultLine != 3)
+            .GroupBy(d => d.TargetId)
+            .Select(g => g.Count())
+            .FirstOrDefault();
+
+            return totalCount;
+        }
+
+        public async Task<int> GetTotalTray(long currtarget)
         {
             try
             {
-                int Total = 0;
-                var currTarget = await GetCurrentTargetID();
-                using (var connection = new SqlConnection(connectionString))
-                {
-                    connection.Open();
-                    using (var command = connection.CreateCommand())
-                    {
-                        command.CommandText = "with a as (( select a.target_id, a.[index], a.result areacam, b.result linecam from data a, data b where a.client_id = 1 and b.client_id = 2 and a.[index] = b.[index] and a.tray = b.tray and a.side = b.side and a.target_id =b.target_id) union all ( select a.target_id, a.[index], a.result areacam, b.result linecam from data a, data b where a.client_id = 3 and b.client_id = 4 and a.[index] = b.[index] and a.tray = b.tray and a.side = b.side and a.target_id =b.target_id ) )select count(*) Total from a where a.target_id =@targetid and areacam<>3 and  linecam<> 3 group by a.target_id";
-                        command.Parameters.AddWithValue("@targetid", currTarget);
-                        var all = await command.ExecuteScalarAsync();
-                        if (all == null)
-                        {
-                            Total = 0;
-                        }
-                        else
-                        {
-                            Total = int.Parse(all.ToString());
-                        }
-                    }
-                }
-                return Total;
+                var trays = await _dbContext.Data
+              .Where(d => d.TargetId == currtarget)
+              .Select(d => d.Tray)
+              .Distinct()
+              .ToListAsync();
 
-
-            }
-            catch (Exception ex)
-            {
-                return 0;
-            }
-
-        }
-        public async Task<int> GetTotalTray()
-        {
-            try
-            {
-                int totalTray = 0;
-                var currTarget = await GetCurrentTargetID();
-                List<string> lstTray = new List<string>();
-                using (var conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    using (var cmd = conn.CreateCommand())
-                    {
-                        cmd.CommandText = "select DISTINCT tray from data where Target_id =@targetid";
-                        cmd.Parameters.AddWithValue("@targetid", currTarget);
-                        using (var reader = await cmd.ExecuteReaderAsync())
-                        {
-                            while (await reader.ReadAsync())
-                            {
-                                lstTray.Add(reader.GetString(0));
-                            }
-                        }
-                        if (lstTray != null && lstTray.Any())
-                        {
-                            totalTray = lstTray.Count;
-                        }
-                        else
-                        {
-                            totalTray = 0;
-                        }
-                    }
-                }
+                int totalTray = trays.Count;
                 return totalTray;
             }
             catch (Exception ex)
             { return 0; }
         }
 
-        public async Task<int> GetTotalEmpty()
+        public async Task<int> GetTotalEmpty(long currtarget)
         {
-            int TotalEmpty = 0;
-            var currTarget = await GetCurrentTargetID();
+            var totalEmpty = _dbContext.Data
+           .Where(d => d.TargetId == currtarget &&
+            d.ResultArea != null &&
+            d.ResultLine != null && (d.ResultArea == 3 || d.ResultLine == 3))
+           .GroupBy(d => d.TargetId)
+           .Select(g => g.Count())
+           .FirstOrDefault();
 
-            using (var conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = "with a as (( select a.target_id, a.tray, a.[index], 'left' side, a.result areacam, b.result linecam from data a, data b where a.client_id = 1 and b.client_id = 2 and a.[index] = b.[index] and a.tray = b.tray and a.side = b.side and a.target_id =b.target_id) union all ( select a.target_id, a.tray, a.[index], 'right' side, a.result areacam, b.result linecam from data a, data b where a.client_id = 3 and b.client_id = 4 and a.[index] = b.[index] and a.tray = b.tray and a.side = b.side and a.target_id =b.target_id ) )select count(*) TotalEmpty from a where a.target_id =@targetid and (areacam =3 or linecam =3) group by a.target_id";
-                    cmd.Parameters.AddWithValue("@targetid", currTarget);
-                    var allempty = cmd.ExecuteScalar();
-                    if (allempty == null)
-                    {
-                        TotalEmpty = 0;
-                    }
-                    else
-                    {
-                        TotalEmpty = int.Parse(allempty.ToString());
-                    }
-                }
-            }
-            return TotalEmpty;
+            return totalEmpty;
 
         }
 
-        public async Task<int> GettotalOK()
+        public async Task<int> GettotalOK(long currtarget)
         {
-            int totalOK = 0;
-            var currTarget = await GetCurrentTargetID();
-            using (var conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = "with a as (( select a.target_id, a.tray, a.[index], 'left' side, a.result areacam, b.result linecam from data a, data b where a.client_id = 1 and b.client_id = 2 and a.[index] = b.[index] and a.tray = b.tray and a.side = b.side and a.target_id =b.target_id) union all ( select a.target_id, a.tray, a.[index], 'right' side, a.result areacam, b.result linecam from data a, data b where a.client_id = 3 and b.client_id = 4 and a.[index] = b.[index] and a.tray = b.tray and a.side = b.side and a.target_id =b.target_id ) )select count (*) TotalOK from a where a.target_id =@targetid and a.areacam =a.linecam and a.areacam =1 group by a.target_id";
-                    cmd.Parameters.AddWithValue("@targetid", currTarget);
-                    var allok =  cmd.ExecuteScalar();
-                    if (allok == null)
-                    {
-                        totalOK = 0;
-                    }
-                    else
-                    {
-                        totalOK = int.Parse(allok.ToString());
-                    }
 
-                }
-            }
-
+            var totalOK = _dbContext.Data.Where(d => d.TargetId == currtarget && d.ResultArea == 1 && d.ResultLine == 1 && d.ResultArea != null && d.ResultLine != null)
+                .GroupBy(d => d.TargetId).Select(g => g.Count()).FirstOrDefault();
             return totalOK;
         }
 
-        public async Task<int> GettotalNG()
+        public async Task<int> GettotalNG(long currtarget)
         {
-            int totalNG = 0;
-            var currTarget = await GetCurrentTargetID();
-            using (var conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = "with a as (( select a.target_id, a.tray, a.[index], 'left' side, a.result areacam, b.result linecam from data a, data b where a.client_id = 1 and b.client_id = 2 and a.[index] = b.[index] and a.tray = b.tray and a.side = b.side and a.target_id =b.target_id) union all ( select a.target_id, a.tray, a.[index], 'right' side, a.result areacam, b.result linecam from data a, data b where a.client_id = 3 and b.client_id = 4 and a.[index] = b.[index] and a.tray = b.tray and a.side = b.side and a.target_id =b.target_id ) )select count(*) totalNG from a where a.target_id =@targetid AND ((areacam = 2 AND areacam <> 3 AND linecam <> 3) or (linecam = 2 AND linecam <> 3 AND areacam <> 3))";
-                    cmd.Parameters.AddWithValue("@targetid", currTarget);
-                    var allng = cmd.ExecuteScalar();
-                    if (allng == null)
-                    {
-                        totalNG = 0;
-                    }
-                    else
-                    {
-                        totalNG = int.Parse(allng.ToString());
-                    }
-
-                }
-            }
+            var totalNG =  _dbContext.Data
+            .Where(d => d.TargetId == currtarget && d.ResultArea != null && d.ResultLine != null &&
+                        ((d.ResultArea == 2 && d.ResultLine != 3) || (d.ResultLine == 2 && d.ResultArea != 3)))
+            .GroupBy(d => d.TargetId)
+            .Select(g => g.Count())
+            .FirstOrDefault();
 
             return totalNG;
         }
 
+        public async Task<int> GetCurrentTray(long currtarget)
+        {
+            return 0;
+        }
+
+        public async Task<List<Data>> GetHistory()
+        {
+            string sqlQuery = "SELECT * from data";
+
+            return _dbContext.Data.FromSqlRaw(sqlQuery).ToList();
+        }
     }
 }

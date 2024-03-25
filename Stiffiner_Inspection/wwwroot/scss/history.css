@@ -333,8 +333,8 @@
 }
 .history #inspection-statistical #result .current-tray .btn-previous-tray {
   color: #4f5aed;
-  margin-left: 3.5em;
-  margin-right: 30px;
+  margin-left: 6.5em;
+  margin-right: 37px;
   font-weight: bold;
   display: inline-block;
   font-size: 25px;
@@ -379,10 +379,10 @@
   padding: 7px 0;
 }
 .history #inspection-statistical #result .current-tray .check-item .is-check-tray {
-  flex-basis: 36%;
+  flex-basis: 45%;
   border: 1px solid #8e93cd;
   background: white;
-  padding: 0px 15px 7px 15px;
+  padding: 0px 30px 7px 30px;
 }
 .history #inspection-statistical #result .current-tray .check-item .is-check-tray .title-cam {
   font-size: 14px;
@@ -436,6 +436,19 @@
   font-size: 12px;
   border-radius: 3px;
 }
+.history #inspection-statistical #result .current-tray .check-item .checking-tray-left .result-left-tray:hover {
+  cursor: pointer;
+  opacity: 0.5;
+}
+.history #inspection-statistical #result .current-tray .check-item .checking-tray-left .result-left-tray.OK {
+  background: #66B032 !important;
+}
+.history #inspection-statistical #result .current-tray .check-item .checking-tray-left .result-left-tray.NG {
+  background: #E4491D !important;
+}
+.history #inspection-statistical #result .current-tray .check-item .checking-tray-left .result-left-tray.Empty {
+  background: #B5B5B5 !important;
+}
 .history #inspection-statistical #result .current-tray .check-item .checking-tray-right .result-left-tray {
   flex-basis: 100%;
   text-align: center;
@@ -445,6 +458,10 @@
   padding: 4px;
   font-size: 12px;
   border-radius: 3px;
+}
+.history #inspection-statistical #result .current-tray .check-item .checking-tray-right .result-left-tray:hover {
+  cursor: pointer;
+  opacity: 0.5;
 }
 .history #inspection-statistical #result .image {
   flex-direction: column;

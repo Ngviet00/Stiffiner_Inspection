@@ -295,25 +295,14 @@
     // Get the canvas element
     var ctx = document.getElementById('pie-chart').getContext('2d');
 
-    var errorCodes = @Html.Raw(Json.Serialize(ViewBag.errorCodes));
     var labels = ["OK", "NG", "Empty"];
-    var values = [65,20,15];
+    var values = [
+        @Html.Raw(Json.Serialize(ViewBag.PercentChartOK)),
 
-    const backgroundColor = [
-        '#BE7B72', '#FDAF7B', '#824D74',
-        // '#B692F6',
-        // '#D6BBFB', '#E9D7FE', '#7F56D9', '#F4EBFF',
-        // '#9E77ED', '#B692F6', '#D6BBFB', '#E9D7FE',
-        // '#7F56D9', '#F4EBFF', '#9E77ED', '#B692F6',
-        // '#D6BBFB'
-    ]
+        @Html.Raw(Json.Serialize(ViewBag.PercentChartNG)),
 
-     // errorCodes.forEach(function (item) {
-
-     //     item.id > 10 ? values.push(item.id * 3) : "";
-
-     //     labels.push(`${item.errorContent.toUpperCase()}`);
-     // });
+        @Html.Raw(Json.Serialize(ViewBag.PercentChartEmpty))
+    ];
 
     var myPieChart = new Chart(ctx, {
         type: 'pie',
@@ -321,7 +310,9 @@
             labels: labels,
             datasets: [{
                 data: values,
-                backgroundColor: backgroundColor
+                backgroundColor: [
+                    '#BE7B72', '#FDAF7B', '#824D74',
+                ]
             }]
         },
         options: {
@@ -352,10 +343,10 @@
                          const percentageValue = (value / totalValue * 100).toFixed(1);
                          return `${percentageValue}%`;
                      },
-                    color: '#000000',
+                    color: '#ffffff',
                     font: {
                         weight: 'bold',
-                        size: 11,
+                        size: 15,
                     },
                     align: 'end',
                     anchor: 'center'

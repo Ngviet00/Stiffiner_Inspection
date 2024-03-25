@@ -11,7 +11,7 @@
         public int index { get; set; }
         public string? camera { get; set; } = string.Empty;
         public int result { get; set; }
-        public int? error_code { get; set; }
+        public string? error { get; set; }
         public string? image { get; set; } = string.Empty;
     }
 }

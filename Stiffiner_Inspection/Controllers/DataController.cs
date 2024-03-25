@@ -26,19 +26,16 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
+                dataDTO.tray = Global.currentTray;
+
                 //gửi lên web realtime sự kiện result log
                 await _hubContext.Clients.All.SendAsync("ReceiveData", dataDTO);
 
                 //gửi lên web realtime timelog
                 await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", dataDTO.time, "Program", "Send signals from Server to PLC");
 
-                //lưu db
+                //lưu db, check, nếu có thì gửi tín hiệu cho PLC
                 var result = await _dataService.Save(dataDTO);
-
-                //check
-
-                //send to PLC
-                _dataService.SendToPLC(dataDTO);
 
                 return Ok(result);
             }

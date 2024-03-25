@@ -102,7 +102,6 @@ $(function () {
 
     //event change plc
     connection.on("ChangeStatusPLC", (status) => {
-        console.log("status:" + status);
         let _status = $('#value-plc-status');
         let _message = $('#error-plc-status')
         

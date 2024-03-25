@@ -412,8 +412,8 @@ $color_3C3C3C: #3C3C3C;
 
                 .btn-previous-tray {
                     color: #4f5aed;
-                    margin-left: 3.5em;
-                    margin-right: 30px;
+                    margin-left: 6.5em;
+                    margin-right: 37px;
                     font-weight: bold;
                     display: inline-block;
                     font-size: 25px;
@@ -467,10 +467,10 @@ $color_3C3C3C: #3C3C3C;
                     }
 
                     .is-check-tray {
-                        flex-basis: 36%;
+                        flex-basis: 45%;
                         border: 1px solid #8e93cd;
                         background: white;
-                        padding: 0px 15px 7px 15px;
+                        padding: 0px 30px 7px 30px;
 
                         .title-cam {
                             font-size: 14px;
@@ -535,6 +535,23 @@ $color_3C3C3C: #3C3C3C;
                             font-size: 12px;
                             border-radius: 3px;
 
+                            &:hover {
+                                cursor: pointer;
+                                opacity: 0.5;
+                            }
+
+                            &.OK {
+                                background: #66B032 !important;
+                            }
+
+                            &.NG {
+                                background: #E4491D !important;
+                            }
+
+                            &.Empty {
+                                background: #B5B5B5 !important;
+                            }
+
                             .position {
                             }
 
@@ -554,6 +571,11 @@ $color_3C3C3C: #3C3C3C;
                             padding: 4px;
                             font-size: 12px;
                             border-radius: 3px;
+
+                            &:hover {
+                                cursor: pointer;
+                                opacity: 0.5;
+                            }
 
                             .position {
                             }
