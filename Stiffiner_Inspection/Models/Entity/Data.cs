@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Stiffiner_Inspection.Models.Entity
@@ -33,25 +32,13 @@ namespace Stiffiner_Inspection.Models.Entity
         [Column("camera"), MaxLength(255)]
         public string? Camera { get; set; } = string.Empty;
 
-        [Column("result")]
-        public int? Result { get; set; }
+        [Column("result_area")]
+        public int? ResultArea { get; set; }
 
-        [Column("result_1")]
-        public int? Result1 { get; set; }
+        [Column("result_line")]
+        public int? ResultLine { get; set; }
 
-        [Column("error_code")]
-        public int? ErrorCode { get; set; }
-
-        [Column("image"), MaxLength(255)]
-        public string? Image { get; set; } = string.Empty;
-
-        [Column("time_start")]
-        public DateTime? TimeStart { get; set; }
-
-        [Column("time_end")]
-        public DateTime? TimeEnd { get; set; }
-
-        [Column("flag")]
-        public int? Flag { get; set; }
+        [Column("target_id")]
+        public int? TargetId { get; set; }
     }
 }

@@ -36,12 +36,16 @@ namespace Stiffiner_Inspection.Services
                 ClientId = dataDTO.client_id,
                 Side = dataDTO.side,
                 Index = dataDTO.index,
-                Result = dataDTO.result,
                 Camera = dataDTO.camera,
-                ErrorCode = dataDTO.error_code,
             };
 
             await _dbContext.Data.AddAsync(data);
+
+            //save image
+
+            //save error
+
+
             await _dbContext.SaveChangesAsync();
 
             return data;
@@ -137,25 +141,26 @@ namespace Stiffiner_Inspection.Services
 
         public async Task<int> GetCurrentTargetID()
         {
-            using (var connection = new SqlConnection(connectionString))
-            {
-                int currentTargetID = 0;
-                connection.Open();
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandText = "select DISTINCT Target_id  from Target t where current_Qty <= Target_id ";
-                    var currTarget = await command.ExecuteScalarAsync();
-                    if (currTarget != null)
-                    {
-                        currentTargetID = Convert.ToInt32(currTarget);
-                    }
-                    return currentTargetID;
-                }
-            }
-
+            //using (var connection = new SqlConnection(connectionString))
+            //{
+            //    int currentTargetID = 0;
+            //    connection.Open();
+            //    using (var command = connection.CreateCommand())
+            //    {
+            //        command.CommandText = "select DISTINCT Target_id  from Targets t where current_Qty <= Target_id ";
+            //        var currTarget = await command.ExecuteScalarAsync();
+            //        if (currTarget != null)
+            //        {
+            //            currentTargetID = Convert.ToInt32(currTarget);
+            //        }
+            //        return currentTargetID;
+            //    }
+            //}
+            return 0;
         }
         public async Task<int> GetCurrentTargetQty()
         {
+            return 0;
             int Targetqty = 0;
             var currTarget = await GetCurrentTargetID();
             using (var connection = new SqlConnection(connectionString))
@@ -164,7 +169,7 @@ namespace Stiffiner_Inspection.Services
                 
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "select Target_Qty  from Target t where t.target_id =@targetid";
+                    command.CommandText = "select Target_Qty  from Targets t where t.target_id =@targetid";
                     command.Parameters.AddWithValue("@targetid", currTarget);
                     var currTargetQty = await command.ExecuteScalarAsync();
                     if (currTargetQty != null)

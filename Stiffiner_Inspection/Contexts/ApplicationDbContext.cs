@@ -11,8 +11,9 @@ namespace Stiffiner_Inspection.Contexts
 
         public DbSet<Data> Data { get; set; }
         public DbSet<ErrorCode> ErrorCodes { get; set; }
-        public DbSet<StatusCAM> StatusCAM { get; set; }
         public DbSet<Image> Images { get; set; }
+        public DbSet<Error> Errors { get; set; }
+        public DbSet<Target> Targets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,13 +36,6 @@ namespace Stiffiner_Inspection.Contexts
                 new ErrorCode { Id = 16, ErrorContent = "curl sus" },
                 new ErrorCode { Id = 17, ErrorContent = "ng tape" }
                 );
-
-            modelBuilder.Entity<StatusCAM>().HasData(
-                new StatusCAM { Id = 1, Status = 0 },
-                new StatusCAM { Id = 2, Status = 0 },
-                new StatusCAM { Id = 3, Status = 0 },
-                new StatusCAM { Id = 4, Status = 0 }
-            );
         }
     }
 }

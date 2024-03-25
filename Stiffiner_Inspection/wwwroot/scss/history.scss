@@ -397,9 +397,10 @@ $color_3C3C3C: #3C3C3C;
             }
 
             .current-tray {
-                flex-basis: 25%;
+                flex-basis: 100%;
 
                 .btn-next-tray {
+                    color: #4f5aed;
                     margin-left: 30px;
                     font-size: 25px;
                     font-weight: bold;
@@ -410,7 +411,8 @@ $color_3C3C3C: #3C3C3C;
                 }
 
                 .btn-previous-tray {
-                    margin-left: 5em;
+                    color: #4f5aed;
+                    margin-left: 3.5em;
                     margin-right: 30px;
                     font-weight: bold;
                     display: inline-block;
@@ -522,12 +524,50 @@ $color_3C3C3C: #3C3C3C;
 
                     .checking-tray-left {
                         border-right: none;
+
+                        .result-left-tray {
+                            flex-basis: 100%;
+                            text-align: center;
+                            flex-direction: column;
+                            display: flex;
+                            color: white;
+                            padding: 4px;
+                            font-size: 12px;
+                            border-radius: 3px;
+
+                            .position {
+                            }
+
+                            .result {
+                            }
+                        }
+                    }
+
+                    .checking-tray-right {
+
+                        .result-left-tray {
+                            flex-basis: 100%;
+                            text-align: center;
+                            flex-direction: column;
+                            display: flex;
+                            color: white;
+                            padding: 4px;
+                            font-size: 12px;
+                            border-radius: 3px;
+
+                            .position {
+                            }
+
+                            .result {
+                            }
+                        }
                     }
                 }
             }
 
-            .info-stiffiner {
-                flex-basis: 70%;
+            .image {
+                flex-direction: column;
+                flex-basis: 40%;
                 border: 1px solid #8e93cd;
                 margin-top: 46px;
                 padding: 25px 15px 15px 22px;
@@ -547,6 +587,81 @@ $color_3C3C3C: #3C3C3C;
                     b {
                         font-size: 16px;
                         color: #667085;
+                    }
+                }
+            }
+
+            .info-error {
+                margin-top: 46px;
+                border: 1px solid #8e93cd;
+                width: 100%;
+                margin-left: 3em;
+                padding: 25px 15px 15px 22px;
+
+                #title {
+                    color: #767676;
+                    font-weight: 700;
+                    margin-bottom: 10px;
+                }
+
+                .info {
+                    padding-left: 20px;
+
+                    span {
+                        margin-bottom: 8px;
+                        display: inline-block;
+                    }
+
+                    .information, .position, .side, .title-ng-detail {
+                        font-weight: bold;
+                        color: #667085;
+                        font-size: 14px;
+                        line-height: 18px;
+                        text-align: left;
+                    }
+                }
+
+                .title-ng-detail {
+                    font-weight: bold;
+                    color: #667085;
+                    font-size: 14px;
+                    line-height: 18px;
+                    text-align: left;
+                }
+
+                .label-error {
+                    flex-basis: 25%;
+                }
+
+                .title-table {
+                    .label-error {
+                        padding: 10px 0px;
+                        border-bottom: 0.5px solid #00000080;
+                        border-right: 0.5px solid #00000080;
+                    }
+
+                    .qty-error {
+                        flex-basis: 15%;
+                        padding: 10px 4px;
+                        border-bottom: 0.5px solid #00000080;
+                    }
+                }
+
+                .list-error {
+                    .label-error {
+                        color: #667085;
+                        font-weight: bold;
+                        padding: 10px 0px;
+                        border-bottom: 0.5px solid #00000080;
+                        border-right: 0.5px solid #00000080;
+                    }
+
+                    .qty-error {
+                        color: #667085;
+                        font-weight: bold;
+                        flex-basis: 15%;
+                        padding: 10px 4px;
+                        border-bottom: 0.5px solid #00000080;
                     }
                 }
             }

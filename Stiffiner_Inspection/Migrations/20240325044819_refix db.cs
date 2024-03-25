@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Stiffiner_Inspection.Migrations
 {
     /// <inheritdoc />
-    public partial class createdatabase : Migration
+    public partial class refixdb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,16 +21,14 @@ namespace Stiffiner_Inspection.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     time = table.Column<DateTime>(type: "datetime2", nullable: true),
                     model = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    tray = table.Column<int>(type: "int", nullable: true),
+                    tray = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     client_id = table.Column<int>(type: "int", nullable: true),
                     side = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     index = table.Column<int>(type: "int", nullable: true),
                     camera = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    result = table.Column<int>(type: "int", nullable: true),
-                    error_code = table.Column<int>(type: "int", nullable: true),
-                    image = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    time_start = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    time_end = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    result_area = table.Column<int>(type: "int", nullable: true),
+                    result_line = table.Column<int>(type: "int", nullable: true),
+                    target_id = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -51,18 +49,47 @@ namespace Stiffiner_Inspection.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "time_logs",
+                name: "errors",
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    time = table.Column<DateTime>(type: "datetime2", maxLength: 255, nullable: true),
-                    type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    message = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
+                    data_id = table.Column<long>(type: "bigint", nullable: false),
+                    description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    type = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_time_logs", x => x.id);
+                    table.PrimaryKey("PK_errors", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "images",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    data_id = table.Column<long>(type: "bigint", nullable: false),
+                    path = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_images", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "targets",
+                columns: table => new
+                {
+                    target_id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    target_qty = table.Column<int>(type: "int", nullable: false),
+                    created_date = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    updated_date = table.Column<DateTime>(type: "DateTime", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_targets", x => x.target_id);
                 });
 
             migrationBuilder.InsertData(
@@ -100,7 +127,13 @@ namespace Stiffiner_Inspection.Migrations
                 name: "error_code");
 
             migrationBuilder.DropTable(
-                name: "time_logs");
+                name: "errors");
+
+            migrationBuilder.DropTable(
+                name: "images");
+
+            migrationBuilder.DropTable(
+                name: "targets");
         }
     }
 }

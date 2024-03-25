@@ -12,8 +12,8 @@ using Stiffiner_Inspection.Contexts;
 namespace Stiffiner_Inspection.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240315123108_create table status cam")]
-    partial class createtablestatuscam
+    [Migration("20240325044819_refix db")]
+    partial class refixdb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,15 +43,6 @@ namespace Stiffiner_Inspection.Migrations
                         .HasColumnType("int")
                         .HasColumnName("client_id");
 
-                    b.Property<int?>("ErrorCode")
-                        .HasColumnType("int")
-                        .HasColumnName("error_code");
-
-                    b.Property<string>("Image")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("image");
-
                     b.Property<int?>("Index")
                         .HasColumnType("int")
                         .HasColumnName("index");
@@ -61,34 +52,62 @@ namespace Stiffiner_Inspection.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("model");
 
-                    b.Property<int?>("Result")
+                    b.Property<int?>("ResultArea")
                         .HasColumnType("int")
-                        .HasColumnName("result");
+                        .HasColumnName("result_area");
+
+                    b.Property<int?>("ResultLine")
+                        .HasColumnType("int")
+                        .HasColumnName("result_line");
 
                     b.Property<string>("Side")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("side");
 
+                    b.Property<int?>("TargetId")
+                        .HasColumnType("int")
+                        .HasColumnName("target_id");
+
                     b.Property<DateTime?>("Time")
                         .HasColumnType("datetime2")
                         .HasColumnName("time");
 
-                    b.Property<DateTime?>("TimeEnd")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("time_end");
-
-                    b.Property<DateTime?>("TimeStart")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("time_start");
-
-                    b.Property<int?>("Tray")
-                        .HasColumnType("int")
+                    b.Property<string>("Tray")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("tray");
 
                     b.HasKey("Id");
 
                     b.ToTable("data");
+                });
+
+            modelBuilder.Entity("Stiffiner_Inspection.Models.Entity.Error", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("DataId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("data_id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("description");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("errors");
                 });
 
             modelBuilder.Entity("Stiffiner_Inspection.Models.Entity.ErrorCode", b =>
@@ -197,44 +216,53 @@ namespace Stiffiner_Inspection.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Stiffiner_Inspection.Models.Entity.StatusCAM", b =>
+            modelBuilder.Entity("Stiffiner_Inspection.Models.Entity.Image", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("bigint")
                         .HasColumnName("id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<int?>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("status");
+                    b.Property<long>("DataId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("data_id");
+
+                    b.Property<string>("Path")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("path");
 
                     b.HasKey("Id");
 
-                    b.ToTable("status_cam");
+                    b.ToTable("images");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Status = 0
-                        });
+            modelBuilder.Entity("Stiffiner_Inspection.Models.Entity.Target", b =>
+                {
+                    b.Property<long>("TargetId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("target_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("TargetId"));
+
+                    b.Property<DateTime>("Created_date")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("created_date");
+
+                    b.Property<int>("Target_qty")
+                        .HasColumnType("int")
+                        .HasColumnName("target_qty");
+
+                    b.Property<DateTime>("Updated_date")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("updated_date");
+
+                    b.HasKey("TargetId");
+
+                    b.ToTable("targets");
                 });
 #pragma warning restore 612, 618
         }

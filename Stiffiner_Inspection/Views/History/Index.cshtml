@@ -1,0 +1,111 @@
+﻿<div class="history">
+    <div id="inspection-statistical" class="d-flex justify-content-between">
+        <div id="result">
+            <div class="d-flex">
+                <div class="current-tray">
+                    <div class="d-flex align-items-center" style="margin-bottom: 20px">
+                        <span class="btn-previous-tray"> < </span>
+                        <div id="title-current-tray">
+                            TRAY 10
+                        </div>
+                        <span class="btn-next-tray"> > </span>
+                    </div>
+                    <div class="d-flex check-item">
+                        <div class="is-check-tray checking-tray-left">
+                            <div class="title-cam text-center mb-1">Left</div>
+                            <div class="ng-ok">
+                                <div class="d-flex justify-content-center flex-column">
+                                    @for (int i = 1; i <= 20; i++)
+                                    {
+                                        <div class="result-left-tray" style="background: #E4491D;">
+                                            <span class="position">@(20 + i)</span>
+                                            <span class="result">OK</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="is-check-tray checking-tray-right">
+                            <div class="title-cam text-center mb-1">Right</div>
+                            <div class="ng-ok">
+                                <div class="d-flex justify-content-center flex-column">
+                                    @for (int i = 1; i <= 20; i++)
+                                    {
+                                        <div class="result-left-tray" style="background: #66B032;">
+                                            <span class="position">@i</span>
+                                            <span class="result">OK</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="image">
+                    <div>
+                        <h3 id="type-item-stiffiner">Area Camera</h3>
+                        <div class="error-image mt-4">
+                            @for (int i = 1; i <= 3; i++)
+                            {
+                                <img src="~/image/error-image.png" class="mb-3" />
+                            }
+                        </div>
+                    </div>
+                    <div>
+                        <h3 id="type-item-stiffiner">Line Camera</h3>
+                        <div class="error-image mt-4">
+                            @for (int i = 1; i <= 1; i++)
+                            {
+                                <img src="~/image/error-image.png" class="mb-3" />
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-error">
+                    <h3 id="title">NG Classification</h3>
+
+                    <div class="info">
+                        <span class="information">Information</span> <br />
+
+                        <span class="position">
+                            Position: <b>4</b>
+                        </span>
+                        <br />
+                        <span class="side">
+                            Side: <b>Left</b>
+                        </span>
+                    </div>
+
+                    <div class="title-ng-detail mt-4">
+                        NG details
+                    </div>
+
+                    <div>
+                        <div class="title-table d-flex">
+                            <div class="label-error">Error Type</div>
+                            <div class="qty-error">Quantity</div>
+                        </div>
+
+                        <div class="list-error">
+                            @for (int i = 0; i <= 3; i++)
+                            {
+                                <div class="d-flex">
+                                    <div class="label-error">Black Dot</div>
+                                    <div class="qty-error">2</div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                       
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/history.js"></script>
+}

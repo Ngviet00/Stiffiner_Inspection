@@ -320,9 +320,10 @@
   line-height: 24px;
 }
 .history #inspection-statistical #result .current-tray {
-  flex-basis: 25%;
+  flex-basis: 100%;
 }
 .history #inspection-statistical #result .current-tray .btn-next-tray {
+  color: #4f5aed;
   margin-left: 30px;
   font-size: 25px;
   font-weight: bold;
@@ -331,7 +332,8 @@
   cursor: pointer;
 }
 .history #inspection-statistical #result .current-tray .btn-previous-tray {
-  margin-left: 5em;
+  color: #4f5aed;
+  margin-left: 3.5em;
   margin-right: 30px;
   font-weight: bold;
   display: inline-block;
@@ -424,24 +426,105 @@
 .history #inspection-statistical #result .current-tray .check-item .checking-tray-left {
   border-right: none;
 }
-.history #inspection-statistical #result .info-stiffiner {
-  flex-basis: 70%;
+.history #inspection-statistical #result .current-tray .check-item .checking-tray-left .result-left-tray {
+  flex-basis: 100%;
+  text-align: center;
+  flex-direction: column;
+  display: flex;
+  color: white;
+  padding: 4px;
+  font-size: 12px;
+  border-radius: 3px;
+}
+.history #inspection-statistical #result .current-tray .check-item .checking-tray-right .result-left-tray {
+  flex-basis: 100%;
+  text-align: center;
+  flex-direction: column;
+  display: flex;
+  color: white;
+  padding: 4px;
+  font-size: 12px;
+  border-radius: 3px;
+}
+.history #inspection-statistical #result .image {
+  flex-direction: column;
+  flex-basis: 40%;
   border: 1px solid #8e93cd;
   margin-top: 46px;
   padding: 25px 15px 15px 22px;
 }
-.history #inspection-statistical #result .info-stiffiner #type-item-stiffiner {
+.history #inspection-statistical #result .image #type-item-stiffiner {
   color: #767676;
   font-weight: 700;
   margin-bottom: 10px;
 }
-.history #inspection-statistical #result .info-stiffiner span {
+.history #inspection-statistical #result .image span {
   font-size: 14px;
   color: #767981;
   font-weight: 600;
   margin-right: 30px;
 }
-.history #inspection-statistical #result .info-stiffiner span b {
+.history #inspection-statistical #result .image span b {
   font-size: 16px;
   color: #667085;
+}
+.history #inspection-statistical #result .info-error {
+  margin-top: 46px;
+  border: 1px solid #8e93cd;
+  width: 100%;
+  margin-left: 3em;
+  padding: 25px 15px 15px 22px;
+}
+.history #inspection-statistical #result .info-error #title {
+  color: #767676;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.history #inspection-statistical #result .info-error .info {
+  padding-left: 20px;
+}
+.history #inspection-statistical #result .info-error .info span {
+  margin-bottom: 8px;
+  display: inline-block;
+}
+.history #inspection-statistical #result .info-error .info .information, .history #inspection-statistical #result .info-error .info .position, .history #inspection-statistical #result .info-error .info .side, .history #inspection-statistical #result .info-error .info .title-ng-detail {
+  font-weight: bold;
+  color: #667085;
+  font-size: 14px;
+  line-height: 18px;
+  text-align: left;
+}
+.history #inspection-statistical #result .info-error .title-ng-detail {
+  font-weight: bold;
+  color: #667085;
+  font-size: 14px;
+  line-height: 18px;
+  text-align: left;
+}
+.history #inspection-statistical #result .info-error .label-error {
+  flex-basis: 25%;
+}
+.history #inspection-statistical #result .info-error .title-table .label-error {
+  padding: 10px 0px;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.5019607843);
+  border-right: 0.5px solid rgba(0, 0, 0, 0.5019607843);
+}
+.history #inspection-statistical #result .info-error .title-table .qty-error {
+  flex-basis: 15%;
+  padding: 10px 4px;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.5019607843);
+}
+.history #inspection-statistical #result .info-error .list-error .label-error {
+  color: #667085;
+  font-weight: bold;
+  padding: 10px 0px;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.5019607843);
+  border-right: 0.5px solid rgba(0, 0, 0, 0.5019607843);
+}
+.history #inspection-statistical #result .info-error .list-error .qty-error {
+  color: #667085;
+  font-weight: bold;
+  flex-basis: 15%;
+  padding: 10px 4px;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.5019607843);
 }

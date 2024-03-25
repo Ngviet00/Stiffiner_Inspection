@@ -24,7 +24,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<DataService>();
 builder.Services.AddScoped<ErrorCodeService>();
-builder.Services.AddScoped<StatusCAMService>();
 
 builder.Services.AddSwaggerGen(c =>
 {
