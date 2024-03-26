@@ -36,6 +36,19 @@ namespace Stiffiner_Inspection.Contexts
                 new ErrorCode { Id = 16, ErrorContent = "curl sus" },
                 new ErrorCode { Id = 17, ErrorContent = "ng tape" }
                 );
+
+            modelBuilder.Entity<Error>().HasIndex(x => x.DataId);
+            modelBuilder.Entity<Image>().HasIndex(x => x.DataId);
+
+            modelBuilder.Entity<Error>()
+                .HasOne(child => child.Data)
+                .WithMany(parent => parent.Errors)
+                .HasForeignKey(child => child.DataId);
+
+            modelBuilder.Entity<Image>()
+                .HasOne(child => child.Data)
+                .WithMany(parent => parent.Images)
+                .HasForeignKey(child => child.DataId);
         }
     }
 }

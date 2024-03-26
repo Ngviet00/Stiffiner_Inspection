@@ -21,7 +21,7 @@ namespace Stiffiner_Inspection.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     time = table.Column<DateTime>(type: "datetime2", nullable: true),
                     model = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    tray = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    tray = table.Column<int>(type: "int", nullable: false),
                     client_id = table.Column<int>(type: "int", nullable: true),
                     side = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     index = table.Column<int>(type: "int", nullable: true),
@@ -49,6 +49,21 @@ namespace Stiffiner_Inspection.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "targets",
+                columns: table => new
+                {
+                    target_id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    target_qty = table.Column<int>(type: "int", nullable: false),
+                    created_date = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    updated_date = table.Column<DateTime>(type: "DateTime", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_targets", x => x.target_id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "errors",
                 columns: table => new
                 {
@@ -61,6 +76,12 @@ namespace Stiffiner_Inspection.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_errors", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_errors_data_data_id",
+                        column: x => x.data_id,
+                        principalTable: "data",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -75,21 +96,12 @@ namespace Stiffiner_Inspection.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_images", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "targets",
-                columns: table => new
-                {
-                    target_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    target_qty = table.Column<int>(type: "int", nullable: false),
-                    created_date = table.Column<DateTime>(type: "DateTime", nullable: false),
-                    updated_date = table.Column<DateTime>(type: "DateTime", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_targets", x => x.target_id);
+                    table.ForeignKey(
+                        name: "FK_images_data_data_id",
+                        column: x => x.data_id,
+                        principalTable: "data",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -115,14 +127,21 @@ namespace Stiffiner_Inspection.Migrations
                     { 16L, "curl sus" },
                     { 17L, "ng tape" }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_errors_data_id",
+                table: "errors",
+                column: "data_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_images_data_id",
+                table: "images",
+                column: "data_id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "data");
-
             migrationBuilder.DropTable(
                 name: "error_code");
 
@@ -134,6 +153,9 @@ namespace Stiffiner_Inspection.Migrations
 
             migrationBuilder.DropTable(
                 name: "targets");
+
+            migrationBuilder.DropTable(
+                name: "data");
         }
     }
 }

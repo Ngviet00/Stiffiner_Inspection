@@ -12,7 +12,7 @@ using Stiffiner_Inspection.Contexts;
 namespace Stiffiner_Inspection.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240325044819_refix db")]
+    [Migration("20240326121107_refix db")]
     partial class refixdb
     {
         /// <inheritdoc />
@@ -73,9 +73,8 @@ namespace Stiffiner_Inspection.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("time");
 
-                    b.Property<string>("Tray")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                    b.Property<int>("Tray")
+                        .HasColumnType("int")
                         .HasColumnName("tray");
 
                     b.HasKey("Id");
@@ -106,6 +105,8 @@ namespace Stiffiner_Inspection.Migrations
                         .HasColumnName("type");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DataId");
 
                     b.ToTable("errors");
                 });
@@ -236,6 +237,8 @@ namespace Stiffiner_Inspection.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DataId");
+
                     b.ToTable("images");
                 });
 
@@ -263,6 +266,35 @@ namespace Stiffiner_Inspection.Migrations
                     b.HasKey("TargetId");
 
                     b.ToTable("targets");
+                });
+
+            modelBuilder.Entity("Stiffiner_Inspection.Models.Entity.Error", b =>
+                {
+                    b.HasOne("Stiffiner_Inspection.Models.Entity.Data", "Data")
+                        .WithMany("Errors")
+                        .HasForeignKey("DataId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Data");
+                });
+
+            modelBuilder.Entity("Stiffiner_Inspection.Models.Entity.Image", b =>
+                {
+                    b.HasOne("Stiffiner_Inspection.Models.Entity.Data", "Data")
+                        .WithMany("Images")
+                        .HasForeignKey("DataId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Data");
+                });
+
+            modelBuilder.Entity("Stiffiner_Inspection.Models.Entity.Data", b =>
+                {
+                    b.Navigation("Errors");
+
+                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }

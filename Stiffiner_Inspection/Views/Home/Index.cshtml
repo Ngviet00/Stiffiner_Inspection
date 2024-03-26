@@ -1,6 +1,7 @@
 ﻿<div class="wrap-content">
     <div id="inspection-statistical" class="d-flex justify-content-between">
         <div id="result">
+            <div id="data-chart-percent" data-percent-chart-ok="@ViewBag.PercentChartOK" data-percent-chart-ng="@ViewBag.PercentChartNG" data-percent-chart-empty="@ViewBag.PercentChartEmpty"></div>
             <h3 class="genera-title">Result</h3>
             <div class="d-flex justify-content-between">
                 <div class="current-tray">
@@ -24,16 +25,16 @@
                             <div class="ng-ok">
                                 <div class="d-flex justify-content-center">
                                     <div class="d-flex flex-column left-tray">
-                                        @for (int i = 1; i <= 20; i++)
-                                        {
-                                            <span class="ok left-area-@i">Wait</span>
-                                        }
+                                            @for (int i = 1; i <= 20; i++)
+                                            {
+                                                <span class="ok left-area-@i">Wait</span>
+                                            }
                                     </div>
                                     <div class="d-flex flex-column right-tray">
-                                        @for (int i = 1; i <= 20; i++)
-                                        {
-                                            <span class="ng left-line-@i">Wait</span>
-                                        }
+                                            @for (int i = 1; i <= 20; i++)
+                                            {
+                                                <span class="ng left-line-@i">Wait</span>
+                                            }
                                     </div>
                                 </div>
                             </div>
@@ -150,14 +151,14 @@
 
                         <div class="second-row d-flex align-items-center justify-content-between mb-1">
                             <div class="title">Tray Total</div>
-                            <div class="w-100 total">
+                            <div class="w-100 total" id="total-tray-ea">
                                 @ViewBag.TotalTray
                             </div>
                         </div>
 
                         <div class="second-row d-flex align-items-center justify-content-between mb-1">
                             <div class="title">Total</div>
-                            <div class="w-100 total">
+                            <div class="w-100 total" id="total-ea">
                                 @ViewBag.Total<span class="">EA</span>
                             </div>
                         </div>
@@ -165,26 +166,26 @@
                         <div class="third-row d-flex align-items-center justify-content-between mb-1">
                             <div class="title">OK</div>
                             <div class="w-100 total">
-                                <div class="d-inline-block">
+                                <div class="d-inline-block" id="total-ok-ea">
                                     @ViewBag.TotalOK<span>EA</span>
                                 </div>
-                                <span class="percent">@ViewBag.PercentOK %</span>
+                                <span class="percent" id="percent-ok">@ViewBag.PercentOK %</span>
                             </div>
                         </div>
 
                         <div class="fourth-row d-flex align-items-center justify-content-between mb-1">
                             <div class="title">NG</div>
                             <div class="w-100 total">
-                                <div class="d-inline-block">
+                                <div class="d-inline-block" id="total-ng-ea">
                                     @ViewBag.TotalNG<span>EA</span>
                                 </div>
-                                <span class="percent">@ViewBag.PercentNG %</span>
+                                <span class="percent" id="percent-ng">@ViewBag.PercentNG %</span>
                             </div>
                         </div>
 
                         <div class="second-row d-flex align-items-center justify-content-between mb-1">
                             <div class="title">Empty</div>
-                            <div class="w-100 total">
+                            <div class="w-100 total" id="total-empty-ea">
                                 @ViewBag.TotalEmpty<span class="">EA</span>
                             </div>
                         </div>
@@ -232,10 +233,6 @@
 
             <div class="statistical-chart mt-4 d-flex justify-content-center">
                 <div class="total-error">
-                    @* <h3 id="title">Error Detect</h3>
-                    <div class="total">
-                        Total <span>0</span> detect
-                    </div> *@
                 </div>
 
                 <div class="chart">
@@ -287,80 +284,10 @@
         </div>
     </div>
 </div>
-<script src="~/js/chart.js"></script>
-<script src="~/js/chartjs-plugin-datalabels.min.js"></script>
-
-
-<script>
-    // Get the canvas element
-    var ctx = document.getElementById('pie-chart').getContext('2d');
-
-    var labels = ["OK", "NG", "Empty"];
-    var values = [
-        @Html.Raw(Json.Serialize(ViewBag.PercentChartOK)),
-
-        @Html.Raw(Json.Serialize(ViewBag.PercentChartNG)),
-
-        @Html.Raw(Json.Serialize(ViewBag.PercentChartEmpty))
-    ];
-
-    var myPieChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: values,
-                backgroundColor: [
-                    '#BE7B72', '#FDAF7B', '#824D74',
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-
-            title: {
-                display: false,
-                text: null,
-            },
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        color: '#667085',
-                    }
-                },
-                tooltip: {
-                    enabled: false,
-                },
-                datalabels: {
-                     formatter: (value, context) => {
-                         const datapoints = context.chart.data.datasets[0].data;
-                         function totalSum(total, datapoint) {
-                             return total + datapoint;
-                         }
-                         const totalValue = datapoints.reduce(totalSum, 0);
-                         const percentageValue = (value / totalValue * 100).toFixed(1);
-                         return `${percentageValue}%`;
-                     },
-                    color: '#ffffff',
-                    font: {
-                        weight: 'bold',
-                        size: 15,
-                    },
-                    align: 'end',
-                    anchor: 'center'
-                }
-            }
-        },
-        plugins: [ChartDataLabels]
-    });
-
-     myPieChart.update('none');
-
-</script>
 
 @section Scripts {
+    <script src="~/js/chart.js"></script>
+    <script src="~/js/chartjs-plugin-datalabels.min.js"></script>
     <script src="~/lib/microsoft-signalr/signalr.min.js"></script>
     <script src="~/js/home.js"></script>
 }

@@ -25,4 +25,4 @@ function updateCurrentTime() {
 
 updateCurrentTime();
 
-setInterval(updateCurrentTime, 900);
+setInterval(updateCurrentTime, 870);

@@ -13,6 +13,7 @@ namespace Stiffiner_Inspection.Controllers
     {
         private readonly DataService _dataService;
         private readonly IHubContext<HomeHub> _hubContext;
+        const int PERCENT = 100;
 
         public DataController(DataService dataService, IHubContext<HomeHub> hubContext)
         {
@@ -26,6 +27,7 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
+                //get current target id
                 dataDTO.tray = Global.currentTray;
 
                 //gửi lên web realtime sự kiện result log
@@ -34,10 +36,40 @@ namespace Stiffiner_Inspection.Controllers
                 //gửi lên web realtime timelog
                 await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", dataDTO.time, "Program", "Send signals from Server to PLC");
 
-                //lưu db, check, nếu có thì gửi tín hiệu cho PLC
+                //send to PLC
+                await _dataService.SendToPLC(dataDTO);
+
+                //lưu db
                 var result = await _dataService.Save(dataDTO);
 
-                return Ok(result);
+                //update count total, OK, NG
+                if (result.ResultArea is not null && result.ResultLine is not null)
+                {
+                    //int totalTray = await _dataService.GetTotalTray(Global.currentTargetId);
+                    //double total = await _dataService.GetTotal(Global.currentTargetId);
+                    //int totalOK = await _dataService.GettotalOK(Global.currentTargetId);
+                    //int totalNG = await _dataService.GettotalNG(Global.currentTargetId);
+                    //int totalEmpty = await _dataService.GetTotalEmpty(Global.currentTargetId);
+
+                    //double percentOK = Math.Round((totalOK / total) * PERCENT, 2);
+                    //double percentNG = Math.Round((totalNG / total) * PERCENT, 2);
+
+                    //double percentChartOk = _dataService.CalculateChartOK(totalOK, total, totalEmpty);
+                    //double percentChartNG = _dataService.CalculateChartNG(totalNG, total, totalEmpty);
+                    //double percentChartEmpty = total == 0 ? 0 : Math.Round(PERCENT - percentChartNG - percentChartOk, 1);
+
+                    //gửi lên client
+                    //await _hubContext.Clients.All.SendAsync("UpdateQuantity", totalTray, total, totalOK, totalNG, totalEmpty, percentOK, percentNG, percentChartOk, percentChartNG, percentChartEmpty);
+
+                    //nếu lớn hơn target => gửi cho client hiển thị thông báo
+                    //if (total >= 2000)
+                    //{
+                    //    await _hubContext.Clients.All.SendAsync("AlertEnoughQuantity");
+                    //    Global.controlPLC.AlertEnoughQuantity(true);
+                    //}
+                }
+
+                return Ok();
             }
             catch (Exception ex)
             {

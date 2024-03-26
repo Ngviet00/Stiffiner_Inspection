@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Stiffiner_Inspection.Models.Entity
@@ -17,5 +16,7 @@ namespace Stiffiner_Inspection.Models.Entity
 
         [Column("path"), MaxLength(255)]
         public string? Path { get; set; } = string.Empty;
+
+        public Data? Data { get; set; }
     }
 }

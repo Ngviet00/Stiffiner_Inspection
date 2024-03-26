@@ -1,4 +1,6 @@
-﻿namespace Stiffiner_Inspection
+﻿using Stiffiner_Inspection.Models.DTO.Data;
+
+namespace Stiffiner_Inspection
 {
     public static class Global
     {
@@ -23,8 +25,17 @@
 
         public static int resetPLC4 { get; set; } = 0;
 
-        public static int currentTray { get; set; } = 15;
+        public static int currentTray { get; set; } = 0;
 
-        public static int currentTargetId { get; set; } = 15;
+        public static int currentTargetId { get; set; } = 1;
+
+        public static List<DataDTO> currentTrayLeft = new List<DataDTO>();
+        public static List<DataDTO> currentTrayRight = new List<DataDTO>();
+
+        public static List<DataDTO> previousTrayLeft = new List<DataDTO>();
+        public static List<DataDTO> previousTrayRight = new List<DataDTO>();
+
+        public static string directoryPath = @"D:\Export_Result";
+        public static string fileNameCSV = "test.csv";      
     }
 }

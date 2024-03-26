@@ -180,6 +180,26 @@ $(function () {
         }
     });
 
+    //update quantity
+    connection.on("UpdateQuantity", function (totalTray, total, totalOK, totalNG, totalEmpty, percentOK, percentNG, percentChartOk, percentChartNG, percentChartEmpty) {
+        $('#total-tray-ea').html(totalTray);
+        $('#total-ea').html(`${total}<span class="">EA</span>`);
+        $('#total-ok-ea').html(`${totalOK}<span class="">EA</span>`);
+        $('#total-ng-ea').html(`${totalNG}<span class="">EA</span>`);
+        $('#total-empty-ea').html(`${totalEmpty}<span class="">EA</span>`);
+
+        $('#percent-ok').html(`${percentOK} %`);
+        $('#percent-ng').html(`${percentNG} %`);
+
+        myPieChart.data.datasets[0].data = [percentChartOk, percentChartNG, percentChartEmpty];
+        myPieChart.data.labels = ["OK", "NG", "Empty"];
+        myPieChart.update('none');
+    });
+
+    connection.on("AlertEnoughQuantity", function () {
+        alert('enough');
+    })
+
     function appendPreviousTray() {
 
         let client1 = "";
@@ -268,6 +288,25 @@ $(function () {
         $('#result .current-tray .checking-tray-right .ng-ok .right-tray').empty().append(client4)
     }
 
+    function resetPreviousTray() {
+        let client1 = '';
+        let client2 = '';
+        let client3 = '';
+        let client4 = '';
+
+        for (let i = 1; i <= 20; i++) {
+            client1 += `<span class="wait">Wait</span>`;
+            client2 += `<span class="wait">Wait</span>`;
+            client3 += `<span class="wait">Wait</span>`;
+            client4 += `<span class="wait">Wait</span>`;
+        }
+
+        $('#result .previous-tray .checking-tray-left .ng-ok .left-tray').html(client1)
+        $('#result .previous-tray .checking-tray-left .ng-ok .right-tray').html(client2)
+        $('#result .previous-tray .checking-tray-right .ng-ok .left-tray').html(client3)
+        $('#result .previous-tray .checking-tray-right .ng-ok .right-tray').html(client4)
+    }
+
     function appendResultLog(data) {
         $("#result-log table tbody").prepend(`
             <tr>
@@ -280,7 +319,7 @@ $(function () {
                 <td class="status-item ${data.result === 1 ? "text-success" : "text-danger"}">
                     ${data.result == 1 ? "OK" : (data.result == 2 ? "NG" : (data.result == 3 ? "EMPTY" : "")) }
                 </td>
-                <td class="detail-error">${data.errorDetection ?? "-"}</td>
+                <td class="detail-error">${data.error ?? "-"}</td>
             </tr>
         `);
 
@@ -307,4 +346,100 @@ $(function () {
 
         return hours + ":" + minutes + ":" + seconds;
     }
+
+    // Get the canvas element
+    var ctx = document.getElementById('pie-chart').getContext('2d');
+
+    var valueChart = document.getElementById('data-chart-percent');
+    var labels = []
+    var values = [
+        parseFloat(valueChart.getAttribute('data-percent-chart-ok')),
+        parseFloat(valueChart.getAttribute('data-percent-chart-ng')),
+        parseFloat(valueChart.getAttribute('data-percent-chart-empty')),
+    ];
+
+    if (values[0] == 0 && values[1] == 0 && values[2] == 0) {
+        values = [100]
+    }
+
+    var myPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ["OK", "NG", "Empty"],
+            datasets: [{
+                data: values,
+                backgroundColor: [
+                    '#BE7B72', '#FDAF7B', '#824D74',
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            title: {
+                display: false,
+                text: null,
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#667085',
+                    }
+                },
+                tooltip: {
+                    enabled: false,
+                },
+                datalabels: {
+                    formatter: (value, context) => {
+                        const datapoints = context.chart.data.datasets[0].data;
+                        function totalSum(total, datapoint) {
+                            return total + datapoint;
+                        }
+                        const totalValue = datapoints.reduce(totalSum, 0);
+                        const percentageValue = (value / totalValue * 100).toFixed(1);
+                        return `${percentageValue}%`;
+                    },
+                    color: '#ffffff',
+                    font: {
+                        weight: 'bold',
+                        size: 15,
+                    },
+                    align: 'end',
+                    anchor: 'center'
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+
+    //test reset all data
+    $('.btn-apply-target').click(function () {
+        $('#time-log table tbody').html(`
+            <tr class="time-log-no-data">
+                <td colspan="12" class="w-100 text-lg-center text-dark fw-bold mt-1" style="font-size: 14px;">No data</td>
+            </tr>
+        `)
+
+        $('#result-log table tbody').html(`
+            <tr class="result-log-no-data">
+                <td colspan="12" class="w-100 text-lg-center text-dark fw-bold mt-1" style="font-size: 14px;">No data</td>
+            </tr>
+        `)
+
+        resetCurrentTray()
+        resetPreviousTray()
+
+        $('#total-tray-ea').html(0);
+        $('#total-ea').html(`0<span class="">EA</span>`);
+        $('#total-ok-ea').html(`0<span class="">EA</span>`);
+        $('#total-ng-ea').html(`0<span class="">EA</span>`);
+        $('#total-empty-ea').html(`0<span class="">EA</span>`);
+
+        $('#percent-ok').html(`0 %`);
+        $('#percent-ng').html(`0 %`);
+
+        myPieChart.data.datasets[0].data = [100];
+        myPieChart.update('none');
+    })
 });

@@ -19,5 +19,7 @@ namespace Stiffiner_Inspection.Models.Entity
 
         [Column("type")]
         public int Type { get; set; }
+
+        public Data? Data { get; set; }
     }
 }
