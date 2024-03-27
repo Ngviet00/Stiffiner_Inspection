@@ -6,7 +6,7 @@
                     <div class="d-flex align-items-center" style="margin-bottom: 20px">
                         <span class="btn-previous-tray"> < </span>
                         <div id="title-current-tray">
-                            TRAY 10
+                            TRAY <span id="number-current-tray">10</span>
                         </div>
                         <span class="btn-next-tray"> > </span>
                     </div>
@@ -102,27 +102,79 @@
 
 @section Scripts {
     <script>
+        const MAX_TRAY = 10;
+        const MIN_TRAY = 1;
+        var currentTray = 10;
         const data = @Html.Raw(Json.Serialize(ViewBag.GroupedData));
 
+        const lengthArr = data.length;
+
+        console.log(lengthArr);
         if (data.length > 0) {
+            renderTray(data[0]);
+        }
+
+        /*number - current - tray*/
+
+        function showItem(item, key) {
+            let data = JSON.parse(decodeURIComponent(item))
+            if (data.resultArea == 2 || data.resultLine == 2) {
+
+                //set info
+                $('.b-position').html(key + 1);
+                $('.b-side').html(key >= 20 ? 'Left' : 'Right');
+
+                $('.no-data').addClass('d-none');
+                $('.error-image').removeClass('d-none');
+                $('.list-error').removeClass('d-none')
+
+                //set errors
+                let arr = data.errors;
+
+                let groupedByDescription = arr.reduce((acc, curr) => {
+                    if (!acc[curr.description]) {
+                        acc[curr.description] = { count: 1};
+                    } else {
+                        acc[curr.description].count++;
+                    }
+                    return acc;
+                }, {});
+
+                let listErrs = '';
+
+                for (const [key, value] of Object.entries(groupedByDescription)) {
+                    listErrs += `
+                        <div class="d-flex">
+                            <div class="label-error">${key}</div>
+                            <div class="qty-error">${value.count}</div>
+                        </div>
+                    `;
+                }
+                $('.list-error').html(listErrs);
+
+                //set image
+            }
+        }
+
+        function renderTray(data) {
             let rsLeft = '';
             let rsRight = '';
-
-            data[0].forEach(function (item, key) {
+            console.log(data);
+            data.forEach(function (item, key) {
                 let rs = item.resultArea == 1 && item.resultLine == 1 ? 'OK' : (item.resultArea == 3 && item.resultLine == 3 ? 'Empty' : 'NG')
 
                 if (key < 20) {
                     rsRight += `
-                        <div class="result-left-tray" onclick="showItem(${item.id}, ${key}, ${item.resultArea}, ${item.resultLine})" style="background: ${rs == 'OK' ? '#66B032' : (rs == 'Empty' ? '#B5B5B5' : '#E4491D')};cursor: ${rs != 'NG' ? 'not-allowed' : ''}">
+                        <div class="result-left-tray" onclick="showItem('${encodeURIComponent(JSON.stringify(item))}', ${key})" style="background: ${rs == 'OK' ? '#66B032' : (rs == 'Empty' ? '#B5B5B5' : '#E4491D')};cursor: ${rs != 'NG' ? 'not-allowed' : ''}">
                             <span class="position">${key + 1}</span>
                             <span class="result">
-                            ${rs}
+                                ${rs}
                             </span>
                         </div>
                     `
                 } else {
                     rsLeft += `
-                        <div class="result-left-tray" onclick="showItem(${item.id}, ${key}, ${item.resultArea}, ${item.resultLine})" style="background: ${rs == 'OK' ? '#66B032' : (rs == 'Empty' ? '#B5B5B5' : '#E4491D')};cursor: ${rs != 'NG' ? 'not-allowed' : ''}">
+                        <div class="result-left-tray" onclick="showItem('${encodeURIComponent(JSON.stringify(item))}', ${key})" style="background: ${rs == 'OK' ? '#66B032' : (rs == 'Empty' ? '#B5B5B5' : '#E4491D')};cursor: ${rs != 'NG' ? 'not-allowed' : ''}">
                             <span class="position">${key + 1}</span>
                             <span class="result">
                                ${rs}
@@ -136,16 +188,26 @@
             $('#rs-right').html(rsRight);
         }
 
-        function showItem(id, key, rsArea, rsLine) {
-            if (rsArea == 2 || rsLine == 2) {
-                $('.b-position').html(key + 1);
-                $('.b-side').html(key >= 20 ? 'Left' : 'Right');
+        $('.btn-next-tray').click(function () {
+            
+            if (currentTray >= MAX_TRAY) {
+                return;
+            }
 
-                $('.no-data').addClass('d-none');
-                $('.error-image').removeClass('d-none');
-                $('.list-error').removeClass('d-none')
-            }           
-        }
+            currentTray++;
+            $('#number-current-tray').html(currentTray);
+            renderTray(data[MAX_TRAY - currentTray]);
+        });
+
+        $('.btn-previous-tray').click(function () {
+            if (currentTray <= MIN_TRAY) {
+                return;
+            }
+
+            currentTray--;
+            $('#number-current-tray').html(currentTray);
+            renderTray(data[MAX_TRAY - currentTray]);
+        });
 
     </script>
     <script src="~/js/history.js"></script>

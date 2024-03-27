@@ -32,9 +32,6 @@ namespace Stiffiner_Inspection
         public static List<DataDTO> currentTrayLeft = new List<DataDTO>();
         public static List<DataDTO> currentTrayRight = new List<DataDTO>();
 
-        public static List<DataDTO> previousTrayLeft = new List<DataDTO>();
-        public static List<DataDTO> previousTrayRight = new List<DataDTO>();
-
         public static string directoryPath = @"D:\Export_Result";
         public static string fileNameCSV = "test.csv";      
     }

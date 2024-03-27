@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Stiffiner_Inspection.Models.Entity
 {
@@ -20,6 +21,7 @@ namespace Stiffiner_Inspection.Models.Entity
         [Column("type")]
         public int Type { get; set; }
 
+        [JsonIgnore]
         public Data? Data { get; set; }
     }
 }

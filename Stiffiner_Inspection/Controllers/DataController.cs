@@ -45,28 +45,28 @@ namespace Stiffiner_Inspection.Controllers
                 //update count total, OK, NG
                 if (result.ResultArea is not null && result.ResultLine is not null)
                 {
-                    //int totalTray = await _dataService.GetTotalTray(Global.currentTargetId);
-                    //double total = await _dataService.GetTotal(Global.currentTargetId);
-                    //int totalOK = await _dataService.GettotalOK(Global.currentTargetId);
-                    //int totalNG = await _dataService.GettotalNG(Global.currentTargetId);
-                    //int totalEmpty = await _dataService.GetTotalEmpty(Global.currentTargetId);
+                    int totalTray = await _dataService.GetTotalTray(Global.currentTargetId);
+                    double total = await _dataService.GetTotal(Global.currentTargetId);
+                    int totalOK = await _dataService.GettotalOK(Global.currentTargetId);
+                    int totalNG = await _dataService.GettotalNG(Global.currentTargetId);
+                    int totalEmpty = await _dataService.GetTotalEmpty(Global.currentTargetId);
 
-                    //double percentOK = Math.Round((totalOK / total) * PERCENT, 2);
-                    //double percentNG = Math.Round((totalNG / total) * PERCENT, 2);
+                    double percentOK = Math.Round((totalOK / total) * PERCENT, 2);
+                    double percentNG = Math.Round((totalNG / total) * PERCENT, 2);
 
-                    //double percentChartOk = _dataService.CalculateChartOK(totalOK, total, totalEmpty);
-                    //double percentChartNG = _dataService.CalculateChartNG(totalNG, total, totalEmpty);
-                    //double percentChartEmpty = total == 0 ? 0 : Math.Round(PERCENT - percentChartNG - percentChartOk, 1);
+                    double percentChartOk = _dataService.CalculateChartOK(totalOK, total, totalEmpty);
+                    double percentChartNG = _dataService.CalculateChartNG(totalNG, total, totalEmpty);
+                    double percentChartEmpty = total == 0 ? 0 : Math.Round(PERCENT - percentChartNG - percentChartOk, 1);
 
                     //gửi lên client
-                    //await _hubContext.Clients.All.SendAsync("UpdateQuantity", totalTray, total, totalOK, totalNG, totalEmpty, percentOK, percentNG, percentChartOk, percentChartNG, percentChartEmpty);
+                    await _hubContext.Clients.All.SendAsync("UpdateQuantity", totalTray, total, totalOK, totalNG, totalEmpty, percentOK, percentNG, percentChartOk, percentChartNG, percentChartEmpty);
 
                     //nếu lớn hơn target => gửi cho client hiển thị thông báo
-                    //if (total >= 2000)
-                    //{
-                    //    await _hubContext.Clients.All.SendAsync("AlertEnoughQuantity");
-                    //    Global.controlPLC.AlertEnoughQuantity(true);
-                    //}
+                    if (total >= 2000)
+                    {
+                        await _hubContext.Clients.All.SendAsync("AlertEnoughQuantity");
+                        Global.controlPLC.AlertEnoughQuantity(true);
+                    }
                 }
 
                 return Ok();

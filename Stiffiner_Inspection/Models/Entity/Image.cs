@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Stiffiner_Inspection.Models.Entity
 {
@@ -17,6 +18,7 @@ namespace Stiffiner_Inspection.Models.Entity
         [Column("path"), MaxLength(255)]
         public string? Path { get; set; } = string.Empty;
 
+        [JsonIgnore]
         public Data? Data { get; set; }
     }
 }
