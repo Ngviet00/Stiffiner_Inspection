@@ -7,7 +7,6 @@ using Stiffiner_Inspection.Hubs;
 using System.Globalization;
 using CsvHelper;
 using log4net;
-using System.Linq;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -367,9 +366,24 @@ namespace Stiffiner_Inspection.Services
             }
         }
 
-        public async Task<int> GetCurrentTray(long currtarget)
+        public async Task<int> GetcurrTray(long currtarget)
         {
-            return 0;
+            int currTray = 0;
+            int maxTray = await _dbContext.Data.Where(x => x.TargetId == currtarget).OrderByDescending(x => x.Tray).Select(x => x.Tray).FirstOrDefaultAsync();
+
+            var total = await _dbContext.Data
+            .Where(d => d.TargetId == currtarget && d.ResultArea != null && d.ResultLine != null && d.Tray == maxTray)
+            .CountAsync();
+
+            if (total >= 40)
+            {
+                maxTray++;
+            }
+            else
+            {
+                currTray = maxTray;
+            }
+            return currTray;
         }
 
         public async Task<List<Data>> GetHistory()
@@ -380,6 +394,7 @@ namespace Stiffiner_Inspection.Services
                     .OrderByDescending(e => e.Id)
                     .ThenBy(e => e.Index)
                     .Include(p => p.Errors)
+                    .Include(p => p.Images)
                     .ToListAsync();
             } 
             catch (Exception ex)

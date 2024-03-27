@@ -30,7 +30,9 @@ namespace Stiffiner_Inspection.Controllers
         {
             long currtarget = await _dataService.GetCurrentTargetID();
             Global.currentTargetId = (int) currtarget;
+            ViewBag.currentTargetId = Global.currentTargetId;
 
+            ViewBag.currentTray = await _dataService.GetcurrTray(Global.currentTargetId);
             //Global.controlPLC.Connect();
 
             //Thread read value plc

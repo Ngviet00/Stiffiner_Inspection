@@ -165,7 +165,7 @@ $(function () {
         }, 3500)
     });
 
-    //plc reset
+    //event plc reset
     connection.on("PLCReset", async (value) => {
         if (value == 1 && resetPLC == 1) {
             let number = $('.lbl-number').html();
@@ -180,7 +180,7 @@ $(function () {
         }
     });
 
-    //update quantity
+    //event update quantity
     connection.on("UpdateQuantity", function (totalTray, total, totalOK, totalNG, totalEmpty, percentOK, percentNG, percentChartOk, percentChartNG, percentChartEmpty) {
         $('#total-tray-ea').html(totalTray);
         $('#total-ea').html(`${total}<span class="">EA</span>`);
@@ -196,6 +196,7 @@ $(function () {
         myPieChart.update('none');
     });
 
+    //event alert enough quantity
     connection.on("AlertEnoughQuantity", function () {
         alert('enough');
     })
@@ -351,7 +352,6 @@ $(function () {
     var ctx = document.getElementById('pie-chart').getContext('2d');
 
     var valueChart = document.getElementById('data-chart-percent');
-    var labels = []
     var values = [
         parseFloat(valueChart.getAttribute('data-percent-chart-ok')),
         parseFloat(valueChart.getAttribute('data-percent-chart-ng')),
