@@ -377,7 +377,7 @@ namespace Stiffiner_Inspection.Services
 
             if (total >= 40)
             {
-                maxTray++;
+                currTray = maxTray++;
             }
             else
             {
