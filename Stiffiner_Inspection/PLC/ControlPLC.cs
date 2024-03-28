@@ -18,11 +18,12 @@ namespace Stiffiner_Inspection
         private const string REG_PLC_Read_STATUS = "D20";
         private const string REG_PLC_RefeshData = "M2010";
         private const string REG_PLC_EndInspection = "M2008";
+        private const string REG_PLC_VisionDoneInspection = "M240";
 
         // Register Write
         private const string REG_PLC_Write = "D";
         private const int REG_PLC_Start = 900;
-        private const string REG_Vision_Bussy = "M240";
+        private const string REG_Vision_Bussy = "M420";
         private const string REG_ENOUGH_QUANTITY= "M250"; //để tạm thời m250
 
         private bool isStart = false;
@@ -97,7 +98,12 @@ namespace Stiffiner_Inspection
                     Global.currentTrayRight.Clear();
                     Global.currentTray++;
 
+                    Global._currentTray.Clear();
+
+
                     Global.fileNameCSV = "MAY_1_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "_Stiffiner.csv";
+
+                    Global.countSendPLC = 1;
 
                     TurnOnLightControl();
                     isStartHistory = true;
@@ -147,6 +153,7 @@ namespace Stiffiner_Inspection
         public void WriteDataToRegister(int data, int index)
         {
             _plc.WriteDeviceBlock(GetWriteRegisterByIndex(index), 1, data);
+            Global.countSendPLC++;
         }
 
         private string GetWriteRegisterByIndex(int index)
@@ -193,6 +200,11 @@ namespace Stiffiner_Inspection
             //busy = 1, ready 0
             int data = status ? 0 : 1;
             _plc.SetDevice(REG_Vision_Bussy, data);
+        }
+
+        public void VisionDoneIns()
+        {
+            _plc.SetDevice(REG_PLC_VisionDoneInspection, 1); // DA Inspection xong
         }
 
         public void AlertEnoughQuantity(bool status)

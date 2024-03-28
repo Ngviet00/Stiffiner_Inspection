@@ -199,42 +199,104 @@ namespace Stiffiner_Inspection.Services
             //nếu client = 1 => 2, 2 => 1, 3 => 4 và ngược lại
             var clientIdPair = GetClientIdPair(dataDTO);
 
-            if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2)
+
+            Global._currentTray.Add(dataDTO);
+            //if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2)
+            //{
+            //    //client 1, 2 thêm vào tray left
+            //    Global.currentTrayLeft.Add(dataDTO);
+
+            //    //tìm kiếm nếu có đủ area và line
+
+            //    //var exist = Global.currentTrayLeft.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index);
+
+            //    //if (exist is not null)
+            //    //{
+            //    //    //lấy result, index và gửi cho PLC
+            //    //    var rs = GetResult(dataDTO.result, exist.result);
+            //    //    var position = GetPosition(exist.index, dataDTO.client_id);
+            //    //    Global.controlPLC.WriteDataToRegister(rs, position);
+
+            //    //    if (Global.countSendPLC == 40)
+            //    //    {
+            //    //        Global.controlPLC.VisionDoneIns();
+            //    //    }
+            //    //    _logger.Error("get result plc: rs-" + rs + "-position: " + position);
+
+            //    //    await ExportDataToCsvRow(dataDTO, exist);
+            //    //}
+            //}
+            //else
+            //{
+            //    //client 3, 4 thêm vào tray right
+            //    Global.currentTrayRight.Add(dataDTO);
+
+            //    ////tìm kiếm nếu có đủ area và line
+            //    //var exist = Global.currentTrayRight.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index);
+
+            //    //if (exist is not null)
+            //    //{
+            //    //    //lấy result, index và gửi cho PLC
+            //    //    var rs = GetResult(dataDTO.result, exist.result);
+            //    //    var position = GetPosition(exist.index, dataDTO.client_id);
+            //    //    Global.controlPLC.WriteDataToRegister(rs, position);
+
+            //    //    if (Global.countSendPLC == 40)
+            //    //    {
+            //    //        Global.controlPLC.VisionDoneIns();
+            //    //    }
+            //    //    _logger.Error("get result plc: rs-" + rs + "-position: " + position);
+
+            //    //    await ExportDataToCsvRow(dataDTO, exist);
+            //    //}
+            //}
+
+            if (Global._currentTray.Count == 80)
             {
-                //client 1, 2 thêm vào tray left
-                Global.currentTrayLeft.Add(dataDTO);
-
-                //tìm kiếm nếu có đủ area và line
-                var exist = Global.currentTrayLeft.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index);
-
-                if (exist is not null)
+                foreach (var item in Global._currentTray)
                 {
-                    //lấy result, index và gửi cho PLC
-                    var rs = GetResult(dataDTO.result, exist.result);
-                    var position = GetPosition(exist.index, dataDTO.client_id);
-                    Global.controlPLC.WriteDataToRegister(rs, position);
-
-                    await ExportDataToCsvRow(dataDTO, exist);
+                    var _clientIdPair = GetClientIdPair((DataDTO)item);
+                    var _itemExist = Global._currentTray.Find(e => e.tray == Global.currentTray && e.client_id ==_clientIdPair && e.index == item.index && e.side == item.side);
+                    
+                    if (_itemExist is not null)
+                    {
+                        var _rs = GetResult(_itemExist.result, item.result);
+                        var _position = GetPosition(item.index, item.client_id);
+                        Global.controlPLC.WriteDataToRegister(_rs, _position);
+                        _logger.Error("Test_plc_result: " + _rs + ", position: " + _position);
+                    } 
                 }
+
+                Global.controlPLC.VisionDoneIns();
             }
-            else
-            {
-                //client 3, 4 thêm vào tray right
-                Global.currentTrayRight.Add(dataDTO);
 
-                //tìm kiếm nếu có đủ area và line
-                var exist = Global.currentTrayRight.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index);
+            //if (Global.currentTrayLeft.Count == 40)
+            //{
+            //    foreach(var item in Global.currentTrayLeft)
+            //    {
+            //        var _rs = 1;
+            //        var _position = 1;
+            //        Global.controlPLC.
 
-                if (exist is not null)
-                {
-                    //lấy result, index và gửi cho PLC
-                    var rs = GetResult(dataDTO.result, exist.result);
-                    var position = GetPosition(exist.index, dataDTO.client_id);
-                    Global.controlPLC.WriteDataToRegister(rs, position);
 
-                    await ExportDataToCsvRow(dataDTO, exist);
-                }
-            }
+            //        var _clientIdPair = GetClientIdPair(item);
+
+
+
+            //        var exist = Global.currentTrayLeft.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index);
+            //        var rs = GetResult(dataDTO.result, exist.result);
+            //        var position = GetPosition(exist.index, dataDTO.client_id);
+            //        Global.controlPLC.WriteDataToRegister(rs, position);
+            //    }
+            //}
+
+
+
+            //if (Global.currentTrayLeft.Count == 40 && Global.currentTrayRight.Count == 40)
+            //{
+            //    _logger.Error("vision_done");
+                
+            //}
         }
 
         public async Task<long> GetCurrentTargetID()
