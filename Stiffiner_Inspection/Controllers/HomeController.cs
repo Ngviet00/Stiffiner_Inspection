@@ -33,7 +33,7 @@ namespace Stiffiner_Inspection.Controllers
             ViewBag.currentTargetId = Global.currentTargetId;
 
             ViewBag.currentTray = await _dataService.GetcurrTray(Global.currentTargetId);
-            //Global.controlPLC.Connect();
+            Global.controlPLC.Connect();
 
             //Thread read value plc
             Thread threadValuePLC = new Thread(GetValuePLC);

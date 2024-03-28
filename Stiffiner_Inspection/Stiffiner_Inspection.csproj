@@ -57,7 +57,7 @@
 
 	<ItemGroup>
 	  <Reference Include="Interop.ActUtlType64Lib">
-	    <HintPath>C:\Users\Admin\Desktop\Interop.ActUtlType64Lib.dll</HintPath>
+	    <HintPath>PLC\Interop.ActUtlType64Lib.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 

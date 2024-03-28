@@ -242,6 +242,7 @@ namespace Stiffiner_Inspection.Services
             try
             {
                 return await _dbContext.Targets
+                .AsNoTracking()
                 .OrderByDescending(t => t.TargetId)
                 .Select(t => t.TargetId)
                 .FirstOrDefaultAsync();
@@ -261,6 +262,7 @@ namespace Stiffiner_Inspection.Services
                 int targetQty = 0;
 
                 var target = await _dbContext.Targets
+                    .AsNoTracking()
                     .Where(t => t.TargetId == currTargetid)
                     .Select(t => t.Target_qty)
                     .FirstOrDefaultAsync();
@@ -284,6 +286,7 @@ namespace Stiffiner_Inspection.Services
             try
             {
                 return await _dbContext.Data
+                 .AsNoTracking()
                  .Where(d => d.TargetId == targetId &&
                              d.ResultArea != null && d.ResultArea != EMPTY &&
                              d.ResultLine != null && d.ResultLine != EMPTY)
@@ -302,21 +305,20 @@ namespace Stiffiner_Inspection.Services
         {
             try
             {
-                return await _dbContext.Data.Where(d => d.TargetId == currtarget).Select(d => d.Tray).Distinct().CountAsync();
+                return await _dbContext.Data.AsNoTracking().Where(d => d.TargetId == currtarget).Select(d => d.Tray).Distinct().CountAsync();
             }
             catch (Exception ex)
             {
                 _logger.Error("Error Get Total Tray: " + ex.Message);
                 return 0;
             }
-
         }
 
         public async Task<int> GetTotalEmpty(long currtarget)
         {
             try
             {
-                return await _dbContext.Data
+                return await _dbContext.Data.AsNoTracking()
               .Where(d => d.TargetId == currtarget &&
                d.ResultArea != null &&
                d.ResultLine != null && (d.ResultArea == EMPTY || d.ResultLine == EMPTY))
@@ -335,7 +337,7 @@ namespace Stiffiner_Inspection.Services
         {
             try
             {
-                return await _dbContext.Data
+                return await _dbContext.Data.AsNoTracking()
                   .Where(d => d.TargetId == currtarget && d.ResultArea == OK && d.ResultLine == OK && d.ResultArea != null && d.ResultLine != null)
                   .GroupBy(d => d.TargetId)
                   .Select(g => g.Count())
@@ -352,7 +354,7 @@ namespace Stiffiner_Inspection.Services
         {
             try
             {
-                return await _dbContext.Data
+                return await _dbContext.Data.AsNoTracking()
                 .Where(d => d.TargetId == currtarget && d.ResultArea != null && d.ResultLine != null &&
                             ((d.ResultArea == NG && d.ResultLine != EMPTY) || (d.ResultLine == NG && d.ResultArea != EMPTY)))
                 .GroupBy(d => d.TargetId)
@@ -369,7 +371,7 @@ namespace Stiffiner_Inspection.Services
         public async Task<int> GetcurrTray(long currtarget)
         {
             int currTray = 0;
-            int maxTray = await _dbContext.Data.Where(x => x.TargetId == currtarget).OrderByDescending(x => x.Tray).Select(x => x.Tray).FirstOrDefaultAsync();
+            int maxTray = await _dbContext.Data.AsNoTracking().Where(x => x.TargetId == currtarget).OrderByDescending(x => x.Tray).Select(x => x.Tray).FirstOrDefaultAsync();
 
             var total = await _dbContext.Data
             .Where(d => d.TargetId == currtarget && d.ResultArea != null && d.ResultLine != null && d.Tray == maxTray)
@@ -390,11 +392,12 @@ namespace Stiffiner_Inspection.Services
         {
             try
             {
-                return await _dbContext.Data
+                return await _dbContext.Data.AsNoTracking()
                     .OrderByDescending(e => e.Id)
                     .ThenBy(e => e.Index)
                     .Include(p => p.Errors)
                     .Include(p => p.Images)
+                    .Take(500)
                     .ToListAsync();
             } 
             catch (Exception ex)
@@ -444,6 +447,11 @@ namespace Stiffiner_Inspection.Services
             string directoryPath = Global.directoryPath;
             string fileName = Global.fileNameCSV;
             string filePath = Path.Combine(directoryPath, fileName);
+
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
 
             try
             {

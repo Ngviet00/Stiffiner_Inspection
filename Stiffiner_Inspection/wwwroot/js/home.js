@@ -104,7 +104,7 @@ $(function () {
     connection.on("ChangeStatusPLC", (status) => {
         let _status = $('#value-plc-status');
         let _message = $('#error-plc-status')
-        
+
         status === STATUS_PLC.ALARM ? _message.removeClass('d-none') : _message.addClass('d-none');
 
         if (status === STATUS_PLC.DISCONNECTED) {
@@ -175,6 +175,19 @@ $(function () {
             resetPLC++;
             resetCurrentTray();
             appendPreviousTray();
+
+            //clear log
+            $('#time-log table tbody').html(`
+                <tr class="time-log-no-data">
+                    <td colspan="12" class="w-100 text-lg-center text-dark fw-bold mt-1" style="font-size: 14px;">No data</td>
+                </tr>
+            `)
+
+            $('#result-log table tbody').html(`
+                <tr class="result-log-no-data">
+                    <td colspan="12" class="w-100 text-lg-center text-dark fw-bold mt-1" style="font-size: 14px;">No data</td>
+                </tr>
+            `)
         } else {
             resetPLC = 1;
         }
@@ -202,13 +215,12 @@ $(function () {
     })
 
     function appendPreviousTray() {
-
         let client1 = "";
         let client2 = "";
         let client3 = "";
         let client4 = "";
 
-        if (previousTray.length == 80) {
+        if (previousTray.length > 0) {
             previousTray.forEach(item => {
                 if (item.client_id == 1) {
                     client1 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
@@ -318,7 +330,7 @@ $(function () {
                 <td>${data.index}</td>
                 <td class="text-capitalize">${data.camera}</td>
                 <td class="status-item ${data.result === 1 ? "text-success" : "text-danger"}">
-                    ${data.result == 1 ? "OK" : (data.result == 2 ? "NG" : (data.result == 3 ? "EMPTY" : "")) }
+                    ${data.result == 1 ? "OK" : (data.result == 2 ? "NG" : (data.result == 3 ? "EMPTY" : ""))}
                 </td>
                 <td class="detail-error">${data.error ?? "-"}</td>
             </tr>
@@ -414,32 +426,34 @@ $(function () {
     });
 
     //test reset all data
-    $('.btn-apply-target').click(function () {
-        $('#time-log table tbody').html(`
-            <tr class="time-log-no-data">
-                <td colspan="12" class="w-100 text-lg-center text-dark fw-bold mt-1" style="font-size: 14px;">No data</td>
-            </tr>
-        `)
+    //$('.btn-apply-target').click(function () {
+    //    $('#time-log table tbody').html(`
+    //        <tr class="time-log-no-data">
+    //            <td colspan="12" class="w-100 text-lg-center text-dark fw-bold mt-1" style="font-size: 14px;">No data</td>
+    //        </tr>
+    //    `)
 
-        $('#result-log table tbody').html(`
-            <tr class="result-log-no-data">
-                <td colspan="12" class="w-100 text-lg-center text-dark fw-bold mt-1" style="font-size: 14px;">No data</td>
-            </tr>
-        `)
+    //    $('#result-log table tbody').html(`
+    //        <tr class="result-log-no-data">
+    //            <td colspan="12" class="w-100 text-lg-center text-dark fw-bold mt-1" style="font-size: 14px;">No data</td>
+    //        </tr>
+    //    `)
 
-        resetCurrentTray()
-        resetPreviousTray()
+    //    resetCurrentTray()
+    //    resetPreviousTray()
 
-        $('#total-tray-ea').html(0);
-        $('#total-ea').html(`0<span class="">EA</span>`);
-        $('#total-ok-ea').html(`0<span class="">EA</span>`);
-        $('#total-ng-ea').html(`0<span class="">EA</span>`);
-        $('#total-empty-ea').html(`0<span class="">EA</span>`);
+    //    $('#total-tray-ea').html(0);
+    //    $('#total-ea').html(`0<span class="">EA</span>`);
+    //    $('#total-ok-ea').html(`0<span class="">EA</span>`);
+    //    $('#total-ng-ea').html(`0<span class="">EA</span>`);
+    //    $('#total-empty-ea').html(`0<span class="">EA</span>`);
 
-        $('#percent-ok').html(`0 %`);
-        $('#percent-ng').html(`0 %`);
+    //    $('#percent-ok').html(`0 %`);
+    //    $('#percent-ng').html(`0 %`);
 
-        myPieChart.data.datasets[0].data = [100];
-        myPieChart.update('none');
-    })
+    //    myPieChart.data.datasets[0].data = [100];
+    //    myPieChart.update('none');
+
+    //    appendPreviousTray();
+    //})
 });

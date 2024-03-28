@@ -109,12 +109,11 @@
 
         const lengthArr = data.length;
 
-        console.log(lengthArr);
         if (data.length > 0) {
             renderTray(data[0]);
         }
 
-        /*number - current - tray*/
+        $('#number-current-tray').html(lengthArr);
 
         function showItem(item, key) {
             let data = JSON.parse(decodeURIComponent(item))
@@ -200,6 +199,10 @@
         });
 
         $('.btn-previous-tray').click(function () {
+            if (lengthArr.length == 0) {
+                return;
+            }
+
             if (currentTray <= MIN_TRAY) {
                 return;
             }
