@@ -72,7 +72,7 @@ namespace Stiffiner_Inspection.Controllers
 
             ViewBag.PercentChartOK = _dataService.CalculateChartOK(allOK, total, allEMPTY);
             ViewBag.PercentChartNG = _dataService.CalculateChartOK(allNG, total, allEMPTY);
-            ViewBag.PercentChartEmpty = total == 0 ? 0 : Math.Round(PERCENT - ViewBag.PercentChartNG - ViewBag.PercentChartOK, 1);
+            ViewBag.PercentChartEmpty = total == 0 ? 0 : Math.Round(PERCENT - ViewBag.PercentChartNG - ViewBag.PercentChartOK, 2);
 
             return View();
         }

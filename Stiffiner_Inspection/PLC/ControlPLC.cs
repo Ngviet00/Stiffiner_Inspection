@@ -102,13 +102,9 @@ namespace Stiffiner_Inspection
                     Global.currentTrayLeft.Clear();
                     Global.currentTrayRight.Clear();
                     Global.currentTray++;
-
                     Global._currentTray.Clear();
 
-
-                    Global.fileNameCSV = "MAY_1_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "_Stiffiner.csv";
-
-                    Global.countSendPLC = 1;
+                    Global.fileNameCSV = "MAY_1_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + "_Stiffiner.csv";
 
                     TurnOnLightControl();
                     isStartHistory = true;
@@ -158,7 +154,6 @@ namespace Stiffiner_Inspection
         public void WriteDataToRegister(int data, int index)
         {
             _plc.WriteDeviceBlock(GetWriteRegisterByIndex(index), 1, data);
-            Global.countSendPLC++;
         }
 
         private string GetWriteRegisterByIndex(int index)

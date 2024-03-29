@@ -62,14 +62,14 @@ namespace Stiffiner_Inspection.Controllers
                     await _hubContext.Clients.All.SendAsync("UpdateQuantity", totalTray, total, totalOK, totalNG, totalEmpty, percentOK, percentNG, percentChartOk, percentChartNG, percentChartEmpty);
 
                     //nếu lớn hơn target => gửi cho client hiển thị thông báo
-                    if (total >= 2000)
-                    {
-                        await _hubContext.Clients.All.SendAsync("AlertEnoughQuantity");
-                        Global.controlPLC.AlertEnoughQuantity(true);
-                    }
+                    //if (total >= 2000)
+                    //{
+                    //    await _hubContext.Clients.All.SendAsync("AlertEnoughQuantity");
+                    //    Global.controlPLC.AlertEnoughQuantity(true);
+                    //}
                 }
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {

@@ -35,8 +35,6 @@ namespace Stiffiner_Inspection
         public static string directoryPath = @"D:\Export_Result";
         public static string fileNameCSV = "test.csv";
 
-        public static int countSendPLC { get; set; } = 1;
-
         public static List<DataDTO> _currentTray = new List<DataDTO>();
     }
 }

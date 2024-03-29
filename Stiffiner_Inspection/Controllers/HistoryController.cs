@@ -20,7 +20,7 @@ namespace Stiffiner_Inspection.Controllers
                 .GroupBy(x => x.Tray)
                 .OrderByDescending(g => g.Key)
                 .Where(g => g.Count() >= 40)
-                .Take(4)
+                .Take(10)
                 .ToList();
 
             ViewBag.GroupedData = groupedData;

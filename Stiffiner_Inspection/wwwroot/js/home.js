@@ -168,10 +168,6 @@ $(function () {
     //event plc reset
     connection.on("PLCReset", async (value) => {
         if (value == 1 && resetPLC == 1) {
-            let number = $('.lbl-number').html();
-            number = parseInt(number) + 1;
-            $('.lbl-number').html(number);
-
             resetPLC++;
             resetCurrentTray();
             appendPreviousTray();
@@ -371,7 +367,7 @@ $(function () {
     ];
 
     if (values[0] == 0 && values[1] == 0 && values[2] == 0) {
-        values = [100]
+        values = [100, 0, 0]
     }
 
     var myPieChart = new Chart(ctx, {

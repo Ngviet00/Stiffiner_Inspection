@@ -199,57 +199,38 @@ namespace Stiffiner_Inspection.Services
             //nếu client = 1 => 2, 2 => 1, 3 => 4 và ngược lại
             var clientIdPair = GetClientIdPair(dataDTO);
 
-
             Global._currentTray.Add(dataDTO);
-            //if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2)
-            //{
-            //    //client 1, 2 thêm vào tray left
-            //    Global.currentTrayLeft.Add(dataDTO);
 
-            //    //tìm kiếm nếu có đủ area và line
+            if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2)
+            {
+                //client 1, 2 thêm vào tray left
+                Global.currentTrayLeft.Add(dataDTO);
 
-            //    //var exist = Global.currentTrayLeft.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index);
+                //tìm kiếm nếu có đủ area và line
+                var exist = Global.currentTrayLeft.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index && e.side == dataDTO.side);
 
-            //    //if (exist is not null)
-            //    //{
-            //    //    //lấy result, index và gửi cho PLC
-            //    //    var rs = GetResult(dataDTO.result, exist.result);
-            //    //    var position = GetPosition(exist.index, dataDTO.client_id);
-            //    //    Global.controlPLC.WriteDataToRegister(rs, position);
+                if (exist is not null)
+                {
+                    await ExportDataToCsvRow(dataDTO, exist);
+                }
+            }
+            else
+            {
+                //client 3, 4 thêm vào tray right
+                Global.currentTrayRight.Add(dataDTO);
 
-            //    //    if (Global.countSendPLC == 40)
-            //    //    {
-            //    //        Global.controlPLC.VisionDoneIns();
-            //    //    }
-            //    //    _logger.Error("get result plc: rs-" + rs + "-position: " + position);
+                //tìm kiếm nếu có đủ area và line
+                var exist = Global.currentTrayRight.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index && e.side == dataDTO.side);
 
-            //    //    await ExportDataToCsvRow(dataDTO, exist);
-            //    //}
-            //}
-            //else
-            //{
-            //    //client 3, 4 thêm vào tray right
-            //    Global.currentTrayRight.Add(dataDTO);
+                if (exist is not null)
+                {
+                    await ExportDataToCsvRow(dataDTO, exist);
+                }
+                //calculate
+                //send
+            }
 
-            //    ////tìm kiếm nếu có đủ area và line
-            //    //var exist = Global.currentTrayRight.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index);
-
-            //    //if (exist is not null)
-            //    //{
-            //    //    //lấy result, index và gửi cho PLC
-            //    //    var rs = GetResult(dataDTO.result, exist.result);
-            //    //    var position = GetPosition(exist.index, dataDTO.client_id);
-            //    //    Global.controlPLC.WriteDataToRegister(rs, position);
-
-            //    //    if (Global.countSendPLC == 40)
-            //    //    {
-            //    //        Global.controlPLC.VisionDoneIns();
-            //    //    }
-            //    //    _logger.Error("get result plc: rs-" + rs + "-position: " + position);
-
-            //    //    await ExportDataToCsvRow(dataDTO, exist);
-            //    //}
-            //}
+            //if
 
             if (Global._currentTray.Count == 80)
             {
@@ -263,41 +244,11 @@ namespace Stiffiner_Inspection.Services
                         var _rs = GetResult(_itemExist.result, item.result);
                         var _position = GetPosition(item.index, item.client_id);
                         Global.controlPLC.WriteDataToRegister(_rs, _position);
-                        
-                        await ExportDataToCsvRow(item, _itemExist);
                     } 
                 }
 
                 Global.controlPLC.VisionDoneIns();
             }
-
-            //if (Global.currentTrayLeft.Count == 40)
-            //{
-            //    foreach(var item in Global.currentTrayLeft)
-            //    {
-            //        var _rs = 1;
-            //        var _position = 1;
-            //        Global.controlPLC.
-
-
-            //        var _clientIdPair = GetClientIdPair(item);
-
-
-
-            //        var exist = Global.currentTrayLeft.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index);
-            //        var rs = GetResult(dataDTO.result, exist.result);
-            //        var position = GetPosition(exist.index, dataDTO.client_id);
-            //        Global.controlPLC.WriteDataToRegister(rs, position);
-            //    }
-            //}
-
-
-
-            //if (Global.currentTrayLeft.Count == 40 && Global.currentTrayRight.Count == 40)
-            //{
-            //    _logger.Error("vision_done");
-                
-            //}
         }
 
         public async Task<long> GetCurrentTargetID()
@@ -456,8 +407,7 @@ namespace Stiffiner_Inspection.Services
             try
             {
                 return await _dbContext.Data.AsNoTracking()
-                    .OrderByDescending(e => e.Id)
-                    .ThenBy(e => e.Index)
+                    .OrderBy(e => e.Id)
                     .Include(p => p.Errors)
                     .Include(p => p.Images)
                     .Take(500)
@@ -472,17 +422,17 @@ namespace Stiffiner_Inspection.Services
 
         public double CalculateChartOK(int totalOK, double total, int totalEmpty)
         {
-            return total == 0 ? 0 : Math.Round(totalOK / (total + totalEmpty) * PERCENT, 1);
+            return total == 0 ? 0 : Math.Round(totalOK / (total + totalEmpty) * PERCENT, 2);
         }
 
         public double CalculateChartNG(int totalNG, double total, int totalEmpty)
         {
-            return total == 0 ? 0 : Math.Round(totalNG / (total + totalEmpty) * PERCENT, 1);
+            return total == 0 ? 0 : Math.Round(totalNG / (total + totalEmpty) * PERCENT, 2);
         }
 
         public double CalculateChartEmpty(double total, double percentNG, double percentOK)
         {
-            return total == 0 ? 0 : Math.Round(100 - percentNG - percentOK, 1);
+            return total == 0 ? 0 : Math.Round(100 - percentNG - percentOK, 2);
         }
 
         public async Task ExportDataToCsvRow(DataDTO dataDTO, DataDTO exist)
@@ -529,9 +479,6 @@ namespace Stiffiner_Inspection.Services
                     }
                     csv.WriteRecord(data);
                     await csv.NextRecordAsync();
-
-                    //count tray left = 40 and tray right = 40
-                    //send ftp cho ERP dongyang
                 }
             }
             catch (Exception ex)
