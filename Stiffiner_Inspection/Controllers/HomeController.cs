@@ -32,8 +32,11 @@ namespace Stiffiner_Inspection.Controllers
             Global.currentTargetId = (int) currtarget;
             ViewBag.currentTargetId = Global.currentTargetId;
 
-            ViewBag.currentTray = await _dataService.GetcurrTray(Global.currentTargetId);
-            Global.controlPLC.Connect();
+            int currentTrayId = await _dataService.GetcurrTray(Global.currentTargetId);
+            ViewBag.currentTray = currentTrayId;
+            Global.currentTray = currentTrayId;
+
+            //Global.controlPLC.Connect();
 
             //Thread read value plc
             Thread threadValuePLC = new Thread(GetValuePLC);
@@ -90,6 +93,14 @@ namespace Stiffiner_Inspection.Controllers
                 await _hubContext.Clients.All.SendAsync("ChangeStatusPLC", Global.valuePLC);
                 Thread.Sleep(timeSleep);
             }
+        }
+
+        public IActionResult ClearData()
+        {
+            Global.controlPLC.Disconneted();
+            return Ok(new {
+                clear = "success"
+            });
         }
     }
 }

@@ -263,7 +263,8 @@ namespace Stiffiner_Inspection.Services
                         var _rs = GetResult(_itemExist.result, item.result);
                         var _position = GetPosition(item.index, item.client_id);
                         Global.controlPLC.WriteDataToRegister(_rs, _position);
-                        _logger.Error("Test_plc_result: " + _rs + ", position: " + _position);
+                        
+                        await ExportDataToCsvRow(item, _itemExist);
                     } 
                 }
 

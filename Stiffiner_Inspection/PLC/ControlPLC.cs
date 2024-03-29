@@ -65,6 +65,11 @@ namespace Stiffiner_Inspection
             }
         }
 
+        public void Disconneted()
+        {
+            _plc.Close();
+        }
+
         private void ReadDataFromRegister()
         {
             while (!isExist)
@@ -163,32 +168,46 @@ namespace Stiffiner_Inspection
 
         public void TurnOnLightControl()
         {
-            SerialPort lightControl1 = new SerialPort("COM4", 115200);
-            SerialPort lightControl2 = new SerialPort("COM5", 115200);
+            try
+            {
+                SerialPort lightControl1 = new SerialPort("COM4", 115200);
+                SerialPort lightControl2 = new SerialPort("COM5", 115200);
 
-            lightControl1.Open();
-            lightControl2.Open();
+                lightControl1.Open();
+                lightControl2.Open();
 
-            lightControl1.WriteLine("@SI00/255/255/255/255");
-            lightControl2.WriteLine("@SI00/255/255/255/255");
+                lightControl1.WriteLine("@SI00/255/255/255/255");
+                lightControl2.WriteLine("@SI00/255/255/255/255");
 
-            lightControl1.Close();
-            lightControl2.Close();
+                lightControl1.Close();
+                lightControl2.Close();
+            } catch (Exception ex)
+            {
+                _logger.Error("Cannot turn on light control: " + ex.Message);
+            }
+            
         }
 
         public void TurnOffLightControl()
         {
-            SerialPort lightControl1 = new SerialPort("COM4", 115200);
-            SerialPort lightControl2 = new SerialPort("COM5", 115200);
+            try
+            {
+                SerialPort lightControl1 = new SerialPort("COM4", 115200);
+                SerialPort lightControl2 = new SerialPort("COM5", 115200);
 
-            lightControl1.Open();
-            lightControl2.Open();
+                lightControl1.Open();
+                lightControl2.Open();
 
-            lightControl1.WriteLine("@SI00/0/0/0/0");
-            lightControl2.WriteLine("@SI00/0/0/0/0");
+                lightControl1.WriteLine("@SI00/0/0/0/0");
+                lightControl2.WriteLine("@SI00/0/0/0/0");
 
-            lightControl1.Close();
-            lightControl2.Close();
+                lightControl1.Close();
+                lightControl2.Close();
+            } catch (Exception ex)
+            {
+                _logger.Error("Cannot turn off the light: " + ex.Message);
+            }
+            
         }
 
         private bool IsCheckBit(char value)

@@ -106,7 +106,7 @@
         const MIN_TRAY = 1;
         var currentTray = 10;
         const data = @Html.Raw(Json.Serialize(ViewBag.GroupedData));
-
+        console.log(11, data);
         const lengthArr = data.length;
 
         if (data.length > 0) {
