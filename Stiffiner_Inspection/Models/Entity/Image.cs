@@ -18,6 +18,9 @@ namespace Stiffiner_Inspection.Models.Entity
         [Column("path"), MaxLength(255)]
         public string? Path { get; set; } = string.Empty;
 
+        [Column("client_id", TypeName = "int")]
+        public int ClientId { get; set; }
+
         [JsonIgnore]
         public Data? Data { get; set; }
     }

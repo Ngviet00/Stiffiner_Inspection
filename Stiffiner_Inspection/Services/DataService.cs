@@ -7,6 +7,9 @@ using Stiffiner_Inspection.Hubs;
 using System.Globalization;
 using CsvHelper;
 using log4net;
+using System.Net;
+using Stiffiner_Inspection.Models.Response;
+using Newtonsoft.Json;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -53,7 +56,7 @@ namespace Stiffiner_Inspection.Services
                 if (dataDTO.result == NG)
                 {
                     //save image
-                    await SaveImage(existEntity, dataDTO.image);
+                    await SaveImage(existEntity, dataDTO);
 
                     //save error
                     await SaveError(existEntity, dataDTO.error);
@@ -97,7 +100,7 @@ namespace Stiffiner_Inspection.Services
                 if (dataDTO.result == NG)
                 {
                     //save image
-                    await SaveImage(data, dataDTO.image);
+                    await SaveImage(data, dataDTO);
 
                     //save error
                     await SaveError(data, dataDTO.error);
@@ -112,11 +115,11 @@ namespace Stiffiner_Inspection.Services
             return dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2 ? dataDTO.index + 20 : dataDTO.index;
         }
 
-        private async Task SaveImage(Data data, string listImgs)
+        private async Task SaveImage(Data data, DataDTO dataDto)
         {
             List<Image> listImages = new List<Image>();
 
-            string[] imgs = listImgs.Split(',');
+            string[] imgs = dataDto.image.Split(',');
 
             foreach (string item in imgs)
             {
@@ -124,6 +127,7 @@ namespace Stiffiner_Inspection.Services
                 {
                     DataId = data.Id,
                     Path = item,
+                    ClientId = (int)dataDto.client_id
                 });
             }
 
@@ -237,14 +241,14 @@ namespace Stiffiner_Inspection.Services
                 foreach (var item in Global._currentTray)
                 {
                     var _clientIdPair = GetClientIdPair((DataDTO)item);
-                    var _itemExist = Global._currentTray.Find(e => e.tray == Global.currentTray && e.client_id ==_clientIdPair && e.index == item.index && e.side == item.side);
-                    
+                    var _itemExist = Global._currentTray.Find(e => e.tray == Global.currentTray && e.client_id == _clientIdPair && e.index == item.index && e.side == item.side);
+
                     if (_itemExist is not null)
                     {
                         var _rs = GetResult(_itemExist.result, item.result);
                         var _position = GetPosition(item.index, item.client_id);
                         Global.controlPLC.WriteDataToRegister(_rs, _position);
-                    } 
+                    }
                 }
 
                 Global.controlPLC.VisionDoneIns();
@@ -407,12 +411,12 @@ namespace Stiffiner_Inspection.Services
             try
             {
                 return await _dbContext.Data.AsNoTracking()
-                    .OrderBy(e => e.Id)
+                    .OrderBy(e => e.Index)
                     .Include(p => p.Errors)
                     .Include(p => p.Images)
-                    .Take(500)
+                    //.Take(500)
                     .ToListAsync();
-            } 
+            }
             catch (Exception ex)
             {
                 _logger.Error("Error Get List History: " + ex.Message);
@@ -485,6 +489,74 @@ namespace Stiffiner_Inspection.Services
             {
                 _logger.Error("Can not save to file CSV: " + ex.Message);
             }
+        }
+
+        public async Task<List<ImageResponse>> DownloadFile(List<Image> images)
+        {
+            try
+            {
+                List<ImageResponse> imgsResponse = new List<ImageResponse>();
+
+                string rootPath = @"D:\publish_image\images\";
+
+                using (var client = new WebClient())
+                {
+
+                    foreach (var item in images)
+                    {
+                        client.Credentials = new NetworkCredential("MS", "1");
+
+                        string filePathRemote = GetFilePathRemote(item.ClientId) + FormatUrlImage(item.Path);
+
+                        string fileName = DateTime.Now.ToString("HH_mm_ss_ff") + ".bmp";
+
+                        //string filePath = "";
+
+                        client.DownloadFile(filePathRemote, rootPath + fileName);
+
+                        imgsResponse.Add(new ImageResponse
+                        {
+                            client_id = item.ClientId,
+                            path = "https://192.168.1.55:8089/images/" + fileName
+                        });
+                    }
+
+                    return imgsResponse;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error cannot download file: " + ex.ToString());
+                return null;
+            }
+        }
+
+        public string GetFilePathRemote(int clientId)
+        {
+            switch (clientId)
+            {
+                case 1:
+                    return "file://192.168.1.11/ScreenCapture/";
+                case 2:
+                    return "file://192.168.1.22/ScreenCapture/";
+                case 3:
+                    return "file://192.168.1.33/ScreenCapture/";
+                case 4:
+                    return "file://192.168.1.44/ScreenCapture/";
+            }
+
+            return "";
+        }
+
+        public string FormatUrlImage(string? urlImage)
+        {
+            string filePath = @urlImage;
+
+            int startIndex = @"D:\SaveResults\ScreenCapture\".Length;
+
+            string subPath = filePath.Substring(startIndex);
+
+            return subPath.Replace('\\', '/');
         }
     }
 }

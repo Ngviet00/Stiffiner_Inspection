@@ -57,6 +57,8 @@ app.UseRouting();
 
 app.UseAuthorization();
 app.MapHub<HomeHub>("/homeHub");
+app.MapHub<HistoryHub>("/historyHub");
+
 
 app.MapControllerRoute(
     name: "default",
