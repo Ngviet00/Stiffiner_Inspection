@@ -493,7 +493,6 @@ namespace Stiffiner_Inspection.Services
                     .OrderBy(e => e.Index)
                     .Include(p => p.Errors)
                     .Include(p => p.Images)
-                    //.Take(500)
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -570,38 +569,52 @@ namespace Stiffiner_Inspection.Services
         //    }
         //}
 
-        public async Task<List<ImageResponse>> DownloadFile(List<Image> images)
+        public async Task<string> DownloadFile(List<Image> images)
         {
             try
             {
                 List<ImageResponse> imgsResponse = new List<ImageResponse>();
 
-                string rootPath = @"D:\publish_image\images\";
 
-                using (var client = new WebClient())
-                {
+                string imagePath = @"\\192.168.0.103\imgs\test_2.bmp";
 
-                    foreach (var item in images)
-                    {
-                        client.Credentials = new NetworkCredential("MS", "1");
+                string base64Image = GetBase64Image(imagePath);
 
-                        string filePathRemote = GetFilePathRemote(item.ClientId) + FormatUrlImage(item.Path);
+                return base64Image;
 
-                        string fileName = DateTime.Now.ToString("HH_mm_ss_ff") + ".bmp";
+                // Print base64 encoded image data
+                //Console.WriteLine(base64Image);
 
-                        //string filePath = "";
+                //return imgsResponse;
 
-                        client.DownloadFile(filePathRemote, rootPath + fileName);
 
-                        imgsResponse.Add(new ImageResponse
-                        {
-                            client_id = item.ClientId,
-                            path = "https://192.168.1.55:8089/images/" + fileName
-                        });
-                    }
 
-                    return imgsResponse;
-                }
+                //string rootPath = @"D:\publish_image\images\";
+
+                //using (var client = new WebClient())
+                //{
+
+                //    foreach (var item in images)
+                //    {
+                //        client.Credentials = new NetworkCredential("MS", "1");
+
+                //        string filePathRemote = GetFilePathRemote(item.ClientId) + FormatUrlImage(item.Path);
+
+                //        string fileName = DateTime.Now.ToString("HH_mm_ss_ff") + ".bmp";
+
+                //        //string filePath = "";
+
+                //        client.DownloadFile(filePathRemote, rootPath + fileName);
+
+                //        imgsResponse.Add(new ImageResponse
+                //        {
+                //            client_id = item.ClientId,
+                //            path = "https://192.168.1.55:8089/images/" + fileName
+                //        });
+                //    }
+
+                //    return imgsResponse;
+                //}
             }
             catch (Exception ex)
             {
@@ -610,21 +623,28 @@ namespace Stiffiner_Inspection.Services
             }
         }
 
-        public string GetFilePathRemote(int clientId)
+        static string GetBase64Image(string imagePath)
+        {
+            byte[] imageBytes = File.ReadAllBytes(imagePath);
+            return Convert.ToBase64String(imageBytes);
+        }
+
+        public string GetRemoteClient(int? clientId)
         {
             switch (clientId)
             {
                 case 1:
-                    return "file://192.168.1.11/ScreenCapture/";
+                    return @"192.168.0.103\";
+                    //return @"192.168.1.11\ScreenCapture\";
                 case 2:
-                    return "file://192.168.1.22/ScreenCapture/";
+                    return @"192.168.1.22\ScreenCapture\";
                 case 3:
-                    return "file://192.168.1.33/ScreenCapture/";
+                    return @"192.168.1.33\ScreenCapture\";
                 case 4:
-                    return "file://192.168.1.44/ScreenCapture/";
+                    return @"192.168.1.44\ScreenCapture\";
             }
 
-            return "";
+            return @"192.168.0.103\";
         }
 
         public string FormatUrlImage(string? urlImage)

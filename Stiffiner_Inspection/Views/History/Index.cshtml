@@ -37,7 +37,8 @@
                         </div>
 
                         <div class="error-image mt-4" id="err-image-area">
-                            @* <img src="https://192.168.0.103:8889/test.jpg" /> *@
+                            <img class="zoom-image" src="https://localhost:7006/api/v1/get-image" alt="Image" style="max-width: 100%; width: 200px"> <br/>
+                            <img class="zoom-image" src="https://localhost:7006/api/v1/get-image-1" alt="Image" style="max-width: 100%; width: 200px">
                         </div>
                     </div>
                     <div>
@@ -94,6 +95,23 @@
 </div>
 
 @section Scripts {
+    <script src="~/js/okzoom-1.0.min.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.zoom-image').okzoom({
+                width: 250,
+                height: 250,
+                background: "#fff",
+                backgroundRepeat: "repeat",
+                shadow: "0 0 5px #000",
+                border: "1px solid black",
+                scaleFactor: 2
+            });
+        });
+        
+    </script>
+
     <script src="~/lib/microsoft-signalr/signalr.min.js"></script>
 
     <script>
@@ -104,7 +122,15 @@
 
         connection.start()
             .then(() => {
-                console.log('Connection history established!')
+                console.log('Connection history established!');
+
+                // connection.invoke("DownloadFile", []).then((result) => {
+                //  console.log(result, 'download ok');
+
+                // }).catch(function (err) {
+                //     return console.error(err.toString());
+                // });
+
             })
             .catch((err) => {
                 console.error(err.toString())
@@ -162,43 +188,43 @@
                 }
                 $('.list-error').html(listErrs);
 
-                connection.invoke("DownloadFile", data.images).then((result) => {
+                // connection.invoke("DownloadFile", data.images).then((result) => {
                     
 
-                    console.log(result, 'download ok');
+                //     console.log(result, 'download ok');
 
-                    let imageArea = '';
-                    let imageLine = '';
+                //     let imageArea = '';
+                //     let imageLine = '';
 
-                    $('#err-image-area').html('')
-                    $('#err-image-line').html('')
+                //     $('#err-image-area').html('')
+                //     $('#err-image-line').html('')
 
-                    result.forEach(item => {
-                        if (item.client_id == 1 || item.client_id == 3) {
-                            var img = document.createElement('img');
-                            img.src = item.path;
-                            img.style.maxWidth = "100%";
-                            $('#err-image-area').append(img);
-                        } else {
-                            var img = document.createElement('img');
-                            img.src = item.path;
-                            img.style.maxWidth = "100%";
-                            $('#err-image-line').append(img);
-                        }
-                        console.log(11, item);
-                    });
+                //     // result.forEach(item => {
+                //     //     if (item.client_id == 1 || item.client_id == 3) {
+                //     //         var img = document.createElement('img');
+                //     //         img.src = item.path;
+                //     //         img.style.maxWidth = "100%";
+                //     //         $('#err-image-area').append(img);
+                //     //     } else {
+                //     //         var img = document.createElement('img');
+                //     //         img.src = item.path;
+                //     //         img.style.maxWidth = "100%";
+                //     //         $('#err-image-line').append(img);
+                //     //     }
+                //     //     console.log(11, item);
+                //     // });
 
-                    //D:\SaveResults\ScreenCapture\2024\3\30\NG\13_53_04_648.bmp
-                    // var img = document.createElement('img');
+                //     //D:\SaveResults\ScreenCapture\2024\3\30\NG\13_53_04_648.bmp
+                //     // var img = document.createElement('img');
 
-                    // img.src = result.path;
+                //     // img.src = result.path;
 
-                    // img.style.maxWidth = "100%";
+                //     // img.style.maxWidth = "100%";
 
-                    // $('#err-image-area').html('').append(img);
-                }).catch(function (err) {
-                    return console.error(err.toString());
-                });
+                //     // $('#err-image-area').html('').append(img);
+                // }).catch(function (err) {
+                //     return console.error(err.toString());
+                // });
             }
         }
 
@@ -254,5 +280,8 @@
         });
 
     </script>
+
+    
+
     <script src="~/js/history.js"></script>
 }

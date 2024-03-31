@@ -264,5 +264,59 @@ namespace Stiffiner_Inspection.Controllers
                 });
             }
         }
+
+        [HttpGet]
+        [Route("get-image")]
+        public IActionResult GetImage(int? clientId, string? path)
+        {
+            try
+            {
+                string remoteClient = _dataService.GetRemoteClient(clientId);
+                string url = @"imgs\test_3.bmp";
+                string remoteImagePath = $@"\\" + remoteClient + url;
+                //string remoteImagePath = $@"\\192.168.0.103\imgs\test_2.bmp";
+
+                // Check if the image file exists
+                if (!System.IO.File.Exists(remoteImagePath))
+                {
+                    return NotFound();
+                }
+
+                // Return the image file as a stream
+                var fileStream = new FileStream(remoteImagePath, FileMode.Open, FileAccess.Read);
+                return File(fileStream, "image/jpeg"); // Adjust content type based on your image format
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error retrieving image: {ex.Message}");
+            }
+        }
+
+        [HttpGet]
+        [Route("get-image-1")]
+        public IActionResult GetImage1(int? clientId, string? path)
+        {
+            try
+            {
+                string remoteClient = _dataService.GetRemoteClient(clientId);
+                string url = @"imgs\test_2.bmp";
+                string remoteImagePath = $@"\\" + remoteClient + url;
+                //string remoteImagePath = $@"\\192.168.0.103\imgs\test_2.bmp";
+
+                // Check if the image file exists
+                if (!System.IO.File.Exists(remoteImagePath))
+                {
+                    return NotFound();
+                }
+
+                // Return the image file as a stream
+                var fileStream = new FileStream(remoteImagePath, FileMode.Open, FileAccess.Read);
+                return File(fileStream, "image/jpeg"); // Adjust content type based on your image format
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error retrieving image: {ex.Message}");
+            }
+        }
     }
 }
