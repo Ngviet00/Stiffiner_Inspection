@@ -71,7 +71,7 @@ namespace Stiffiner_Inspection.Controllers
             ViewBag.CurrTargetQty = await _dataService.GetCurrentTargetQty(currtarget);
 
             ViewBag.PercentChartOK = _dataService.CalculateChartOK(allOK, total, allEMPTY);
-            ViewBag.PercentChartNG = _dataService.CalculateChartOK(allNG, total, allEMPTY);
+            ViewBag.PercentChartNG = _dataService.CalculateChartNG(allNG, total, allEMPTY);
             ViewBag.PercentChartEmpty = total == 0 ? 0 : Math.Round(PERCENT - ViewBag.PercentChartNG - ViewBag.PercentChartOK, 2);
 
             return View();

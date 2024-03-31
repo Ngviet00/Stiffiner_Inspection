@@ -33,10 +33,18 @@ $(function () {
         'ERROR': 3,
     });
 
+    const CLIENT = Object.freeze({
+        'CLIENT_1': 1,
+        'CLIENT_2': 2,
+        'CLIENT_3': 3,
+        'CLIENT_4': 4,
+    });
+
     //connection start
     connection.start()
         .then(() => {
-            console.log('Connection established!')
+            console.log('Connection established!');
+            UpdateStatisticalCalculations();
         })
         .catch((err) => {
             console.error(err.toString())
@@ -54,6 +62,7 @@ $(function () {
         appendResultLog(data);
     });
 
+    //event time log
     connection.on("ReceiveTimeLog", (time, type, message) => {
         const noDataTimeLogRow = $('.time-log-no-data');
         if (noDataTimeLogRow) {
@@ -77,7 +86,7 @@ $(function () {
 
         timeouts[client_id] = setTimeout(function () {
             $(".dot-cam-" + client_id).css("background", '#b6b9b6');
-        }, 3500);
+        }, 2000);
     });
 
     //event check status camera pc
@@ -88,7 +97,7 @@ $(function () {
 
         deepcores[client_id] = setTimeout(function () {
             $(".dot-deep-core-" + client_id).css("background", '#b6b9b6');
-        }, 3500);
+        }, 2000);
     });
 
     //event check status camera pc
@@ -97,7 +106,7 @@ $(function () {
         $(".dot-connect-" + clientId).css("background", "#0ad90a")
         clientConnects[clientId] = setTimeout(function () {
             $(".dot-connect-" + clientId).css("background", '#b6b9b6')
-        }, 3500);
+        }, 2000);
     });
 
     //event change plc
@@ -156,17 +165,9 @@ $(function () {
         }
     });
 
-    //event change trigger cam
-    connection.on("ChangeStatusTriggerCam", (clientId) => {
-        clearTimeout(triggercams[clientId]);
-        $('.dot-trigger-cam-' + clientId).css("color", '#0ad90a');
-        triggercams[clientId] = setTimeout(() => {
-            $('.dot-trigger-cam-' + clientId).css("color", '#b6b9b6');
-        }, 3500)
-    });
-
     //event plc reset
     connection.on("PLCReset", async (value) => {
+        //set resetPLC = 1 avoid duplicate
         if (value == 1 && resetPLC == 1) {
             resetPLC++;
             resetCurrentTray();
@@ -179,6 +180,7 @@ $(function () {
                 </tr>
             `)
 
+            //clear result log
             $('#result-log table tbody').html(`
                 <tr class="result-log-no-data">
                     <td colspan="12" class="w-100 text-lg-center text-dark fw-bold mt-1" style="font-size: 14px;">No data</td>
@@ -190,20 +192,20 @@ $(function () {
     });
 
     //event update quantity
-    connection.on("UpdateQuantity", function (totalTray, total, totalOK, totalNG, totalEmpty, percentOK, percentNG, percentChartOk, percentChartNG, percentChartEmpty) {
-        $('#total-tray-ea').html(totalTray);
-        $('#total-ea').html(`${total}<span class="">EA</span>`);
-        $('#total-ok-ea').html(`${totalOK}<span class="">EA</span>`);
-        $('#total-ng-ea').html(`${totalNG}<span class="">EA</span>`);
-        $('#total-empty-ea').html(`${totalEmpty}<span class="">EA</span>`);
+    //connection.on("UpdateStatisticalCalculations", function (totalTray, total, totalOK, totalNG, totalEmpty, percentOK, percentNG, percentChartOk, percentChartNG, percentChartEmpty) {
+    //    $('#total-tray-ea').html(totalTray);
+    //    $('#total-ea').html(`${total}<span class="">EA</span>`);
+    //    $('#total-ok-ea').html(`${totalOK}<span class="">EA</span>`);
+    //    $('#total-ng-ea').html(`${totalNG}<span class="">EA</span>`);
+    //    $('#total-empty-ea').html(`${totalEmpty}<span class="">EA</span>`);
 
-        $('#percent-ok').html(`${percentOK} %`);
-        $('#percent-ng').html(`${percentNG} %`);
+    //    $('#percent-ok').html(`${percentOK} %`);
+    //    $('#percent-ng').html(`${percentNG} %`);
 
-        myPieChart.data.datasets[0].data = [percentChartOk, percentChartNG, percentChartEmpty];
-        myPieChart.data.labels = ["OK", "NG", "Empty"];
-        myPieChart.update('none');
-    });
+    //    myPieChart.data.datasets[0].data = [percentChartOk, percentChartNG, percentChartEmpty];
+    //    myPieChart.data.labels = ["OK", "NG", "Empty"];
+    //    myPieChart.update('none');
+    //});
 
     //event alert enough quantity
     connection.on("AlertEnoughQuantity", function () {
@@ -217,32 +219,44 @@ $(function () {
         let client4 = "";
 
         if (previousTray.length > 0) {
+
             previousTray.forEach(item => {
-                if (item.client_id == 1) {
-                    client1 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
-                ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
-            </span>`;
+
+                let clientId = item.client_id;
+
+                let rs = item.result == STATUS_RESULT.OK ? 'OK'
+                    : (item.result == STATUS_RESULT.NG) ? 'NG'
+                        : (item.result == STATUS_RESULT.EMPTY) ? 'Wait' : '';
+
+                if (clientId == CLIENT.CLIENT_1) {
+                    client1 +=
+                        `<span class="${rs.toLowerCase()}">
+                            ${rs}
+                        </span>`;
                     return;
                 }
 
-                if (item.client_id == 2) {
-                    client2 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
-                ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
-            </span>`;
+                if (clientId == CLIENT.CLIENT_2) {
+                    client2 +=
+                        `<span class="${rs.toLowerCase()}">
+                            ${rs}
+                        </span>`;
                     return;
                 }
 
-                if (item.client_id == 3) {
-                    client3 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
-                ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
-            </span>`;
+                if (clientId == CLIENT.CLIENT_3) {
+                    client3 +=
+                        `<span class="${rs.toLowerCase()}">
+                            ${rs}
+                        </span>`;
                     return;
                 }
 
-                if (item.client_id == 4) {
-                    client4 += `<span class="${(item.result == 1) ? 'ok' : (item.result == 2) ? 'ng' : (item.result == 3) ? 'wait' : ''}">
-                ${(item.result == 1) ? 'OK' : (item.result == 2) ? 'NG' : (item.result == 3) ? 'Wait' : ''}
-            </span>`;
+                if (clientId == CLIENT.CLIENT_4) {
+                    client4 +=
+                        `<span class="${rs.toLowerCase()}">
+                            ${rs}
+                        </span>`;
                     return;
                 }
             });
@@ -326,9 +340,11 @@ $(function () {
                 <td>${data.index}</td>
                 <td class="text-capitalize">${data.camera}</td>
                 <td class="status-item ${data.result === 1 ? "text-success" : "text-danger"}">
-                    ${data.result == 1 ? "OK" : (data.result == 2 ? "NG" : (data.result == 3 ? "EMPTY" : ""))}
+                    ${data.result == STATUS_RESULT.OK ? "OK" : (data.result == STATUS_RESULT.NG ? "NG" : (data.result == STATUS_RESULT.EMPTY ? "EMPTY" : ""))}
                 </td>
-                <td class="detail-error">${data.error ?? "-"}</td>
+                <td class="detail-error">
+                    ${data.result == STATUS_RESULT.OK || data.result == STATUS_RESULT.EMPTY ? "-" : data.error ?? "-"}
+                </td>
             </tr>
         `);
 
@@ -356,10 +372,11 @@ $(function () {
         return hours + ":" + minutes + ":" + seconds;
     }
 
-    // Get the canvas element
+    //============= CONFIG CHART ============= 
     var ctx = document.getElementById('pie-chart').getContext('2d');
 
     var valueChart = document.getElementById('data-chart-percent');
+
     var values = [
         parseFloat(valueChart.getAttribute('data-percent-chart-ok')),
         parseFloat(valueChart.getAttribute('data-percent-chart-ng')),
@@ -420,6 +437,38 @@ $(function () {
         },
         plugins: [ChartDataLabels]
     });
+
+    //============= END CONFIG CHART ============= 
+
+    //============= UPDATE STATISTICAL CALCULATIONS =============
+    function UpdateStatisticalCalculations() {
+        connection.invoke("UpdateStatistical", "UpdateStatictical")
+            .then(function (res) {
+                $('#total-tray-ea').html(res.totalTray);
+                $('#total-ea').html(`${res.total}<span class="">EA</span>`);
+                $('#total-ok-ea').html(`${res.totalOK}<span class="">EA</span>`);
+                $('#total-ng-ea').html(`${res.totalNG}<span class="">EA</span>`);
+                $('#total-empty-ea').html(`${res.totalEmpty}<span class="">EA</span>`);
+
+                $('#percent-ok').html(`${res.percentOK} %`);
+                $('#percent-ng').html(`${res.percentNG} %`);
+
+                if (res.percentChartOk == 0 && res.percentChartNG == 0 && res.percentChartEmpty == 0) {
+                    res.percentChartOk = 100;
+                }
+
+                myPieChart.data.datasets[0].data = [res.percentChartOk, res.percentChartNG, res.percentChartEmpty];
+                myPieChart.data.labels = ["OK", "NG", "Empty"];
+                myPieChart.update('none');
+            })
+            .catch(function (err) {
+                console.error("Error calling API:", err.toString());
+            })
+            .finally(function () {
+                setTimeout(UpdateStatisticalCalculations, 3000)
+            });
+    }
+    //============= END UPDATE STATISTICAL CALCULATIONS =============
 
     //test reset all data
     //$('.btn-apply-target').click(function () {

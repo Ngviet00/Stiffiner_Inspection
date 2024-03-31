@@ -10,6 +10,8 @@ using log4net;
 using System.Net;
 using Stiffiner_Inspection.Models.Response;
 using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Collections.Generic;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -137,13 +139,13 @@ namespace Stiffiner_Inspection.Services
 
         public async Task SaveError(Data data, string listErrors)
         {
-            List<Error> listErrs = new List<Error>();
+            List<Models.Entity.Error> listErrs = new List<Models.Entity.Error>();
 
             string[] errors = listErrors.Split(',');
 
             foreach (string item in errors)
             {
-                listErrs.Add(new Error
+                listErrs.Add(new Models.Entity.Error
                 {
                     DataId = data.Id,
                     Description = item,
@@ -200,58 +202,134 @@ namespace Stiffiner_Inspection.Services
 
         public async Task SendToPLC(DataDTO dataDTO)
         {
-            //nếu client = 1 => 2, 2 => 1, 3 => 4 và ngược lại
-            var clientIdPair = GetClientIdPair(dataDTO);
+            //=================== TEST ===================
+            Global.CurrentTrayData.Add(dataDTO);
 
-            Global._currentTray.Add(dataDTO);
-
-            if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2)
+            if (Global.CurrentTrayData.Count == 80)
             {
-                //client 1, 2 thêm vào tray left
-                Global.currentTrayLeft.Add(dataDTO);
+                List<DataCSV> dataCSV = [];
 
-                //tìm kiếm nếu có đủ area và line
-                var exist = Global.currentTrayLeft.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index && e.side == dataDTO.side);
-
-                if (exist is not null)
+                for (int i = 1; i <= 20; i++)
                 {
-                    await ExportDataToCsvRow(dataDTO, exist);
-                }
-            }
-            else
-            {
-                //client 3, 4 thêm vào tray right
-                Global.currentTrayRight.Add(dataDTO);
+                    //pair left 
+                    var leftArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_1 && e.tray == Global.currentTray);
+                    var leftLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_2 && e.tray == Global.currentTray);
+                    AddListPrepareSaveExcel(dataCSV, leftArea, leftLine); //add to list
+                    Global.controlPLC.WriteDataToRegister(GetResult(leftArea?.result, leftLine?.result), i + 19); //write register PLC
+                    
 
-                //tìm kiếm nếu có đủ area và line
-                var exist = Global.currentTrayRight.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index && e.side == dataDTO.side);
+                    //pair right
+                    var rightArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_3 && e.tray == Global.currentTray);
+                    var rightLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_4 && e.tray == Global.currentTray);
+                    AddListPrepareSaveExcel(dataCSV, rightArea, rightLine); //add to list
+                    Global.controlPLC.WriteDataToRegister(GetResult(rightArea?.result, rightLine?.result), i - 1); //write register PLC
 
-                if (exist is not null)
-                {
-                    await ExportDataToCsvRow(dataDTO, exist);
-                }
-                //calculate
-                //send
-            }
-
-            //if
-
-            if (Global._currentTray.Count == 80)
-            {
-                foreach (var item in Global._currentTray)
-                {
-                    var _clientIdPair = GetClientIdPair((DataDTO)item);
-                    var _itemExist = Global._currentTray.Find(e => e.tray == Global.currentTray && e.client_id == _clientIdPair && e.index == item.index && e.side == item.side);
-
-                    if (_itemExist is not null)
+                    //if enough 40 item => save to excel
+                    if (dataCSV.Count == 40)
                     {
-                        var _rs = GetResult(_itemExist.result, item.result);
-                        var _position = GetPosition(item.index, item.client_id);
-                        Global.controlPLC.WriteDataToRegister(_rs, _position);
+                        await SaveToExcel(dataCSV);
                     }
                 }
 
+                //ater vision done, send signal
                 Global.controlPLC.VisionDoneIns();
+            }
+
+
+
+            //=================== OK ===================
+
+            //nếu client = 1 => 2, 2 => 1, 3 => 4 và ngược lại
+            //var clientIdPair = GetClientIdPair(dataDTO);
+
+            //Global._currentTray.Add(dataDTO);
+
+            //if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2)
+            //{
+            //    //client 1, 2 thêm vào tray left
+            //    Global.currentTrayLeft.Add(dataDTO);
+
+            //    //tìm kiếm nếu có đủ area và line
+            //    var exist = Global.currentTrayLeft.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index && e.side == dataDTO.side);
+
+            //    if (exist is not null)
+            //    {
+            //        await ExportDataToCsvRow(dataDTO, exist);
+            //    }
+            //}
+            //else
+            //{
+            //    //client 3, 4 thêm vào tray right
+            //    Global.currentTrayRight.Add(dataDTO);
+
+            //    //tìm kiếm nếu có đủ area và line
+            //    var exist = Global.currentTrayRight.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index && e.side == dataDTO.side);
+
+            //    if (exist is not null)
+            //    {
+            //        await ExportDataToCsvRow(dataDTO, exist);
+            //    }
+            //    //calculate
+            //    //send
+            //}
+
+            ////if
+
+            //if (Global._currentTray.Count == 80)
+            //{
+            //    foreach (var item in Global._currentTray)
+            //    {
+            //        var _clientIdPair = GetClientIdPair((DataDTO)item);
+            //        var _itemExist = Global._currentTray.Find(e => e.tray == Global.currentTray && e.client_id == _clientIdPair && e.index == item.index && e.side == item.side);
+
+            //        if (_itemExist is not null)
+            //        {
+            //            var _rs = GetResult(_itemExist.result, item.result);
+            //            var _position = GetPosition(item.index, item.client_id);
+            //            Global.controlPLC.WriteDataToRegister(_rs, _position);
+            //        }
+            //    }
+
+            //    Global.controlPLC.VisionDoneIns();
+            //}
+        }
+
+        public void AddListPrepareSaveExcel(List<DataCSV> dataCSV, DataDTO? dataArea, DataDTO? dataLine)
+        {
+            dataCSV.Add(new DataCSV
+            {
+                model = "Stiffiner",
+                time = dataArea?.time,
+                index = dataArea?.client_id == CLIENT_1 || dataArea?.client_id == CLIENT_2 ? dataArea.index + 20 : dataArea.index,
+                result_area = dataArea.result == 1 ? "OK" : (dataArea.result == 2 ? "NG" : "Empty"),
+                result_line = dataLine?.result == 1 ? "OK" : (dataLine?.result == 2 ? "NG" : "Empty"),
+                image = dataArea?.image + "," + dataLine?.image,
+                errors = dataArea?.error + "," + dataLine?.error
+            });
+        }
+
+        private async Task SaveToExcel(List<DataCSV> dataCSV)
+        {
+            string directoryPath = Global.directoryPath;
+            string fileName = Global.fileNameCSV;
+            string filePath = Path.Combine(directoryPath, fileName);
+
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            try
+            {
+                using (var writer = new StreamWriter(filePath))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                {
+                    await csv.WriteRecordsAsync(dataCSV);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Can not save to file CSV: " + ex.Message);
             }
         }
 
@@ -406,11 +484,12 @@ namespace Stiffiner_Inspection.Services
             return currTray;
         }
 
-        public async Task<List<Data>> GetHistory()
+        public async Task<List<Data>?> GetHistory()
         {
             try
             {
-                return await _dbContext.Data.AsNoTracking()
+                return await _dbContext.Data
+                    .AsNoTracking()
                     .OrderBy(e => e.Index)
                     .Include(p => p.Errors)
                     .Include(p => p.Images)
@@ -439,57 +518,57 @@ namespace Stiffiner_Inspection.Services
             return total == 0 ? 0 : Math.Round(100 - percentNG - percentOK, 2);
         }
 
-        public async Task ExportDataToCsvRow(DataDTO dataDTO, DataDTO exist)
-        {
-            var data = new DataCSV
-            {
-                model = "Stiffiner",
-                time = dataDTO.time,
-                index = dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2 ? exist.index + 20 : exist.index,
-                image = dataDTO.image + "," + exist.image,
-                errors = dataDTO.error + "," + exist.error
-            };
+        //public async Task ExportDataToCsvRow(DataDTO dataDTO, DataDTO exist)
+        //{
+        //    var data = new DataCSV
+        //    {
+        //        model = "Stiffiner",
+        //        time = dataDTO.time,
+        //        index = dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2 ? exist.index + 20 : exist.index,
+        //        image = dataDTO.image + "," + exist.image,
+        //        errors = dataDTO.error + "," + exist.error
+        //    };
 
-            if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_3)
-            {
-                data.result_area = dataDTO.result == 1 ? "OK" : (dataDTO.result == 3 ? "Empty" : "NG");
-                data.result_line = exist.result == 1 ? "OK" : (exist.result == 3 ? "Empty" : "NG");
-            }
-            else
-            {
-                data.result_area = exist.result == 1 ? "OK" : (exist.result == 3 ? "Empty" : "NG");
-                data.result_line = dataDTO.result == 1 ? "OK" : (dataDTO.result == 3 ? "Empty" : "NG");
-            }
+        //    if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_3)
+        //    {
+        //        data.result_area = dataDTO.result == 1 ? "OK" : (dataDTO.result == 3 ? "Empty" : "NG");
+        //        data.result_line = exist.result == 1 ? "OK" : (exist.result == 3 ? "Empty" : "NG");
+        //    }
+        //    else
+        //    {
+        //        data.result_area = exist.result == 1 ? "OK" : (exist.result == 3 ? "Empty" : "NG");
+        //        data.result_line = dataDTO.result == 1 ? "OK" : (dataDTO.result == 3 ? "Empty" : "NG");
+        //    }
 
-            string directoryPath = Global.directoryPath;
-            string fileName = Global.fileNameCSV;
-            string filePath = Path.Combine(directoryPath, fileName);
+        //    string directoryPath = Global.directoryPath;
+        //    string fileName = Global.fileNameCSV;
+        //    string filePath = Path.Combine(directoryPath, fileName);
 
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
+        //    if (!Directory.Exists(directoryPath))
+        //    {
+        //        Directory.CreateDirectory(directoryPath);
+        //    }
 
-            try
-            {
-                bool fileExists = File.Exists(filePath);
-                using (var writer = fileExists ? File.AppendText(filePath) : new StreamWriter(filePath))
-                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-                {
-                    if (!fileExists)
-                    {
-                        csv.WriteHeader<DataCSV>();
-                        await csv.NextRecordAsync();
-                    }
-                    csv.WriteRecord(data);
-                    await csv.NextRecordAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("Can not save to file CSV: " + ex.Message);
-            }
-        }
+        //    try
+        //    {
+        //        bool fileExists = File.Exists(filePath);
+        //        using (var writer = fileExists ? File.AppendText(filePath) : new StreamWriter(filePath))
+        //        using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+        //        {
+        //            if (!fileExists)
+        //            {
+        //                csv.WriteHeader<DataCSV>();
+        //                await csv.NextRecordAsync();
+        //            }
+        //            csv.WriteRecord(data);
+        //            await csv.NextRecordAsync();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.Error("Can not save to file CSV: " + ex.Message);
+        //    }
+        //}
 
         public async Task<List<ImageResponse>> DownloadFile(List<Image> images)
         {

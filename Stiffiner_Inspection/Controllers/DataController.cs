@@ -30,45 +30,44 @@ namespace Stiffiner_Inspection.Controllers
                 //get current target id
                 dataDTO.tray = Global.currentTray;
 
-                //gửi lên web realtime sự kiện result log
+                //event realtime result log
                 await _hubContext.Clients.All.SendAsync("ReceiveData", dataDTO);
 
-                //gửi lên web realtime timelog
+                //event realtime timelog
                 await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", dataDTO.time, "Program", "Send signals from Server to PLC");
 
                 //send to PLC
                 await _dataService.SendToPLC(dataDTO);
 
-                //lưu db
+                //save db
                 var result = await _dataService.Save(dataDTO);
 
                 //update count total, OK, NG
-                if (result.ResultArea is not null && result.ResultLine is not null)
-                {
-                    int totalTray = await _dataService.GetTotalTray(Global.currentTargetId);
-                    double total = await _dataService.GetTotal(Global.currentTargetId);
-                    int totalOK = await _dataService.GettotalOK(Global.currentTargetId);
-                    int totalNG = await _dataService.GettotalNG(Global.currentTargetId);
-                    int totalEmpty = await _dataService.GetTotalEmpty(Global.currentTargetId);
+                //if (result.ResultArea is not null && result.ResultLine is not null)
+                //{
+                //    int totalTray = await _dataService.GetTotalTray(Global.currentTargetId);
+                //    double total = await _dataService.GetTotal(Global.currentTargetId);
+                //    int totalOK = await _dataService.GettotalOK(Global.currentTargetId);
+                //    int totalNG = await _dataService.GettotalNG(Global.currentTargetId);
+                //    int totalEmpty = await _dataService.GetTotalEmpty(Global.currentTargetId);
 
-                    double percentOK = Math.Round((totalOK / total) * PERCENT, 2);
-                    double percentNG = Math.Round((totalNG / total) * PERCENT, 2);
+                //    double percentOK = Math.Round((totalOK / total) * PERCENT, 2);
+                //    double percentNG = Math.Round((totalNG / total) * PERCENT, 2);
 
-                    double percentChartOk = _dataService.CalculateChartOK(totalOK, total, totalEmpty);
-                    double percentChartNG = _dataService.CalculateChartNG(totalNG, total, totalEmpty);
-                    double percentChartEmpty = total == 0 ? 0 : Math.Round(PERCENT - percentChartNG - percentChartOk, 1);
+                //    double percentChartOk = _dataService.CalculateChartOK(totalOK, total, totalEmpty);
+                //    double percentChartNG = _dataService.CalculateChartNG(totalNG, total, totalEmpty);
+                //    double percentChartEmpty = total == 0 ? 0 : Math.Round(PERCENT - percentChartNG - percentChartOk, 1);
 
-                    //gửi lên client
-                    await _hubContext.Clients.All.SendAsync("UpdateQuantity", totalTray, total, totalOK, totalNG, totalEmpty, percentOK, percentNG, percentChartOk, percentChartNG, percentChartEmpty);
+                //    //gửi lên client
+                //    await _hubContext.Clients.All.SendAsync("UpdateQuantity", totalTray, total, totalOK, totalNG, totalEmpty, percentOK, percentNG, percentChartOk, percentChartNG, percentChartEmpty);
 
-                    //nếu lớn hơn target => gửi cho client hiển thị thông báo
-                    //if (total >= 2000)
-                    //{
-                    //    await _hubContext.Clients.All.SendAsync("AlertEnoughQuantity");
-                    //    Global.controlPLC.AlertEnoughQuantity(true);
-                    //}
-                }
-
+                //    //nếu lớn hơn target => gửi cho client hiển thị thông báo
+                //    if (total >= 2000)
+                //    {
+                //        await _hubContext.Clients.All.SendAsync("AlertEnoughQuantity");
+                //        Global.controlPLC.AlertEnoughQuantity(true);
+                //    }
+                //}
                 return Ok(result);
             }
             catch (Exception ex)

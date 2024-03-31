@@ -99,12 +99,14 @@ namespace Stiffiner_Inspection
                     Global.resetPLC4 = 1;
                     Global.resetClient = 1;
 
-                    Global.currentTrayLeft.Clear();
-                    Global.currentTrayRight.Clear();
-                    Global.currentTray++;
-                    Global._currentTray.Clear();
+                    Global.CurrentTrayData.Clear();
 
-                    Global.fileNameCSV = "MAY_1_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + "_Stiffiner.csv";
+                    //Global.currentTrayLeft.Clear();
+                    //Global.currentTrayRight.Clear();
+                    Global.currentTray++;
+                    //Global._currentTray.Clear();
+
+                    Global.fileNameCSV = "MAY_1_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + "_stiffiner.csv";
 
                     TurnOnLightControl();
                     isStartHistory = true;
