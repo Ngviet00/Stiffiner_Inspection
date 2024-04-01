@@ -12,6 +12,7 @@ using Stiffiner_Inspection.Models.Response;
 using Newtonsoft.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -174,6 +175,16 @@ namespace Stiffiner_Inspection.Services
                 return OK;
             }
 
+            if (result1 == EMPTY && result2 == OK || result1 == OK && result2 == EMPTY)
+            {
+                return OK;
+            }
+
+            if (result1 == EMPTY && result2 == NG || result1 == NG && result2 == EMPTY)
+            {
+                return NG;
+            }
+
             if (result1 == EMPTY && result2 == EMPTY)
             {
                 return 0;
@@ -215,14 +226,14 @@ namespace Stiffiner_Inspection.Services
                     var leftArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_1 && e.tray == Global.currentTray);
                     var leftLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_2 && e.tray == Global.currentTray);
                     AddListPrepareSaveExcel(dataCSV, leftArea, leftLine); //add to list
-                    Global.controlPLC.WriteDataToRegister(GetResult(leftArea?.result, leftLine?.result), i + 19); //write register PLC
+                    Global.controlPLC.WriteDataToRegister(GetResult(leftArea?.result, leftLine?.result), i - 1); //write register PLC
                     
 
                     //pair right
                     var rightArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_3 && e.tray == Global.currentTray);
                     var rightLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_4 && e.tray == Global.currentTray);
                     AddListPrepareSaveExcel(dataCSV, rightArea, rightLine); //add to list
-                    Global.controlPLC.WriteDataToRegister(GetResult(rightArea?.result, rightLine?.result), i - 1); //write register PLC
+                    Global.controlPLC.WriteDataToRegister(GetResult(rightArea?.result, rightLine?.result), i + 19); //write register PLC
 
                     //if enough 40 item => save to excel
                     if (dataCSV.Count == 40)
@@ -300,7 +311,7 @@ namespace Stiffiner_Inspection.Services
             {
                 model = "Stiffiner",
                 time = dataArea?.time,
-                index = dataArea?.client_id == CLIENT_1 || dataArea?.client_id == CLIENT_2 ? dataArea.index + 20 : dataArea.index,
+                index = dataArea?.client_id == CLIENT_1 || dataArea?.client_id == CLIENT_2 ? dataArea.index : dataArea.index + 20,
                 result_area = dataArea.result == 1 ? "OK" : (dataArea.result == 2 ? "NG" : "Empty"),
                 result_line = dataLine?.result == 1 ? "OK" : (dataLine?.result == 2 ? "NG" : "Empty"),
                 image = dataArea?.image + "," + dataLine?.image,
@@ -569,52 +580,49 @@ namespace Stiffiner_Inspection.Services
         //    }
         //}
 
-        public async Task<string> DownloadFile(List<Image> images)
+        public async Task<List<ImageResponse>?> DownloadFile(List<Image> images)
         {
             try
             {
                 List<ImageResponse> imgsResponse = new List<ImageResponse>();
 
+                string rootPath = @"D:\publish_image\images\";
+                _logger.Error("error-image:" + images);
+                try
+                {
+                    //using (var client = new WebClient())
+                    //{
+                    //    foreach (var item in images)
+                    //    {
+                    //        _logger.Error("item:" + item);
 
-                string imagePath = @"\\192.168.0.103\imgs\test_2.bmp";
+                    //        string url = GetRemoteClient(item.ClientId) + FormatUrlImage(item.Path);
+                    //        _logger.Error("url:" + url);
 
-                string base64Image = GetBase64Image(imagePath);
+                    //        string fileName = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + ".bmp";
+                    //        _logger.Error("file name:" + fileName);
 
-                return base64Image;
+                    //        client.DownloadFile(url, rootPath + fileName);
 
-                // Print base64 encoded image data
-                //Console.WriteLine(base64Image);
+                    //        imgsResponse.Add(new ImageResponse
+                    //        {
+                    //            client_id = item.ClientId,
+                    //            path = "https://localhost:8089/images/" + fileName
+                    //        });
 
-                //return imgsResponse;
+                    //        _logger.Error("list iamge:" + imgsResponse);
+                    //    }
+                    //}
 
+                    Console.WriteLine("Image downloaded successfully.");
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error("error_exception" + ex.Message);
+                    Console.WriteLine($"Error: {ex.Message}");
+                }
 
-
-                //string rootPath = @"D:\publish_image\images\";
-
-                //using (var client = new WebClient())
-                //{
-
-                //    foreach (var item in images)
-                //    {
-                //        client.Credentials = new NetworkCredential("MS", "1");
-
-                //        string filePathRemote = GetFilePathRemote(item.ClientId) + FormatUrlImage(item.Path);
-
-                //        string fileName = DateTime.Now.ToString("HH_mm_ss_ff") + ".bmp";
-
-                //        //string filePath = "";
-
-                //        client.DownloadFile(filePathRemote, rootPath + fileName);
-
-                //        imgsResponse.Add(new ImageResponse
-                //        {
-                //            client_id = item.ClientId,
-                //            path = "https://192.168.1.55:8089/images/" + fileName
-                //        });
-                //    }
-
-                //    return imgsResponse;
-                //}
+                return imgsResponse;
             }
             catch (Exception ex)
             {
@@ -629,26 +637,31 @@ namespace Stiffiner_Inspection.Services
             return Convert.ToBase64String(imageBytes);
         }
 
+        //remove
         public string GetRemoteClient(int? clientId)
         {
             switch (clientId)
             {
                 case 1:
-                    return @"192.168.0.103\";
-                    //return @"192.168.1.11\ScreenCapture\";
+                    return @"file://192.168.1.11/ScreenCapture/";
                 case 2:
-                    return @"192.168.1.22\ScreenCapture\";
+                    return @"file://192.168.1.22/ScreenCapture/";
                 case 3:
-                    return @"192.168.1.33\ScreenCapture\";
+                    return @"file://192.168.1.33/ScreenCapture/";
                 case 4:
-                    return @"192.168.1.44\ScreenCapture\";
+                    return @"file://192.168.1.44/ScreenCapture/";
             }
 
-            return @"192.168.0.103\";
+            return "192.168.1.11";
         }
 
         public string FormatUrlImage(string? urlImage)
         {
+            if (urlImage == "No_save")
+            {
+
+            }
+
             string filePath = @urlImage;
 
             int startIndex = @"D:\SaveResults\ScreenCapture\".Length;

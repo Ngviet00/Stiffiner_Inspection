@@ -30,7 +30,7 @@ namespace Stiffiner_Inspection.Hubs
         //    }
         //}
 
-        public async Task<string> DownloadFile(List<Image> images)
+        public async Task<List<ImageResponse>> DownloadFile(List<Image> images)
         {
             try
             {

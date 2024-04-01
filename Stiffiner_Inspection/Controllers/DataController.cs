@@ -271,11 +271,11 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
-                string remoteClient = _dataService.GetRemoteClient(clientId);
-                string url = @"imgs\test_3.bmp";
-                string remoteImagePath = $@"\\" + remoteClient + url;
-                //string remoteImagePath = $@"\\192.168.0.103\imgs\test_2.bmp";
-
+                //string remoteClient = _dataService.GetRemoteClient(clientId);
+                //string url = @"imgs\test_3.bmp";
+                //string remoteImagePath = $@"\\" + remoteClient + url;
+                string remoteImagePath = $@"\\192.168.1.11\ScreenCapture\2024\3\30\NG\14_21_48_914.bmp";
+                
                 // Check if the image file exists
                 if (!System.IO.File.Exists(remoteImagePath))
                 {
