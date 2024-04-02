@@ -249,64 +249,6 @@ namespace Stiffiner_Inspection.Services
                 //ater vision done, send signal
                 Global.controlPLC.VisionDoneIns();
             }
-
-
-
-            //=================== OK ===================
-
-            //nếu client = 1 => 2, 2 => 1, 3 => 4 và ngược lại
-            //var clientIdPair = GetClientIdPair(dataDTO);
-
-            //Global._currentTray.Add(dataDTO);
-
-            //if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2)
-            //{
-            //    //client 1, 2 thêm vào tray left
-            //    Global.currentTrayLeft.Add(dataDTO);
-
-            //    //tìm kiếm nếu có đủ area và line
-            //    var exist = Global.currentTrayLeft.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index && e.side == dataDTO.side);
-
-            //    if (exist is not null)
-            //    {
-            //        await ExportDataToCsvRow(dataDTO, exist);
-            //    }
-            //}
-            //else
-            //{
-            //    //client 3, 4 thêm vào tray right
-            //    Global.currentTrayRight.Add(dataDTO);
-
-            //    //tìm kiếm nếu có đủ area và line
-            //    var exist = Global.currentTrayRight.Find(e => e.tray == Global.currentTray && e.client_id == clientIdPair && e.index == dataDTO.index && e.side == dataDTO.side);
-
-            //    if (exist is not null)
-            //    {
-            //        await ExportDataToCsvRow(dataDTO, exist);
-            //    }
-            //    //calculate
-            //    //send
-            //}
-
-            ////if
-
-            //if (Global._currentTray.Count == 80)
-            //{
-            //    foreach (var item in Global._currentTray)
-            //    {
-            //        var _clientIdPair = GetClientIdPair((DataDTO)item);
-            //        var _itemExist = Global._currentTray.Find(e => e.tray == Global.currentTray && e.client_id == _clientIdPair && e.index == item.index && e.side == item.side);
-
-            //        if (_itemExist is not null)
-            //        {
-            //            var _rs = GetResult(_itemExist.result, item.result);
-            //            var _position = GetPosition(item.index, item.client_id);
-            //            Global.controlPLC.WriteDataToRegister(_rs, _position);
-            //        }
-            //    }
-
-            //    Global.controlPLC.VisionDoneIns();
-            //}
         }
 
         public void AddListPrepareSaveExcel(List<DataCSV> dataCSV, DataDTO? dataArea, DataDTO? dataLine)
@@ -532,58 +474,6 @@ namespace Stiffiner_Inspection.Services
             return total == 0 ? 0 : Math.Round(100 - percentNG - percentOK, 2);
         }
 
-        //public async Task ExportDataToCsvRow(DataDTO dataDTO, DataDTO exist)
-        //{
-        //    var data = new DataCSV
-        //    {
-        //        model = "Stiffiner",
-        //        time = dataDTO.time,
-        //        index = dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2 ? exist.index + 20 : exist.index,
-        //        image = dataDTO.image + "," + exist.image,
-        //        errors = dataDTO.error + "," + exist.error
-        //    };
-
-        //    if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_3)
-        //    {
-        //        data.result_area = dataDTO.result == 1 ? "OK" : (dataDTO.result == 3 ? "Empty" : "NG");
-        //        data.result_line = exist.result == 1 ? "OK" : (exist.result == 3 ? "Empty" : "NG");
-        //    }
-        //    else
-        //    {
-        //        data.result_area = exist.result == 1 ? "OK" : (exist.result == 3 ? "Empty" : "NG");
-        //        data.result_line = dataDTO.result == 1 ? "OK" : (dataDTO.result == 3 ? "Empty" : "NG");
-        //    }
-
-        //    string directoryPath = Global.directoryPath;
-        //    string fileName = Global.fileNameCSV;
-        //    string filePath = Path.Combine(directoryPath, fileName);
-
-        //    if (!Directory.Exists(directoryPath))
-        //    {
-        //        Directory.CreateDirectory(directoryPath);
-        //    }
-
-        //    try
-        //    {
-        //        bool fileExists = File.Exists(filePath);
-        //        using (var writer = fileExists ? File.AppendText(filePath) : new StreamWriter(filePath))
-        //        using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-        //        {
-        //            if (!fileExists)
-        //            {
-        //                csv.WriteHeader<DataCSV>();
-        //                await csv.NextRecordAsync();
-        //            }
-        //            csv.WriteRecord(data);
-        //            await csv.NextRecordAsync();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.Error("Can not save to file CSV: " + ex.Message);
-        //    }
-        //}
-
         public async Task<List<ImageResponse>?> DownloadFile(List<Image> images)
         {
             try
@@ -591,54 +481,44 @@ namespace Stiffiner_Inspection.Services
                 List<ImageResponse> imgsResponse = new List<ImageResponse>();
 
                 string rootPath = @"D:\publish_image\images\";
-                _logger.Error("error-image:" + images);
-                try
+
+                using (WebClient client = new WebClient())
                 {
-                    //using (var client = new WebClient())
+                    //foreach (var item in images)
                     //{
-                    //    foreach (var item in images)
+                    //    string url = "http://192.168.1.11:8881/1.bmp";
+
+                    //    string fileName = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_ff") + ".bmp";
+
+                    //    client.DownloadFile(url, rootPath + fileName);
+
+                    //    imgsResponse.Add(new ImageResponse
                     //    {
-                    //        _logger.Error("item:" + item);
-
-                    //        string url = GetRemoteClient(item.ClientId) + FormatUrlImage(item.Path);
-                    //        _logger.Error("url:" + url);
-
-                    //        string fileName = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + ".bmp";
-                    //        _logger.Error("file name:" + fileName);
-
-                    //        client.DownloadFile(url, rootPath + fileName);
-
-                    //        imgsResponse.Add(new ImageResponse
-                    //        {
-                    //            client_id = item.ClientId,
-                    //            path = "https://localhost:8089/images/" + fileName
-                    //        });
-
-                    //        _logger.Error("list iamge:" + imgsResponse);
-                    //    }
+                    //        client_id = item.ClientId,
+                    //        path = "https://localhost:8089/images/" + fileName
+                    //    });
                     //}
 
-                    Console.WriteLine("Image downloaded successfully.");
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error("error_exception" + ex.Message);
-                    Console.WriteLine($"Error: {ex.Message}");
-                }
+                    string url = "http://192.168.1.11:8881/1.bmp";
 
-                return imgsResponse;
+                    string fileName = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_ff") + ".bmp";
+
+                    client.DownloadFile(url, rootPath + fileName);
+
+                    imgsResponse.Add(new ImageResponse
+                    {
+                        client_id = 1,
+                        path = "https://localhost:8889/" + fileName
+                    });
+
+                    return imgsResponse;
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error cannot download file: " + ex.ToString());
+                _logger.Error("Error cannot download file: " + ex.ToString());
                 return null;
             }
-        }
-
-        static string GetBase64Image(string imagePath)
-        {
-            byte[] imageBytes = File.ReadAllBytes(imagePath);
-            return Convert.ToBase64String(imageBytes);
         }
 
         //remove
@@ -647,32 +527,32 @@ namespace Stiffiner_Inspection.Services
             switch (clientId)
             {
                 case 1:
-                    return @"file://192.168.1.11/ScreenCapture/";
+                    return "http://192.168.1.11:8881/";
                 case 2:
-                    return @"file://192.168.1.22/ScreenCapture/";
+                    return "http://192.168.1.22:8881/";
                 case 3:
-                    return @"file://192.168.1.33/ScreenCapture/";
+                    return "http://192.168.1.33:8881/";
                 case 4:
-                    return @"file://192.168.1.44/ScreenCapture/";
+                    return "http://192.168.1.44:8881/";
             }
 
-            return "192.168.1.11";
+            return "";
         }
 
-        public string FormatUrlImage(string? urlImage)
+        static string ConvertPathImage(string fullPath)
         {
-            if (urlImage == "No_save")
+            int index = fullPath.IndexOf("ScreenCapture");
+
+            if (index != -1)
             {
-
+                string relativePath = fullPath.Substring(index);
+                relativePath = relativePath.Replace('\\', '/');
+                return relativePath;
             }
-
-            string filePath = @urlImage;
-
-            int startIndex = @"D:\SaveResults\ScreenCapture\".Length;
-
-            string subPath = filePath.Substring(startIndex);
-
-            return subPath.Replace('\\', '/');
+            else
+            {
+                return fullPath;
+            }
         }
     }
 }

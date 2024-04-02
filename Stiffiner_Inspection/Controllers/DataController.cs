@@ -4,6 +4,8 @@ using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Models.DTO.Data;
 using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
+using System.Net;
+using static System.Net.WebRequestMethods;
 
 namespace Stiffiner_Inspection.Controllers
 {
