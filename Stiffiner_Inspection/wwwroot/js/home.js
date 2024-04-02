@@ -338,7 +338,7 @@ $(function () {
         }
 
         if (data.result === STATUS_RESULT.EMPTY) {
-            $(`.${data.side}-${data.camera}-${data.index}`).css("background", "#9F9F9F").text("Empty");
+            $(`.${data.side}-${data.camera}-${data.index}`).css("background", "#cdcecf").text("Empty");
             return;
         }
     }

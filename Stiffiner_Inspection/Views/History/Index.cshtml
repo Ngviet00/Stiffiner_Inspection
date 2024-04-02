@@ -121,31 +121,32 @@
         connection.start()
             .then(() => {
                 console.log('Connection history established!');
+                connection.invoke("DownloadFile", data.images).then((result) => {
 
-                // connection.invoke("DownloadFile", []).then((result) => {
-                //     let imageArea = '';
-                //     let imageLine = '';
+                    console.log(result);
 
-                //     $('#err-image-area').html('')
-                //     $('#err-image-line').html('')
+                    // let imageArea = '';
+                    // let imageLine = '';
 
-                //     result.forEach(item => {
+                    // $('#err-image-area').html('')
+                    // $('#err-image-line').html('')
 
-                //         var img = document.createElement('img');
-                //         img.src = item.path
-                //         img.height = 70
-                //         img.style.maxWidth = "100%";
+                    // result.forEach(item => {
 
-                //         if (item.client_id == 1 || item.client_id == 3) {
-                //             $('#err-image-area').append(img);
-                //         } else {
-                //             $('#err-image-line').append(img);
-                //         }
-                //     });
-                // }).catch(function (err) {
-                //     return console.error(err.toString());
-                // });
+                    //     var img = document.createElement('img');
+                    //     img.src = item.path
+                    //     img.height = 70
+                    //     img.style.maxWidth = "100%";
 
+                    //     if (item.client_id == 1 || item.client_id == 3) {
+                    //         $('#err-image-area').append(img);
+                    //     } else {
+                    //         $('#err-image-line').append(img);
+                    //     }
+                    // });
+                }).catch(function (err) {
+                    return console.error(err.toString());
+                });
             })
             .catch((err) => {
                 console.error(err.toString())
@@ -207,25 +208,25 @@
 
                     console.log(result);
 
-                    let imageArea = '';
-                    let imageLine = '';
+                    // let imageArea = '';
+                    // let imageLine = '';
 
-                    $('#err-image-area').html('')
-                    $('#err-image-line').html('')
+                    // $('#err-image-area').html('')
+                    // $('#err-image-line').html('')
 
-                    result.forEach(item => {
+                    // result.forEach(item => {
 
-                        var img = document.createElement('img');
-                        img.src = item.path
-                        img.height = 70
-                        img.style.maxWidth = "100%";
+                    //     var img = document.createElement('img');
+                    //     img.src = item.path
+                    //     img.height = 70
+                    //     img.style.maxWidth = "100%";
 
-                        if (item.client_id == 1 || item.client_id == 3) {
-                            $('#err-image-area').append(img);
-                        } else {
-                            $('#err-image-line').append(img);
-                        }
-                    });
+                    //     if (item.client_id == 1 || item.client_id == 3) {
+                    //         $('#err-image-area').append(img);
+                    //     } else {
+                    //         $('#err-image-line').append(img);
+                    //     }
+                    // });
                 }).catch(function (err) {
                     return console.error(err.toString());
                 });

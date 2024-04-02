@@ -17,19 +17,6 @@ namespace Stiffiner_Inspection.Hubs
             _dataService = dataService;
         }
 
-        //public async Task<List<ImageResponse>> DownloadFile(List<Image> images)
-        //{
-        //    try
-        //    {
-        //        return await _dataService.DownloadFile(images);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine("Error cannot download file: " + ex.ToString());
-        //        throw;
-        //    }
-        //}
-
         public async Task<List<ImageResponse>> DownloadFile(List<Image> images)
         {
             try
