@@ -223,13 +223,17 @@ namespace Stiffiner_Inspection.Services
                 for (int i = 1; i <= 20; i++)
                 {
                     //pair left 
+                    //await save to db
+                    //check if Ng => save image, error
                     var leftArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_1 && e.tray == Global.currentTray);
+                    
                     var leftLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_2 && e.tray == Global.currentTray);
                     AddListPrepareSaveExcel(dataCSV, leftArea, leftLine); //add to list
                     Global.controlPLC.WriteDataToRegister(GetResult(leftArea?.result, leftLine?.result), i - 1); //write register PLC
-                    
 
-                    //pair right
+                    //pair left 
+                    //await save to db area and line
+                    //check if Ng => save image, error
                     var rightArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_3 && e.tray == Global.currentTray);
                     var rightLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_4 && e.tray == Global.currentTray);
                     AddListPrepareSaveExcel(dataCSV, rightArea, rightLine); //add to list
@@ -395,8 +399,8 @@ namespace Stiffiner_Inspection.Services
                 return await _dbContext.Data
                  .AsNoTracking()
                  .Where(d => d.TargetId == targetId &&
-                             d.ResultArea != null && d.ResultArea != EMPTY &&
-                             d.ResultLine != null && d.ResultLine != EMPTY)
+                             d.ResultArea != null &&
+                             d.ResultLine != null)
                  .GroupBy(d => d.TargetId)
                  .Select(g => g.Count())
                  .FirstOrDefaultAsync();

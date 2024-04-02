@@ -145,14 +145,10 @@
                         <div class="first-row d-flex align-items-center justify-content-between">
                             <div class="lbl-counting">Counting</div>
                             <div class="lbl-tray-total">
-                                Target
+                                @* Target *@
+                                Tray Total
                             </div>
-                            <div class="lbl-number">@ViewBag.CurrTargetQty<span style="font-size: 14px;">EA</span></div>
-                        </div>
-
-                        <div class="second-row d-flex align-items-center justify-content-between mb-1">
-                            <div class="title">Tray Total</div>
-                            <div class="w-100 total" id="total-tray-ea">
+                            <div class="lbl-number" id="total-tray-ea">
                                 @ViewBag.TotalTray
                             </div>
                         </div>

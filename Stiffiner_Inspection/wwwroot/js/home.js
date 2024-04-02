@@ -86,7 +86,7 @@ $(function () {
 
         timeouts[client_id] = setTimeout(function () {
             $(".dot-cam-" + client_id).css("background", '#b6b9b6');
-        }, 2000);
+        }, 3000);
     });
 
     //event check status camera pc
@@ -97,7 +97,7 @@ $(function () {
 
         deepcores[client_id] = setTimeout(function () {
             $(".dot-deep-core-" + client_id).css("background", '#b6b9b6');
-        }, 2000);
+        }, 3000);
     });
 
     //event check status camera pc
@@ -106,7 +106,7 @@ $(function () {
         $(".dot-connect-" + clientId).css("background", "#0ad90a")
         clientConnects[clientId] = setTimeout(function () {
             $(".dot-connect-" + clientId).css("background", '#b6b9b6')
-        }, 2000);
+        }, 3000);
     });
 
     //event change plc
@@ -191,27 +191,6 @@ $(function () {
         }
     });
 
-    //event update quantity
-    //connection.on("UpdateStatisticalCalculations", function (totalTray, total, totalOK, totalNG, totalEmpty, percentOK, percentNG, percentChartOk, percentChartNG, percentChartEmpty) {
-    //    $('#total-tray-ea').html(totalTray);
-    //    $('#total-ea').html(`${total}<span class="">EA</span>`);
-    //    $('#total-ok-ea').html(`${totalOK}<span class="">EA</span>`);
-    //    $('#total-ng-ea').html(`${totalNG}<span class="">EA</span>`);
-    //    $('#total-empty-ea').html(`${totalEmpty}<span class="">EA</span>`);
-
-    //    $('#percent-ok').html(`${percentOK} %`);
-    //    $('#percent-ng').html(`${percentNG} %`);
-
-    //    myPieChart.data.datasets[0].data = [percentChartOk, percentChartNG, percentChartEmpty];
-    //    myPieChart.data.labels = ["OK", "NG", "Empty"];
-    //    myPieChart.update('none');
-    //});
-
-    //event alert enough quantity
-    connection.on("AlertEnoughQuantity", function () {
-        alert('enough');
-    })
-
     function appendPreviousTray() {
         let client1 = "";
         let client2 = "";
@@ -226,11 +205,11 @@ $(function () {
 
                 let rs = item.result == STATUS_RESULT.OK ? 'OK'
                     : (item.result == STATUS_RESULT.NG) ? 'NG'
-                        : (item.result == STATUS_RESULT.EMPTY) ? 'Wait' : '';
+                        : (item.result == STATUS_RESULT.EMPTY) ? 'Empty' : '';
 
                 if (clientId == CLIENT.CLIENT_1) {
                     client1 +=
-                        `<span class="${rs.toLowerCase()}">
+                        `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase()}">
                             ${rs}
                         </span>`;
                     return;
@@ -238,7 +217,7 @@ $(function () {
 
                 if (clientId == CLIENT.CLIENT_2) {
                     client2 +=
-                        `<span class="${rs.toLowerCase()}">
+                        `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase() }">
                             ${rs}
                         </span>`;
                     return;
@@ -246,7 +225,7 @@ $(function () {
 
                 if (clientId == CLIENT.CLIENT_3) {
                     client3 +=
-                        `<span class="${rs.toLowerCase()}">
+                        `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase() }">
                             ${rs}
                         </span>`;
                     return;
@@ -254,7 +233,7 @@ $(function () {
 
                 if (clientId == CLIENT.CLIENT_4) {
                     client4 +=
-                        `<span class="${rs.toLowerCase()}">
+                        `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase() }">
                             ${rs}
                         </span>`;
                     return;
@@ -394,7 +373,7 @@ $(function () {
             datasets: [{
                 data: values,
                 backgroundColor: [
-                    '#BE7B72', '#FDAF7B', '#824D74',
+                    '#66b032', '#e4491d', '#9F9F9F',
                 ]
             }]
         },
@@ -469,36 +448,4 @@ $(function () {
             });
     }
     //============= END UPDATE STATISTICAL CALCULATIONS =============
-
-    //test reset all data
-    //$('.btn-apply-target').click(function () {
-    //    $('#time-log table tbody').html(`
-    //        <tr class="time-log-no-data">
-    //            <td colspan="12" class="w-100 text-lg-center text-dark fw-bold mt-1" style="font-size: 14px;">No data</td>
-    //        </tr>
-    //    `)
-
-    //    $('#result-log table tbody').html(`
-    //        <tr class="result-log-no-data">
-    //            <td colspan="12" class="w-100 text-lg-center text-dark fw-bold mt-1" style="font-size: 14px;">No data</td>
-    //        </tr>
-    //    `)
-
-    //    resetCurrentTray()
-    //    resetPreviousTray()
-
-    //    $('#total-tray-ea').html(0);
-    //    $('#total-ea').html(`0<span class="">EA</span>`);
-    //    $('#total-ok-ea').html(`0<span class="">EA</span>`);
-    //    $('#total-ng-ea').html(`0<span class="">EA</span>`);
-    //    $('#total-empty-ea').html(`0<span class="">EA</span>`);
-
-    //    $('#percent-ok').html(`0 %`);
-    //    $('#percent-ng').html(`0 %`);
-
-    //    myPieChart.data.datasets[0].data = [100];
-    //    myPieChart.update('none');
-
-    //    appendPreviousTray();
-    //})
 });

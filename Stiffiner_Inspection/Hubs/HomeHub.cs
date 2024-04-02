@@ -75,20 +75,6 @@ namespace Stiffiner_Inspection.Hubs
                 result.percentChartNG = percentChartNG;
                 result.percentChartEmpty = percentChartEmpty;
 
-                //alert set enough target
-                //if (total >= Global.NumberTarget)
-                //{
-                //    //send alert to client is enough quantity
-                //    await _hubContext.Clients.All.SendAsync("AlertEnoughQuantity");
-
-                //    //send signal to PLC alert enough quantity
-                //    Global.controlPLC.AlertEnoughQuantity(true);
-
-                //    //set global is check is true
-                //    Global.IsEnoughTarget = true;
-                //}
-                //return result;
-
                 return result;
 
             } catch (Exception ex)

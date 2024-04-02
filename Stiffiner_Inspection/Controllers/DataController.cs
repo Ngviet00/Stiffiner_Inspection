@@ -41,33 +41,7 @@ namespace Stiffiner_Inspection.Controllers
 
                 //save db
                 var result = await _dataService.Save(dataDTO);
-
-                //update count total, OK, NG
-                //if (result.ResultArea is not null && result.ResultLine is not null)
-                //{
-                //    int totalTray = await _dataService.GetTotalTray(Global.currentTargetId);
-                //    double total = await _dataService.GetTotal(Global.currentTargetId);
-                //    int totalOK = await _dataService.GettotalOK(Global.currentTargetId);
-                //    int totalNG = await _dataService.GettotalNG(Global.currentTargetId);
-                //    int totalEmpty = await _dataService.GetTotalEmpty(Global.currentTargetId);
-
-                //    double percentOK = Math.Round((totalOK / total) * PERCENT, 2);
-                //    double percentNG = Math.Round((totalNG / total) * PERCENT, 2);
-
-                //    double percentChartOk = _dataService.CalculateChartOK(totalOK, total, totalEmpty);
-                //    double percentChartNG = _dataService.CalculateChartNG(totalNG, total, totalEmpty);
-                //    double percentChartEmpty = total == 0 ? 0 : Math.Round(PERCENT - percentChartNG - percentChartOk, 1);
-
-                //    //gửi lên client
-                //    await _hubContext.Clients.All.SendAsync("UpdateQuantity", totalTray, total, totalOK, totalNG, totalEmpty, percentOK, percentNG, percentChartOk, percentChartNG, percentChartEmpty);
-
-                //    //nếu lớn hơn target => gửi cho client hiển thị thông báo
-                //    if (total >= 2000)
-                //    {
-                //        await _hubContext.Clients.All.SendAsync("AlertEnoughQuantity");
-                //        Global.controlPLC.AlertEnoughQuantity(true);
-                //    }
-                //}
+                
                 return Ok(result);
             }
             catch (Exception ex)
@@ -262,60 +236,6 @@ namespace Stiffiner_Inspection.Controllers
                     Status = 500,
                     Message = ex.Message
                 });
-            }
-        }
-
-        [HttpGet]
-        [Route("get-image")]
-        public IActionResult GetImage(int? clientId, string? path)
-        {
-            try
-            {
-                //string remoteClient = _dataService.GetRemoteClient(clientId);
-                //string url = @"imgs\test_3.bmp";
-                //string remoteImagePath = $@"\\" + remoteClient + url;
-                string remoteImagePath = $@"\\192.168.1.11\ScreenCapture\2024\3\30\NG\14_21_48_914.bmp";
-                
-                // Check if the image file exists
-                if (!System.IO.File.Exists(remoteImagePath))
-                {
-                    return NotFound();
-                }
-
-                // Return the image file as a stream
-                var fileStream = new FileStream(remoteImagePath, FileMode.Open, FileAccess.Read);
-                return File(fileStream, "image/jpeg"); // Adjust content type based on your image format
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error retrieving image: {ex.Message}");
-            }
-        }
-
-        [HttpGet]
-        [Route("get-image-1")]
-        public IActionResult GetImage1(int? clientId, string? path)
-        {
-            try
-            {
-                string remoteClient = _dataService.GetRemoteClient(clientId);
-                string url = @"imgs\test_2.bmp";
-                string remoteImagePath = $@"\\" + remoteClient + url;
-                //string remoteImagePath = $@"\\192.168.0.103\imgs\test_2.bmp";
-
-                // Check if the image file exists
-                if (!System.IO.File.Exists(remoteImagePath))
-                {
-                    return NotFound();
-                }
-
-                // Return the image file as a stream
-                var fileStream = new FileStream(remoteImagePath, FileMode.Open, FileAccess.Read);
-                return File(fileStream, "image/jpeg"); // Adjust content type based on your image format
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error retrieving image: {ex.Message}");
             }
         }
     }

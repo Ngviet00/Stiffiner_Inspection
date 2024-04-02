@@ -94,22 +94,5 @@ namespace Stiffiner_Inspection.Controllers
                 Thread.Sleep(timeSleep);
             }
         }
-
-        public IActionResult ClearData()
-        {
-            Global.controlPLC.Disconneted();
-            return Ok(new {
-                clear = "success"
-            });
-        }
-
-        public IActionResult TestImage()
-        {
-            Global.controlPLC.Disconneted();
-            return Ok(new
-            {
-                clear = "success"
-            });
-        }
     }
 }
