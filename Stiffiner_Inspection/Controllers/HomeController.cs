@@ -1,6 +1,8 @@
 using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using Stiffiner_Inspection.Contexts;
 using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Services;
 
@@ -12,6 +14,7 @@ namespace Stiffiner_Inspection.Controllers
         private readonly DataService _dataService;
         private readonly ErrorCodeService _errorCodeService;
         private readonly ILog _logger = LogManager.GetLogger(typeof(HomeController));
+        private readonly ApplicationDbContext _context;
         const int timeSleep = 100;
         const int PERCENT = 100;
         const int ACTIVE = 1;
@@ -19,12 +22,14 @@ namespace Stiffiner_Inspection.Controllers
         public HomeController(
             IHubContext<HomeHub> hubContext,
             DataService dataService,
-            ErrorCodeService errorCodeService
+            ErrorCodeService errorCodeService,
+            ApplicationDbContext context
         )
         {
             _hubContext = hubContext;
             _dataService = dataService;
             _errorCodeService = errorCodeService;
+            _context = context;
         }
 
         public async Task<IActionResult> Index()
@@ -125,6 +130,37 @@ namespace Stiffiner_Inspection.Controllers
             return Global.StatusCam1 == ACTIVE && Global.StatusCam2 == ACTIVE && Global.StatusCam3 == ACTIVE && Global.StatusCam4 == ACTIVE
                 && Global.ConnectCam1 == ACTIVE && Global.ConnectCam2 == ACTIVE && Global.ConnectCam3 == ACTIVE && Global.ConnectCam4 == ACTIVE
                 && Global.DeepLearningCam1 == ACTIVE && Global.DeepLearningCam2 == ACTIVE && Global.DeepLearningCam3 == ACTIVE && Global.DeepLearningCam4 == ACTIVE;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ClearData()
+        {
+            try
+            {
+                _context.Database.ExecuteSqlRaw("TRUNCATE TABLE errors");
+                _context.Database.ExecuteSqlRaw("TRUNCATE TABLE images");
+                _context.Database.ExecuteSqlRaw("DELETE FROM data");
+                _context.Database.ExecuteSqlRaw("DBCC CHECKIDENT ('stiffiner_inspection.dbo.data', RESEED, 0)");
+
+                string folderPath = @"D:\publish_image\images";
+
+                // Check if the directory exists
+                if (Directory.Exists(folderPath))
+                {
+                    await Task.Run(() => Directory.Delete(folderPath, true));
+                    Directory.CreateDirectory(folderPath);
+                } else
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
+                return RedirectToAction("Index");
+            } catch (Exception ex)
+            {
+                _logger.Error("Error can not delete all data: " + ex.Message);
+                return RedirectToAction("Index");
+            }
+           
         }
     }
 }
