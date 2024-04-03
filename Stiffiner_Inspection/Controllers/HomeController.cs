@@ -109,6 +109,10 @@ namespace Stiffiner_Inspection.Controllers
                 if (CheckConditionVisionBusy() == false)
                 {
                     Global.controlPLC.VisionBusy(true);
+                } 
+                else
+                {
+                    Global.controlPLC.VisionBusy(false);
                 }
 
                 Thread.Sleep(1300);
