@@ -17,11 +17,11 @@ namespace Stiffiner_Inspection.Hubs
             _dataService = dataService;
         }
 
-        public async Task<List<ImageResponse>> DownloadFile(List<Image> images)
+        public List<ImageResponse> DownloadFile(List<Image> images)
         {
             try
             {
-                return await _dataService.DownloadFile(images);
+                return _dataService.DownloadFile(images);
             }
             catch (Exception ex)
             {

@@ -1,4 +1,22 @@
-﻿.history .cam-is-active {
+﻿.history .skeleton .line {
+  height: 40px;
+  margin-bottom: 6px;
+  border-radius: 2px;
+  background: rgba(150, 130, 130, 0.2);
+  background: -webkit-gradient(linear, left top, right top, color-stop(8%, rgba(130, 130, 130, 0.2)), color-stop(18%, rgba(130, 130, 130, 0.3)), color-stop(33%, rgba(130, 130, 130, 0.2)));
+  background: linear-gradient(to right, rgba(130, 130, 130, 0.2) 8%, rgba(130, 130, 130, 0.3) 18%, rgba(130, 130, 130, 0.2) 33%);
+  background-size: 800px 100px;
+  animation: wave-lines 2s infinite ease-out;
+}
+@keyframes wave-lines {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+.history .cam-is-active {
   background: #0ad90a !important;
 }
 .history .genera-title {
@@ -464,7 +482,7 @@
   opacity: 0.8;
 }
 .history #inspection-statistical #result .image {
-  min-width: 904px !important;
+  min-width: 1050px !important;
   flex-direction: column;
   flex-basis: 40%;
   border: 1px solid #8e93cd;
@@ -488,8 +506,8 @@
 .history #inspection-statistical #result .info-error {
   margin-top: 46px;
   border: 1px solid #8e93cd;
-  width: 100%;
-  margin-left: 3em;
+  width: 80%;
+  margin-left: 1em;
   padding: 25px 15px 15px 22px;
 }
 .history #inspection-statistical #result .info-error #title {
@@ -504,7 +522,7 @@
   margin-bottom: 8px;
   display: inline-block;
 }
-.history #inspection-statistical #result .info-error .info .information, .history #inspection-statistical #result .info-error .info .position, .history #inspection-statistical #result .info-error .info .side, .history #inspection-statistical #result .info-error .info .title-ng-detail {
+.history #inspection-statistical #result .info-error .info .information, .history #inspection-statistical #result .info-error .info .position, .history #inspection-statistical #result .info-error .info .side, .history #inspection-statistical #result .info-error .info .tray-number, .history #inspection-statistical #result .info-error .info .result-item, .history #inspection-statistical #result .info-error .info .title-ng-detail {
   font-weight: bold;
   color: #667085;
   font-size: 14px;

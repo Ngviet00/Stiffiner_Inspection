@@ -474,66 +474,36 @@ namespace Stiffiner_Inspection.Services
             return total == 0 ? 0 : Math.Round(100 - percentNG - percentOK, 2);
         }
 
-        public async Task<List<ImageResponse>?> DownloadFile(List<Image> images)
+        public List<ImageResponse>? DownloadFile(List<Image> images)
         {
             try
             {
-                string imageUrl = "http://192.168.1.11:8881/ScreenCapture/2024/4/2/NG/13_41_15_494.bmp";
+                List<ImageResponse> imgsResponse = new List<ImageResponse>();
 
-                string savePath = @"D:\publish_image\images\";
+                string rootPath = @"D:\publish_image\images\";
 
                 using (WebClient client = new WebClient())
                 {
-                    try
+                    foreach (var item in images)
                     {
-                        client.DownloadFile(imageUrl, savePath + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + ".bmp");
-                        Console.WriteLine("Image downloaded successfully.");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error downloading image: {ex.Message}");
+                        if (item?.Path?.Trim() != "No_save")
+                        {
+                            string imageUrl = GetImageRemote(item);
+
+                            string fileName = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_fff") + ".bmp";
+
+                            client.DownloadFile(imageUrl, rootPath + fileName);
+
+                            imgsResponse.Add(new ImageResponse
+                            {
+                                client_id = item.ClientId,
+                                path = "https://localhost:8889/" + fileName
+                            });
+                        }
                     }
                 }
 
-                List<ImageResponse> imgsResponse = new List<ImageResponse>();
-
                 return imgsResponse;
-
-                //List<ImageResponse> imgsResponse = new List<ImageResponse>();
-
-                //string rootPath = @"D:\publish_image\images\";
-
-                //using (WebClient client = new WebClient())
-                //{
-                //    //foreach (var item in images)
-                //    //{
-                //    //    string url = "http://192.168.1.11:8881/1.bmp";
-
-                //    //    string fileName = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_ff") + ".bmp";
-
-                //    //    client.DownloadFile(url, rootPath + fileName);
-
-                //    //    imgsResponse.Add(new ImageResponse
-                //    //    {
-                //    //        client_id = item.ClientId,
-                //    //        path = "https://localhost:8089/images/" + fileName
-                //    //    });
-                //    //}
-
-                //    string url = "http://192.168.1.11:8881/1.bmp";
-
-                //    string fileName = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_ff") + ".bmp";
-
-                //    client.DownloadFile(url, rootPath + fileName);
-
-                //    imgsResponse.Add(new ImageResponse
-                //    {
-                //        client_id = 1,
-                //        path = "https://localhost:8889/" + fileName
-                //    });
-
-                //    return imgsResponse;
-                //}
             }
             catch (Exception ex)
             {
@@ -542,8 +512,12 @@ namespace Stiffiner_Inspection.Services
             }
         }
 
-        //remove
-        public string GetRemoteClient(int? clientId)
+        public string GetImageRemote(Image? img)
+        {
+            return FormatClient(img.ClientId) + ConvertPathImage(img?.Path);
+        }
+
+        public string FormatClient(int? clientId)
         {
             switch (clientId)
             {
@@ -553,15 +527,14 @@ namespace Stiffiner_Inspection.Services
                     return "http://192.168.1.22:8881/";
                 case 3:
                     return "http://192.168.1.33:8881/";
-                case 4:
+                default:
                     return "http://192.168.1.44:8881/";
             }
-
-            return "";
         }
 
-        static string ConvertPathImage(string fullPath)
+        static string ConvertPathImage(string? fullPath)
         {
+            fullPath = fullPath?.Trim();
             int index = fullPath.IndexOf("ScreenCapture");
 
             if (index != -1)
