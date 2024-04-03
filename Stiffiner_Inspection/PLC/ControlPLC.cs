@@ -207,7 +207,8 @@ namespace Stiffiner_Inspection
         public void VisionBusy(bool status)
         {
             //busy = 1, ready 0
-            int data = status ? 0 : 1;
+            //vision busy true, 1
+            int data = status ? 1 : 0;
             _plc.SetDevice(REG_Vision_Busy, data);
         }
 

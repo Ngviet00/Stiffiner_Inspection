@@ -202,11 +202,11 @@ namespace Stiffiner_Inspection.Controllers
 
         [Route("deep-core")]
         [HttpPost]
-        public async Task<IActionResult> DeepCore(int client_id, int status = 1)
+        public async Task<IActionResult> DeepCore(int client_id, int status)
         {
             try
             {
-                _dataService.ChangeDeepLearningVisionBusy(client_id, status);
+                _dataService.ChangeDeepLearningVisionBusy(client_id, 1);
                 await _hubContext.Clients.All.SendAsync("deepcore", client_id, status);
 
                 return Ok(new
