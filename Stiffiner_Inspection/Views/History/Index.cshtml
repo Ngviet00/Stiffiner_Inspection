@@ -238,7 +238,10 @@
                     $('.skeleton').addClass('d-none');
                 }).catch(function (err) {
                     return console.error(err.toString());
-                });
+                })
+                .finally(function () {
+                    $('.skeleton').addClass('d-none');
+                });;
             }
         }
 

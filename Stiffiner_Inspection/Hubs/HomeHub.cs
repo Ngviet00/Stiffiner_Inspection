@@ -20,28 +20,28 @@ namespace Stiffiner_Inspection.Hubs
             _hubContext = hubContext;
         }
 
-        public async Task AddNewTarget(int targetValue)
-        {
-            try
-            {
-                await _targetService.InsertTargetQty(Global.currentTargetId, targetValue);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("Add new target failed: " + ex);
-            }
-        }
-        public async Task UpdateTarget(int targetValue)
-        {
-            try
-            {
-                await _targetService.UpdateTargetQty(Global.currentTargetId, targetValue);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("Update target failed: " + ex);
-            }
-        }
+        //public async Task AddNewTarget(int targetValue)
+        //{
+        //    try
+        //    {
+        //        await _targetService.InsertTargetQty(Global.currentTargetId, targetValue);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.Error("Add new target failed: " + ex);
+        //    }
+        //}
+        //public async Task UpdateTarget(int targetValue)
+        //{
+        //    try
+        //    {
+        //        await _targetService.UpdateTargetQty(Global.currentTargetId, targetValue);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.Error("Update target failed: " + ex);
+        //    }
+        //}
 
         public async Task<StatisticalCalculationsResponse?> UpdateStatistical(string message)
         {
@@ -81,6 +81,41 @@ namespace Stiffiner_Inspection.Hubs
             {
                 _logger.Error("Update statistical calculations failed: " + ex.Message);
                 return null;
+            }
+        }
+
+        public void ChangeDeepCoreVisionBusy(int clientId, int status)
+        {
+            try
+            {
+                _dataService.ChangeDeepLearningVisionBusy(clientId, status);
+            } catch (Exception ex)
+            {
+                Console.WriteLine("Error can not change status vision busy:" + ex.Message);
+            }
+        }
+
+        public void ChangeStatusCamVisionBusy(int clientId, int status)
+        {
+            try
+            {
+                _dataService.ChangeStatusCamVisionBusy(clientId, status);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error can not change status vision busy:" + ex.Message);
+            }
+        }
+
+        public void ChangeConnectVisionBusy(int clientId, int status)
+        {
+            try
+            {
+                _dataService.ChangeConnectVisionBusy(clientId, status);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error can not change status vision busy:" + ex.Message);
             }
         }
     }

@@ -36,5 +36,23 @@ namespace Stiffiner_Inspection
 
         public static bool IsEnoughTarget { get; set; } = false;
         public static int NumberTarget { get; set; } = 0;
+
+        //status CAM
+        public static int StatusCam1 { get; set; } = 0;
+        public static int StatusCam2 { get; set; } = 0;
+        public static int StatusCam3 { get; set; } = 0;
+        public static int StatusCam4 { get; set; } = 0;
+
+        //connect
+        public static int ConnectCam1 { get; set; } = 0;
+        public static int ConnectCam2 { get; set; } = 0;
+        public static int ConnectCam3 { get; set; } = 0;
+        public static int ConnectCam4 { get; set; } = 0;
+
+        //deep-learning
+        public static int DeepLearningCam1 { get; set; } = 0;
+        public static int DeepLearningCam2 { get; set; } = 0;
+        public static int DeepLearningCam3 { get; set; } = 0;
+        public static int DeepLearningCam4 { get; set; } = 0;
     }
 }

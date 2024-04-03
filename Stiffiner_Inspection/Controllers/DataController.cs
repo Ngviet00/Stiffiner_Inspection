@@ -17,6 +17,11 @@ namespace Stiffiner_Inspection.Controllers
         private readonly IHubContext<HomeHub> _hubContext;
         const int PERCENT = 100;
 
+        const int CLIENT_1 = 1;
+        const int CLIENT_2 = 2;
+        const int CLIENT_3 = 3;
+        const int CLIENT_4 = 4;
+
         public DataController(DataService dataService, IHubContext<HomeHub> hubContext)
         {
             _dataService = dataService;
@@ -62,6 +67,7 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
+                _dataService.ChangeStatusCamVisionBusy(client_id, 1);
                 await _hubContext.Clients.All.SendAsync("ChangeCAM", client_id, status);
 
                 return Ok(new
@@ -133,6 +139,7 @@ namespace Stiffiner_Inspection.Controllers
                 }
 
                 await _hubContext.Clients.All.SendAsync("ChangeClientConnect", clientId);
+                _dataService.ChangeConnectVisionBusy(clientId, 1);
 
                 return Ok(new
                 {
@@ -199,6 +206,7 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
+                _dataService.ChangeDeepLearningVisionBusy(client_id, status);
                 await _hubContext.Clients.All.SendAsync("deepcore", client_id, status);
 
                 return Ok(new

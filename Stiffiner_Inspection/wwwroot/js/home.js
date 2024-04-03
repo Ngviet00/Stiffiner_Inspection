@@ -86,10 +86,17 @@ $(function () {
 
         timeouts[client_id] = setTimeout(function () {
             $(".dot-cam-" + client_id).css("background", '#b6b9b6');
-        }, 3000);
+            connection.invoke("ChangeStatusCamVisionBusy", client_id, 0)
+                .then(function (res) {
+
+                })
+                .catch(function (err) {
+                    console.error("Error calling API:", err.toString());
+                });
+        }, 500);
     });
 
-    //event check status camera pc
+    //event deep learning
     connection.on("deepcore", (client_id, status) => {
         clearTimeout(deepcores[client_id]);
 
@@ -97,7 +104,14 @@ $(function () {
 
         deepcores[client_id] = setTimeout(function () {
             $(".dot-deep-core-" + client_id).css("background", '#b6b9b6');
-        }, 3000);
+            connection.invoke("ChangeDeepCoreVisionBusy", client_id, 0)
+                .then(function (res) {
+                    
+                })
+                .catch(function (err) {
+                    console.error("Error calling API:", err.toString());
+                });
+        }, 500);
     });
 
     //event check status camera pc
@@ -106,7 +120,14 @@ $(function () {
         $(".dot-connect-" + clientId).css("background", "#0ad90a")
         clientConnects[clientId] = setTimeout(function () {
             $(".dot-connect-" + clientId).css("background", '#b6b9b6')
-        }, 3000);
+            connection.invoke("ChangeConnectVisionBusy", client_id, 0)
+                .then(function (res) {
+
+                })
+                .catch(function (err) {
+                    console.error("Error calling API:", err.toString());
+                });
+        }, 500);
     });
 
     //event change plc

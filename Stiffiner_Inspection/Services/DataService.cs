@@ -548,5 +548,86 @@ namespace Stiffiner_Inspection.Services
                 return fullPath;
             }
         }
+
+        public void ChangeStatusCamVisionBusy(int clientId, int status)
+        {
+            if (clientId == CLIENT_1)
+            {
+                Global.StatusCam1 = status;
+                return;
+            }
+
+            if (clientId == CLIENT_2)
+            {
+                Global.StatusCam2 = status;
+                return;
+            }
+
+            if (clientId == CLIENT_3)
+            {
+                Global.StatusCam3 = status;
+                return;
+            }
+
+            if (clientId == CLIENT_4)
+            {
+                Global.StatusCam4 = status;
+                return;
+            }
+        }
+
+        public void ChangeConnectVisionBusy(int clientId, int status)
+        {
+            if (clientId == CLIENT_1)
+            {
+                Global.ConnectCam1 = status;
+                return;
+            }
+
+            if (clientId == CLIENT_2)
+            {
+                Global.ConnectCam2 = status;
+                return;
+            }
+
+            if (clientId == CLIENT_3)
+            {
+                Global.ConnectCam3 = status;
+                return;
+            }
+
+            if (clientId == CLIENT_4)
+            {
+                Global.ConnectCam4 = status;
+                return;
+            }
+        }
+
+        public void ChangeDeepLearningVisionBusy(int clientId, int status)
+        {
+            if (clientId == CLIENT_1)
+            {
+                Global.DeepLearningCam1 = status;
+                return;
+            }
+
+            if (clientId == CLIENT_2)
+            {
+                Global.DeepLearningCam2 = status;
+                return;
+            }
+
+            if (clientId == CLIENT_3)
+            {
+                Global.DeepLearningCam3 = status;
+                return;
+            }
+
+            if (clientId == CLIENT_4)
+            {
+                Global.DeepLearningCam4 = status;
+                return;
+            }
+        }
     }
 }

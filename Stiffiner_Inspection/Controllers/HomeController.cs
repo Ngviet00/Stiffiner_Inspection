@@ -14,6 +14,7 @@ namespace Stiffiner_Inspection.Controllers
         private readonly ILog _logger = LogManager.GetLogger(typeof(HomeController));
         const int timeSleep = 100;
         const int PERCENT = 100;
+        const int ACTIVE = 1;
 
         public HomeController(
             IHubContext<HomeHub> hubContext,
@@ -49,6 +50,12 @@ namespace Stiffiner_Inspection.Controllers
             resetClient.IsBackground = true;
             resetClient.Name = "RESET_CLIENT";
             resetClient.Start();
+
+            //vision busy
+            Thread visionBusy = new Thread(VisionBusy);
+            visionBusy.IsBackground = true;
+            visionBusy.Name = "VISION_BUSY";
+            visionBusy.Start();
 
             double total = await _dataService.GetTotal(currtarget);
 
@@ -93,6 +100,44 @@ namespace Stiffiner_Inspection.Controllers
                 await _hubContext.Clients.All.SendAsync("ChangeStatusPLC", Global.valuePLC);
                 Thread.Sleep(timeSleep);
             }
+        }
+
+        public void VisionBusy()
+        {
+            while (true)
+            {
+                if (CheckConditionVisionBusy())
+                {
+                    Global.controlPLC.VisionBusy(false);
+                }
+                else
+                {
+                    Global.controlPLC.VisionBusy(true);
+                }
+
+                Thread.Sleep(1000);
+            }
+        }
+
+        //true is not busy, false is busy
+        public bool CheckConditionVisionBusy()
+        {
+            if (Global.StatusCam1 != ACTIVE || Global.StatusCam2 != ACTIVE || Global.StatusCam3 != ACTIVE || Global.StatusCam4 != ACTIVE)
+            {
+                return false;
+            }
+
+            if (Global.ConnectCam1 != ACTIVE || Global.ConnectCam2 != ACTIVE || Global.ConnectCam3 != ACTIVE || Global.ConnectCam4 != ACTIVE)
+            {
+                return false;
+            }
+
+            if (Global.DeepLearningCam1 != ACTIVE || Global.DeepLearningCam2 != ACTIVE || Global.DeepLearningCam3 != ACTIVE || Global.DeepLearningCam4 != ACTIVE)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
