@@ -497,7 +497,7 @@ namespace Stiffiner_Inspection.Services
                             imgsResponse.Add(new ImageResponse
                             {
                                 client_id = item.ClientId,
-                                path = "https://localhost:8889/" + fileName
+                                path = "https://localhost:8089/images/" + fileName
                             });
                         }
                     }
