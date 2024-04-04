@@ -93,7 +93,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 1000);
+        }, 2000);
     });
 
     //event deep learning
@@ -111,7 +111,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 1000);
+        }, 2000);
     });
 
     //event check status camera pc
@@ -127,7 +127,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 1000);
+        }, 2000);
     });
 
     //event change plc

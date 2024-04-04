@@ -120,16 +120,29 @@ namespace Stiffiner_Inspection.Controllers
                     Global.controlPLC.VisionBusy(false);
                 }
 
-                Thread.Sleep(1300);
+                Thread.Sleep(2000);
             }
         }
 
         //true is not busy, false is busy
         public bool CheckConditionVisionBusy()
         {
-            return Global.StatusCam1 == ACTIVE && Global.StatusCam2 == ACTIVE && Global.StatusCam3 == ACTIVE && Global.StatusCam4 == ACTIVE
-                && Global.ConnectCam1 == ACTIVE && Global.ConnectCam2 == ACTIVE && Global.ConnectCam3 == ACTIVE && Global.ConnectCam4 == ACTIVE
-                && Global.DeepLearningCam1 == ACTIVE && Global.DeepLearningCam2 == ACTIVE && Global.DeepLearningCam3 == ACTIVE && Global.DeepLearningCam4 == ACTIVE;
+            if (Global.StatusCam1 != ACTIVE || Global.StatusCam2 != ACTIVE || Global.StatusCam3 != ACTIVE || Global.StatusCam4 != ACTIVE)
+            {
+                return false;
+            }
+
+            if (Global.ConnectCam1 != ACTIVE || Global.ConnectCam2 != ACTIVE || Global.ConnectCam3 != ACTIVE || Global.ConnectCam4 != ACTIVE)
+            {
+                return false;
+            }
+
+            if (Global.DeepLearningCam1 != ACTIVE || Global.DeepLearningCam2 != ACTIVE || Global.DeepLearningCam3 != ACTIVE || Global.DeepLearningCam4 != ACTIVE)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         [HttpPost]

@@ -138,8 +138,8 @@ namespace Stiffiner_Inspection.Controllers
                     result = Global.resetPLC4;
                 }
 
-                await _hubContext.Clients.All.SendAsync("ChangeClientConnect", clientId);
                 _dataService.ChangeConnectVisionBusy(clientId, 1);
+                await _hubContext.Clients.All.SendAsync("ChangeClientConnect", clientId);
 
                 return Ok(new
                 {
