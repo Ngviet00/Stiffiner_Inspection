@@ -13,17 +13,19 @@ namespace Stiffiner_Inspection
         private bool isExist = false;
         private const int timeSleep = 100;
         private readonly ILog _logger = LogManager.GetLogger(typeof(ControlPLC));
+        private static Timer timer;
 
         // Register read
         private const string REG_PLC_Read_STATUS = "D20";
         private const string REG_PLC_RefeshData = "M2010";
         private const string REG_PLC_EndInspection = "M2008";
         private const string REG_PLC_VisionDoneInspection = "M240";
-
+        
         // Register Write
         private const string REG_PLC_Write = "D";
         private const int REG_PLC_Start = 900;
         private const string REG_Vision_Busy = "M420";
+        private const string REG_PLC_NOT_ENOUGHT_TRAY = "M421";
 
         private bool isStart = false;
         private bool isEMG = false;
@@ -103,23 +105,40 @@ namespace Stiffiner_Inspection
 
                     TurnOnLightControl();
                     isStartHistory = true;
-                } else
+                } 
+                else
                 {
                     Global.resetClient = 0;
                 }
 
                 // Check End Insection signal
-                valueReaded = 0;
-                _plc.GetDevice(REG_PLC_EndInspection, out valueReaded);
-                if (valueReaded == 0) isEndHistory = false;
+                int valueReadedEndInspection = 0;
+                _plc.GetDevice(REG_PLC_EndInspection, out valueReadedEndInspection);
+                if (valueReadedEndInspection == 0) isEndHistory = false;
                 //kiem tra neu start nhan thi gui cho clent tin hieu star de clear tray
-                if (!isEndHistory && valueReaded == 1)
+                if (!isEndHistory && valueReadedEndInspection == 1)
                 {
                     isEndHistory = true;
                     TurnOffLightControl();
+
+                    if (Global.CurrentTrayData.Count != 40)
+                    {
+                        //after 8 second, check enough tray
+                        timer = new Timer(CheckEnoughTray, null, 4000, Timeout.Infinite);
+                        _logger.Error("M2008 is ON");
+                    }
                 }
 
                 Thread.Sleep(timeSleep);
+            }
+        }
+
+        private void CheckEnoughTray(object state)
+        {
+            if (Global.CurrentTrayData.Count != 40)
+            {
+                _logger.Error("Count number current tray data:" + Global.CurrentTrayData.Count);
+                VisionNotEnoughTray();
             }
         }
 
@@ -215,6 +234,12 @@ namespace Stiffiner_Inspection
         public void VisionDoneIns()
         {
             _plc.SetDevice(REG_PLC_VisionDoneInspection, 1); // DA Inspection xong
+        }
+
+        public void VisionNotEnoughTray()
+        {
+            _logger.Error("function vision not enough quantity tray");
+            _plc.SetDevice(REG_PLC_NOT_ENOUGHT_TRAY, 1);                
         }
 
         //public void WriteSampleStatusByIndex(eRunStatus sampleStatus, int index)

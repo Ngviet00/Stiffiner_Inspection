@@ -34,9 +34,6 @@ namespace Stiffiner_Inspection
 
         public static List<DataDTO> CurrentTrayData = new List<DataDTO>();
 
-        public static bool IsEnoughTarget { get; set; } = false;
-        public static int NumberTarget { get; set; } = 0;
-
         //status CAM
         public static int StatusCam1 { get; set; } = 0;
         public static int StatusCam2 { get; set; } = 0;
@@ -54,5 +51,7 @@ namespace Stiffiner_Inspection
         public static int DeepLearningCam2 { get; set; } = 0;
         public static int DeepLearningCam3 { get; set; } = 0;
         public static int DeepLearningCam4 { get; set; } = 0;
+
+
     }
 }

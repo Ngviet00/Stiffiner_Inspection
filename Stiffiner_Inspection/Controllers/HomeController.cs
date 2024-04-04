@@ -42,7 +42,7 @@ namespace Stiffiner_Inspection.Controllers
             ViewBag.currentTray = currentTrayId;
             Global.currentTray = currentTrayId;
 
-            Global.controlPLC.Connect();
+            //Global.controlPLC.Connect();
 
             //Thread read value plc
             Thread threadValuePLC = new Thread(GetValuePLC);
