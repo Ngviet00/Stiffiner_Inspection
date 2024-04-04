@@ -129,6 +129,10 @@
                 console.error(err.toString())
             });
 
+        connection.on("RefreshData", function () {
+            location.reload();
+        });
+
         const data = @Html.Raw(Json.Serialize(ViewBag.GroupedData));
 
         const lengthArr = data.length;

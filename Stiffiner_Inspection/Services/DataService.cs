@@ -20,6 +20,7 @@ namespace Stiffiner_Inspection.Services
     public class DataService
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IHubContext<HistoryHub> _historyContext;
         private readonly ILog _logger = LogManager.GetLogger(typeof(DataService));
 
         const int CLIENT_1 = 1;
@@ -33,9 +34,10 @@ namespace Stiffiner_Inspection.Services
 
         const int PERCENT = 100;
 
-        public DataService(ApplicationDbContext dbContext, IHubContext<HomeHub> hubContext)
+        public DataService(ApplicationDbContext dbContext, IHubContext<HomeHub> hubContext, IHubContext<HistoryHub> historyContext)
         {
             _dbContext = dbContext;
+            _historyContext = historyContext;
         }
 
         public async Task<Data> Save(DataDTO dataDTO)
@@ -243,6 +245,7 @@ namespace Stiffiner_Inspection.Services
                     //if enough 40 item => save to excel
                     if (dataCSV.Count == 40)
                     {
+                        await _historyContext.Clients.All.SendAsync("RefreshData");
                         await SaveToExcel(dataCSV);
                     }
                 }
