@@ -118,5 +118,17 @@ namespace Stiffiner_Inspection.Hubs
                 Console.WriteLine("Error can not change status vision busy:" + ex.Message);
             }
         }
+
+        public void ChangeModel(int model)
+        {
+            try
+            {
+                Global.currentSelectedModel = model;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error can not change model:" + ex.Message);
+            }
+        }
     }
 }

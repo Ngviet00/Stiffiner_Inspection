@@ -48,7 +48,7 @@ namespace Stiffiner_Inspection.Controllers
 
                 //save db
                 var result = await _dataService.Save(dataDTO);
-                
+
                 return Ok(result);
             }
             catch (Exception ex)
@@ -225,7 +225,7 @@ namespace Stiffiner_Inspection.Controllers
             }
         }
 
-        [Route("config")]
+        [Route("get-config")]
         [HttpGet]
         public IActionResult GetConfig()
         {
@@ -234,9 +234,9 @@ namespace Stiffiner_Inspection.Controllers
                 return Ok(new
                 {
                     status = 200,
-                    message = "Send API Success",
-                    type_model = 1,
-                    model = "Stiffiner"
+                    message = "success",
+                    type_model = Global.currentSelectedModel,
+                    name_model = Global.currentSelectedModel == 1 ? "Stiffener Inspection" : "Stiffener Inspection V2"
                 });
             }
             catch (Exception ex)

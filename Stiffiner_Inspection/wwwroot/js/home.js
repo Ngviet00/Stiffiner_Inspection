@@ -469,4 +469,14 @@ $(function () {
             });
     }
     //============= END UPDATE STATISTICAL CALCULATIONS =============
+
+    $('#select-model').change(function () {
+        var selectedValue = parseInt($(this).val());
+        connection.invoke("ChangeModel", selectedValue).then(function (res) {
+            alert("Change model successfully!");
+        }).catch(function (err) {
+            console.error("Error calling API:", err.toString());
+        });
+    });
+
 });

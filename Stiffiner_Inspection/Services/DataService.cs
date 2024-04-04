@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Ajax.Utilities;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -267,9 +268,9 @@ namespace Stiffiner_Inspection.Services
 
         private async Task SaveToExcel(List<DataCSV> dataCSV)
         {
-            string directoryPath = Global.directoryPath;
-            string fileName = Global.fileNameCSV;
-            string filePath = Path.Combine(directoryPath, fileName);
+            string directoryPath = @"D:\Export_Result\" + DateTime.Now.ToString(@"yyyy_MM_dd");
+            string fileNameCSV = "MAY_1_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + "_stiffiner.csv";
+            string filePath = Path.Combine(directoryPath, fileNameCSV);
 
             if (!Directory.Exists(directoryPath))
             {

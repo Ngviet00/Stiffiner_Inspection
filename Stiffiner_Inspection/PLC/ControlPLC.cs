@@ -101,7 +101,6 @@ namespace Stiffiner_Inspection
                     Global.resetClient = 1;
                     Global.currentTray++;
                     Global.CurrentTrayData.Clear();
-                    Global.fileNameCSV = "MAY_1_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + "_stiffiner.csv";
 
                     TurnOnLightControl();
                     isStartHistory = true;

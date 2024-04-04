@@ -29,9 +29,6 @@ namespace Stiffiner_Inspection
 
         public static int currentTargetId { get; set; } = 1;
 
-        public static string directoryPath = @"D:\Export_Result";
-        public static string fileNameCSV = "test.csv";
-
         public static List<DataDTO> CurrentTrayData = new List<DataDTO>();
 
         //status CAM
@@ -52,6 +49,6 @@ namespace Stiffiner_Inspection
         public static int DeepLearningCam3 { get; set; } = 0;
         public static int DeepLearningCam4 { get; set; } = 0;
 
-
+        public static int currentSelectedModel = 1;
     }
 }
