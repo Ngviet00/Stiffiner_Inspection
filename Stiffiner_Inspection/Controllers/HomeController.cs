@@ -162,10 +162,13 @@ namespace Stiffiner_Inspection.Controllers
                 {
                     await Task.Run(() => Directory.Delete(folderPath, true));
                     Directory.CreateDirectory(folderPath);
-                } else
+                }
+                else
                 {
                     Directory.CreateDirectory(folderPath);
                 }
+
+                await _dataService.RefreshHistoryWhenClearData();
 
                 return RedirectToAction("Index");
             } catch (Exception ex)

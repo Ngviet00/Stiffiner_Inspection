@@ -245,13 +245,15 @@ namespace Stiffiner_Inspection.Services
                     //if enough 40 item => save to excel
                     if (dataCSV.Count == 40)
                     {
-                        await _historyContext.Clients.All.SendAsync("RefreshData");
                         await SaveToExcel(dataCSV);
                     }
                 }
 
                 //ater vision done, send signal
                 Global.controlPLC.VisionDoneIns();
+
+                //after vision done, call method refresh data in history page
+                await _historyContext.Clients.All.SendAsync("RefreshData");
             }
         }
 
@@ -262,7 +264,7 @@ namespace Stiffiner_Inspection.Services
                 model = "Stiffiner",
                 time = dataArea?.time,
                 index = dataArea?.client_id == CLIENT_1 || dataArea?.client_id == CLIENT_2 ? dataArea.index : dataArea.index + 20,
-                result_area = dataArea.result == 1 ? "OK" : (dataArea.result == 2 ? "NG" : "Empty"),
+                result_area = dataArea?.result == 1 ? "OK" : (dataArea?.result == 2 ? "NG" : "Empty"),
                 result_line = dataLine?.result == 1 ? "OK" : (dataLine?.result == 2 ? "NG" : "Empty"),
                 image = dataArea?.image + "," + dataLine?.image,
                 errors = dataArea?.error + "," + dataLine?.error
@@ -551,6 +553,11 @@ namespace Stiffiner_Inspection.Services
             {
                 return fullPath;
             }
+        }
+
+        public async Task RefreshHistoryWhenClearData()
+        {
+            await _historyContext.Clients.All.SendAsync("RefreshData");
         }
 
         public void ChangeStatusCamVisionBusy(int clientId, int status)

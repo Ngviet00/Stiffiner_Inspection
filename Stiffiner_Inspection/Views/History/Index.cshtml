@@ -241,6 +241,8 @@
 
                     $('.skeleton').addClass('d-none');
                 }).catch(function (err) {
+                    $('#err-image-area').append(`<div style="font-weight: 700;text-align: center;color: #b90000;">Error can not get image!</div>`)
+                    $('#err-image-line').append(`<div style="font-weight: 700;text-align: center;color: #b90000;">Error can not get image!</div>`)
                     return console.error(err.toString());
                 })
                 .finally(function () {
