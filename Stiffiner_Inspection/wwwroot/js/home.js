@@ -213,64 +213,141 @@ $(function () {
     });
 
     function appendPreviousTray() {
+        //let client1 = "";
+        //let client2 = "";
+        //let client3 = "";
+        //let client4 = "";
+
+        //let arrClient1 = previousTray.filter(item => item.client_id == CLIENT.CLIENT_1)
+        //let arrClient2 = previousTray.filter(item => item.client_id == CLIENT.CLIENT_2)
+        //let arrClient3 = previousTray.filter(item => item.client_id == CLIENT.CLIENT_3)
+        //let arrClient4 = previousTray.filter(item => item.client_id == CLIENT.CLIENT_4)
+
+        //if (arrClient1.length > 0) {
+        //    for (let i = 1; i <= 20; i++) {
+        //        let found = arrClient1.find(obj => obj.index == i);
+
+        //        if (found) {
+        //            let rs = found.result == STATUS_RESULT.OK ? 'OK' : (found.result == STATUS_RESULT.NG) ? 'NG' : (found.result == STATUS_RESULT.EMPTY) ? 'Empty' : '';
+        //            client1 += `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase()}">${rs}</span>`;
+        //        } else {
+        //            client1 += `<span class="wait">Wait</span>`;
+        //        }
+        //    }
+        //}
+
+        //if (arrClient2.length > 0) {
+        //    for (let i = 1; i <= 20; i++) {
+        //        let found = arrClient2.find(obj => obj.index == i);
+
+        //        if (found) {
+        //            let rs = found.result == STATUS_RESULT.OK ? 'OK' : (found.result == STATUS_RESULT.NG) ? 'NG' : (found.result == STATUS_RESULT.EMPTY) ? 'Empty' : '';
+        //            client2 += `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase()}">${rs}</span>`;
+        //        } else {
+        //            client2 += `<span class="wait">Wait</span>`;
+        //        }
+        //    }
+        //}
+
+        //if (arrClient3.length > 0) {
+        //    for (let i = 1; i <= 20; i++) {
+        //        let found = arrClient3.find(obj => obj.index == i);
+
+        //        if (found) {
+        //            let rs = found.result == STATUS_RESULT.OK ? 'OK' : (found.result == STATUS_RESULT.NG) ? 'NG' : (found.result == STATUS_RESULT.EMPTY) ? 'Empty' : '';
+        //            client3 += `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase()}">${rs}</span>`;
+        //        } else {
+        //            client3 += `<span class="wait">Wait</span>`;
+        //        }
+        //    }
+        //}
+
+        //if (arrClient4.length > 0) {
+        //    for (let i = 1; i <= 20; i++) {
+        //        let found = arrClient4.find(obj => obj.index == i);
+
+        //        if (found) {
+        //            let rs = found.result == STATUS_RESULT.OK ? 'OK' : (found.result == STATUS_RESULT.NG) ? 'NG' : (found.result == STATUS_RESULT.EMPTY) ? 'Empty' : '';
+        //            client4 += `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase()}">${rs}</span>`;
+        //        } else {
+        //            client4 += `<span class="wait">Wait</span>`;
+        //        }
+        //    }
+        //}
+
+        //$('#result .previous-tray .checking-tray-left .ng-ok .left-tray').html(client1)
+        //$('#result .previous-tray .checking-tray-left .ng-ok .right-tray').html(client2)
+        //$('#result .previous-tray .checking-tray-right .ng-ok .left-tray').html(client3)
+        //$('#result .previous-tray .checking-tray-right .ng-ok .right-tray').html(client4)
+
+        //previousTray = [];
         let client1 = "";
         let client2 = "";
         let client3 = "";
         let client4 = "";
 
-        let arrClient1 = previousTray.filter(item => item.client_id == CLIENT.CLIENT_1)
-        let arrClient2 = previousTray.filter(item => item.client_id == CLIENT.CLIENT_2)
-        let arrClient3 = previousTray.filter(item => item.client_id == CLIENT.CLIENT_3)
-        let arrClient4 = previousTray.filter(item => item.client_id == CLIENT.CLIENT_4)
+        if (previousTray.length > 0) {
 
-        if (arrClient1.length > 0) {
-            for (let i = 1; i <= 20; i++) {
-                let found = arrClient1.find(obj => obj.index == i);
+            previousTray.forEach(item => {
 
-                if (found) {
-                    let rs = found.result == STATUS_RESULT.OK ? 'OK' : (found.result == STATUS_RESULT.NG) ? 'NG' : (found.result == STATUS_RESULT.EMPTY) ? 'Empty' : '';
-                    client1 += `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase()}">${rs}</span>`;
-                } else {
+                let clientId = item.client_id;
+
+                let rs = item.result == STATUS_RESULT.OK ? 'OK'
+                    : (item.result == STATUS_RESULT.NG) ? 'NG'
+                        : (item.result == STATUS_RESULT.EMPTY) ? 'Empty' : '';
+
+                if (clientId == CLIENT.CLIENT_1) {
+                    client1 +=
+                        `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase()}">
+                            ${rs}
+                        </span>`;
+                    return;
+                }
+
+                if (clientId == CLIENT.CLIENT_2) {
+                    client2 +=
+                        `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase() }">
+                            ${rs}
+                        </span>`;
+                    return;
+                }
+
+                if (clientId == CLIENT.CLIENT_3) {
+                    client3 +=
+                        `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase() }">
+                            ${rs}
+                        </span>`;
+                    return;
+                }
+
+                if (clientId == CLIENT.CLIENT_4) {
+                    client4 +=
+                        `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase() }">
+                            ${rs}
+                        </span>`;
+                    return;
+                }
+            });
+        } else {
+            for (let i = 1; i <= 80; i++) {
+                if (i <= 20) {
                     client1 += `<span class="wait">Wait</span>`;
+                    return;
                 }
-            }
-        }
 
-        if (arrClient2.length > 0) {
-            for (let i = 1; i <= 20; i++) {
-                let found = arrClient2.find(obj => obj.index == i);
-
-                if (found) {
-                    let rs = found.result == STATUS_RESULT.OK ? 'OK' : (found.result == STATUS_RESULT.NG) ? 'NG' : (found.result == STATUS_RESULT.EMPTY) ? 'Empty' : '';
-                    client2 += `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase()}">${rs}</span>`;
-                } else {
+                if (i > 20 && i <= 40) {
                     client2 += `<span class="wait">Wait</span>`;
+                    return;
                 }
-            }
-        }
 
-        if (arrClient3.length > 0) {
-            for (let i = 1; i <= 20; i++) {
-                let found = arrClient3.find(obj => obj.index == i);
-
-                if (found) {
-                    let rs = found.result == STATUS_RESULT.OK ? 'OK' : (found.result == STATUS_RESULT.NG) ? 'NG' : (found.result == STATUS_RESULT.EMPTY) ? 'Empty' : '';
-                    client3 += `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase()}">${rs}</span>`;
-                } else {
+                if (i > 40 && i <= 60) {
                     client3 += `<span class="wait">Wait</span>`;
+                    return;
                 }
-            }
-        }
 
-        if (arrClient4.length > 0) {
-            for (let i = 1; i <= 20; i++) {
-                let found = arrClient4.find(obj => obj.index == i);
-
-                if (found) {
-                    let rs = found.result == STATUS_RESULT.OK ? 'OK' : (found.result == STATUS_RESULT.NG) ? 'NG' : (found.result == STATUS_RESULT.EMPTY) ? 'Empty' : '';
-                    client4 += `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase()}">${rs}</span>`;
-                } else {
+                if (i > 60 && i <= 80) {
                     client4 += `<span class="wait">Wait</span>`;
+                    return;
                 }
             }
         }
@@ -413,7 +490,7 @@ $(function () {
                             return total + datapoint;
                         }
                         const totalValue = datapoints.reduce(totalSum, 0);
-                        const percentageValue = (value / totalValue * 100).toFixed(1);
+                        const percentageValue = (value / totalValue * 100).toFixed(2);
                         return `${percentageValue}%`;
                     },
                     color: '#ffffff',

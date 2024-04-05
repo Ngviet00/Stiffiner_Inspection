@@ -154,8 +154,7 @@
         function showItem(item, key) {
             let data = JSON.parse(decodeURIComponent(item))
 
-            if (data.resultArea == 2 || data.resultLine == 2) {
-
+            if (GetResult(data) == 'NG') {
                 if (key == currentIndexSelect && item.tray == currentTraySelect) {
                     return;
                 } else {
@@ -190,11 +189,11 @@
 
                 for (const [key, value] of Object.entries(groupedByDescription)) {
                     listErrs += `
-                        <div class="d-flex">
-                            <div class="label-error">${key}</div>
-                            <div class="qty-error">${value.count}</div>
-                        </div>
-                    `;
+                                <div class="d-flex">
+                                    <div class="label-error">${key}</div>
+                                    <div class="qty-error">${value.count}</div>
+                                </div>
+                            `;
                 }
 
                 $('.list-error').html(listErrs);
@@ -204,7 +203,7 @@
                 $('#err-image-line').html('')
 
                 connection.invoke("DownloadFile", data.images).then((result) => {
-                    
+
                     let imageArea = '';
                     let imageLine = '';
 
@@ -247,15 +246,20 @@
                 })
                 .finally(function () {
                     $('.skeleton').addClass('d-none');
-                });;
+                });
             }
+
+            // if (data.resultArea == 2 || data.resultLine == 2) {
+
+                
+            // }
         }
 
         function renderTray(data) {
             let rsLeft = '';
             let rsRight = '';
             data.forEach(function (item, key) {
-                let rs = item.resultArea == 1 && item.resultLine == 1 ? 'OK' : (item.resultArea == 3 && item.resultLine == 3 ? 'Empty' : 'NG')
+                let rs = GetResult(item);
 
                 if (key < 20) {
                     rsRight += `
@@ -280,6 +284,26 @@
 
             $('#rs-left').html(rsLeft);
             $('#rs-right').html(rsRight);
+        }
+
+        function GetResult(item) {
+            if (item.resultArea == 1 && item.resultLine == 1) {
+                return 'OK';
+            }
+
+            if (item.resultArea == 1 && item.resultLine == 3 || item.resultArea == 3 && item.resultLine == 1) {
+                return 'OK';
+            }
+
+            if (item.resultArea == 2 && item.resultLine == 3 || item.resultArea == 3 && item.resultLine == 2) {
+                return 'NG';
+            }
+
+            if (item.resultArea == 3 && item.resultLine == 3) {
+                return 'Empty';
+            }
+
+            return 'NG';
         }
 
         $('.btn-next-tray').click(function () {

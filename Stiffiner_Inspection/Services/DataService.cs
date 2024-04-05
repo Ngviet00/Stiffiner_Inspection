@@ -378,9 +378,7 @@ namespace Stiffiner_Inspection.Services
             try
             {
                 return await _dbContext.Data.AsNoTracking()
-              .Where(d => d.TargetId == currtarget &&
-               d.ResultArea != null &&
-               d.ResultLine != null && (d.ResultArea == EMPTY || d.ResultLine == EMPTY))
+              .Where(d => d.TargetId == currtarget && d.ResultArea == EMPTY && d.ResultLine == EMPTY)
               .GroupBy(d => d.TargetId)
               .Select(g => g.Count())
               .FirstOrDefaultAsync();
@@ -397,7 +395,7 @@ namespace Stiffiner_Inspection.Services
             try
             {
                 return await _dbContext.Data.AsNoTracking()
-                  .Where(d => d.TargetId == currtarget && d.ResultArea == OK && d.ResultLine == OK && d.ResultArea != null && d.ResultLine != null)
+                  .Where(d => d.TargetId == currtarget && (d.ResultArea == OK && d.ResultLine == OK || d.ResultArea == OK && d.ResultLine == EMPTY || d.ResultArea == EMPTY && d.ResultLine == OK))
                   .GroupBy(d => d.TargetId)
                   .Select(g => g.Count())
                   .FirstOrDefaultAsync();
@@ -414,8 +412,7 @@ namespace Stiffiner_Inspection.Services
             try
             {
                 return await _dbContext.Data.AsNoTracking()
-                .Where(d => d.TargetId == currtarget && d.ResultArea != null && d.ResultLine != null &&
-                            ((d.ResultArea == NG && d.ResultLine != EMPTY) || (d.ResultLine == NG && d.ResultArea != EMPTY)))
+                .Where(d => d.TargetId == currtarget && ((d.ResultArea == NG && d.ResultLine == NG) || (d.ResultArea == NG && d.ResultLine == EMPTY) || (d.ResultArea == EMPTY && d.ResultLine == NG) || d.ResultLine == NG || d.ResultArea == NG))
                 .GroupBy(d => d.TargetId)
                 .Select(g => g.Count())
                 .FirstOrDefaultAsync();
