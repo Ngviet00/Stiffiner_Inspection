@@ -124,7 +124,11 @@ namespace Stiffiner_Inspection.Hubs
             try
             {
                 Global.currentSelectedModel = model;
-                Global.StatusVisionChangeModel = 1;
+
+                Global.StatusVisionChangeModel1 = 1;
+                Global.StatusVisionChangeModel2 = 1;
+                Global.StatusVisionChangeModel3 = 1;
+                Global.StatusVisionChangeModel4 = 1;
             }
             catch (Exception ex)
             {

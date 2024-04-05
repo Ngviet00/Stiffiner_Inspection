@@ -22,6 +22,8 @@ namespace Stiffiner_Inspection.Controllers
         const int CLIENT_3 = 3;
         const int CLIENT_4 = 4;
 
+        const int INACTIVE = 0;
+
         public DataController(DataService dataService, IHubContext<HomeHub> hubContext)
         {
             _dataService = dataService;
@@ -88,21 +90,38 @@ namespace Stiffiner_Inspection.Controllers
 
         [Route("change-status-system-client")]
         [HttpPost]
-        public async Task<IActionResult> ChangeStatusSystemClient(int status, string? message) //1:running, 2: pause, 3: error - with message
+        public async Task<IActionResult> ChangeStatusSystemClient(int clientId, int status, string? message) //1:running, 2: pause, 3: error - with message
         {
             try
-            {
-                if (status == 1)
+            { 
+                if (Global.StatusVisionChangeModel1 != 1 && Global.StatusVisionChangeModel2 != 1 && Global.StatusVisionChangeModel3 != 1 && Global.StatusVisionChangeModel4 != 1)
                 {
-                    Global.StatusVisionChangeModel = 0;
+                    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 1, message);
+                } 
+                else
+                {
+                    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 2, message);
                 }
 
-                if (status == 2)
+                if (clientId == CLIENT_1 && status == 1)
                 {
-                    Global.StatusVisionChangeModel = 1;
+                    Global.StatusVisionChangeModel1 = INACTIVE;
                 }
 
-                await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", status, message);
+                if (clientId == CLIENT_2 && status == 1)
+                {
+                    Global.StatusVisionChangeModel2 = INACTIVE;
+                }
+
+                if (clientId == CLIENT_3 && status == 1)
+                {
+                    Global.StatusVisionChangeModel3 = INACTIVE;
+                }
+
+                if (clientId == CLIENT_4 && status == 1)
+                {
+                    Global.StatusVisionChangeModel4 = INACTIVE;
+                }
 
                 return Ok(new
                 {
