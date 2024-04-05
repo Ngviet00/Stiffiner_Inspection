@@ -94,7 +94,12 @@ namespace Stiffiner_Inspection.Controllers
             {
                 if (status == 1)
                 {
+                    Global.StatusVisionChangeModel = 0;
+                }
 
+                if (status == 2)
+                {
+                    Global.StatusVisionChangeModel = 1;
                 }
 
                 await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", status, message);
@@ -253,36 +258,5 @@ namespace Stiffiner_Inspection.Controllers
                 });
             }
         }
-
-        //[Route("vision-change-model-done")]
-        //[HttpPost]
-        //public IActionResult VisionChangeModelDone(int clientId)
-        //{
-        //    if (clientId == CLIENT_1)
-        //    {
-        //        Global.StatusVisionChangeModelClient1 = 0;
-        //    }
-
-        //    if (clientId == CLIENT_2)
-        //    {
-        //        Global.StatusVisionChangeModelClient2 = 0;
-        //    }
-
-        //    if (clientId == CLIENT_3)
-        //    {
-        //        Global.StatusVisionChangeModelClient3 = 0;
-        //    }
-
-        //    if (clientId == CLIENT_4)
-        //    {
-        //        Global.StatusVisionChangeModelClient4 = 0;
-        //    }
-
-        //    return Ok(new
-        //    {
-        //        status = 200,
-        //        message = "success",
-        //    });
-        //}
     }
 }

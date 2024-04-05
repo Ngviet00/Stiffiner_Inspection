@@ -51,12 +51,6 @@ namespace Stiffiner_Inspection
 
         public static int currentSelectedModel = 1;
 
-        public static int StatusVisionChangeModelClient1 = 0; //1 busy
-        public static int StatusVisionChangeModelClient2 = 0; //1 busy
-        public static int StatusVisionChangeModelClient3 = 0; //1 busy
-        public static int StatusVisionChangeModelClient4 = 0; //1 busy
-
-
-        public static int Status
+        public static int StatusVisionChangeModel = 0; //1 busy
     }
 }

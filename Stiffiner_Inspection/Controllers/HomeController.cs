@@ -120,7 +120,7 @@ namespace Stiffiner_Inspection.Controllers
                     Global.controlPLC.VisionBusy(false);
                 }
 
-                Thread.Sleep(2000);
+                Thread.Sleep(1500);
             }
         }
 
