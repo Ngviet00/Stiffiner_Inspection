@@ -225,9 +225,9 @@ namespace Stiffiner_Inspection.Controllers
             }
         }
 
-        [Route("get-config")]
+        [Route("get-model")]
         [HttpGet]
-        public IActionResult GetConfig()
+        public IActionResult GetModel()
         {
             try
             {
@@ -247,6 +247,19 @@ namespace Stiffiner_Inspection.Controllers
                     Message = ex.Message
                 });
             }
+        }
+
+        [Route("vision-change-model-done")]
+        [HttpPost]
+        public IActionResult VisionChangeModelDone()
+        {
+            Global.StatusVisionChangeModel = 0;
+
+            return Ok(new
+            {
+                status = 200,
+                message = "success",
+            });
         }
     }
 }

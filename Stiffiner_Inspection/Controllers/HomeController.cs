@@ -142,6 +142,11 @@ namespace Stiffiner_Inspection.Controllers
                 return false;
             }
 
+            if (Global.StatusVisionChangeModel == ACTIVE)
+            {
+                return false;
+            }
+
             return true;
         }
 

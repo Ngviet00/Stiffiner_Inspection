@@ -154,11 +154,13 @@ $(function () {
 
         if (status === STATUS_PLC.START) {
             _status.css("color", "#ffffff").css("background", "#49A31D").text("Start");
+            $('#select-model').prop('disabled', true);
             return;
         }
 
         if (status === STATUS_PLC.STOP) {
             _status.css("color", "#ffffff").css("background", "#E4491D").text("Stop");
+            $('#select-model').removeAttr('disabled').prop('disabled', false);
             return;
         }
     });
