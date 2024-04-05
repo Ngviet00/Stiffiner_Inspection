@@ -92,6 +92,11 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
+                if (status == 1)
+                {
+
+                }
+
                 await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", status, message);
 
                 return Ok(new
@@ -236,7 +241,7 @@ namespace Stiffiner_Inspection.Controllers
                     status = 200,
                     message = "success",
                     type_model = Global.currentSelectedModel,
-                    name_model = Global.currentSelectedModel == 1 ? "Stiffener Inspection" : "Stiffener Inspection V2"
+                    name_model = Global.currentSelectedModel == 1 ? "Stiffener Inspection" : "Stiffener Filler"
                 });
             }
             catch (Exception ex)
@@ -249,17 +254,35 @@ namespace Stiffiner_Inspection.Controllers
             }
         }
 
-        [Route("vision-change-model-done")]
-        [HttpPost]
-        public IActionResult VisionChangeModelDone()
-        {
-            Global.StatusVisionChangeModel = 0;
+        //[Route("vision-change-model-done")]
+        //[HttpPost]
+        //public IActionResult VisionChangeModelDone(int clientId)
+        //{
+        //    if (clientId == CLIENT_1)
+        //    {
+        //        Global.StatusVisionChangeModelClient1 = 0;
+        //    }
 
-            return Ok(new
-            {
-                status = 200,
-                message = "success",
-            });
-        }
+        //    if (clientId == CLIENT_2)
+        //    {
+        //        Global.StatusVisionChangeModelClient2 = 0;
+        //    }
+
+        //    if (clientId == CLIENT_3)
+        //    {
+        //        Global.StatusVisionChangeModelClient3 = 0;
+        //    }
+
+        //    if (clientId == CLIENT_4)
+        //    {
+        //        Global.StatusVisionChangeModelClient4 = 0;
+        //    }
+
+        //    return Ok(new
+        //    {
+        //        status = 200,
+        //        message = "success",
+        //    });
+        //}
     }
 }

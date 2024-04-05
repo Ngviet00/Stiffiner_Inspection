@@ -50,6 +50,13 @@ namespace Stiffiner_Inspection
         public static int DeepLearningCam4 { get; set; } = 0;
 
         public static int currentSelectedModel = 1;
-        public static int StatusVisionChangeModel = 0; //1 busy
+
+        public static int StatusVisionChangeModelClient1 = 0; //1 busy
+        public static int StatusVisionChangeModelClient2 = 0; //1 busy
+        public static int StatusVisionChangeModelClient3 = 0; //1 busy
+        public static int StatusVisionChangeModelClient4 = 0; //1 busy
+
+
+        public static int Status
     }
 }
