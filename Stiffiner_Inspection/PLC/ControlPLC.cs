@@ -120,24 +120,15 @@ namespace Stiffiner_Inspection
                     isEndHistory = true;
                     TurnOffLightControl();
 
-                    if (Global.CurrentTrayData.Count != 40)
+                    //if miss data from client
+                    var quantityCurrentTrayData = Global.CurrentTrayData.Count;
+                    if (quantityCurrentTrayData > 0 && quantityCurrentTrayData < 80)
                     {
-                        //after 8 second, check enough tray
-                        timer = new Timer(CheckEnoughTray, null, 4000, Timeout.Infinite);
-                        _logger.Error("M2008 is ON");
+                        VisionNotEnoughTray();
                     }
                 }
 
                 Thread.Sleep(timeSleep);
-            }
-        }
-
-        private void CheckEnoughTray(object state)
-        {
-            if (Global.CurrentTrayData.Count != 40)
-            {
-                _logger.Error("Count number current tray data:" + Global.CurrentTrayData.Count);
-                VisionNotEnoughTray();
             }
         }
 
@@ -237,7 +228,6 @@ namespace Stiffiner_Inspection
 
         public void VisionNotEnoughTray()
         {
-            _logger.Error("function vision not enough quantity tray");
             _plc.SetDevice(REG_PLC_NOT_ENOUGHT_TRAY, 1);                
         }
 

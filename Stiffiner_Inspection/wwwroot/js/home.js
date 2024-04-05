@@ -114,13 +114,13 @@ $(function () {
         }, 2000);
     });
 
-    //event check status camera pc
+    //event check client connect
     connection.on("ChangeClientConnect", (clientId) => {
         clearTimeout(clientConnects[clientId])
         $(".dot-connect-" + clientId).css("background", "#0ad90a")
         clientConnects[clientId] = setTimeout(function () {
             $(".dot-connect-" + clientId).css("background", '#b6b9b6')
-            connection.invoke("ChangeConnectVisionBusy", client_id, 0)
+            connection.invoke("ChangeConnectVisionBusy", clientId, 0)
                 .then(function (res) {
 
                 })
