@@ -575,7 +575,7 @@ $color_3C3C3C: #3C3C3C;
                                 border-bottom: 1px solid white;
                             }
 
-                            .ok, .ng, .wait {
+                            .ok, .ng, .wait, .empty {
                                 flex-basis: 48%;
                                 text-align: center;
                                 border-right: 1px solid #fff;
@@ -595,6 +595,10 @@ $color_3C3C3C: #3C3C3C;
 
                             .wait {
                                 background: #cdcecf !important;
+                            }
+
+                            .empty {
+                                background: #9F9F9F !important;
                             }
                         }
                     }

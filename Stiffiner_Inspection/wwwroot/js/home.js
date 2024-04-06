@@ -232,7 +232,7 @@ $(function () {
 
                 if (clientId == CLIENT.CLIENT_1) {
                     client1 +=
-                        `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase()}">
+                        `<span class="${rs.toLowerCase()}">
                             ${rs}
                         </span>`;
                     return;
@@ -240,7 +240,7 @@ $(function () {
 
                 if (clientId == CLIENT.CLIENT_2) {
                     client2 +=
-                        `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase() }">
+                        `<span class="${rs.toLowerCase()}">
                             ${rs}
                         </span>`;
                     return;
@@ -248,7 +248,7 @@ $(function () {
 
                 if (clientId == CLIENT.CLIENT_3) {
                     client3 +=
-                        `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase() }">
+                        `<span class="${rs.toLowerCase()}">
                             ${rs}
                         </span>`;
                     return;
@@ -256,7 +256,7 @@ $(function () {
 
                 if (clientId == CLIENT.CLIENT_4) {
                     client4 +=
-                        `<span class="${rs.toLowerCase() == 'empty' ? 'wait' : rs.toLowerCase() }">
+                        `<span class="${rs.toLowerCase()}">
                             ${rs}
                         </span>`;
                     return;
@@ -361,7 +361,7 @@ $(function () {
         }
 
         if (data.result === STATUS_RESULT.EMPTY) {
-            $(`.${data.side}-${data.camera}-${data.index}`).css("background", "#cdcecf").text("Empty");
+            $(`.${data.side}-${data.camera}-${data.index}`).css("background", "#9F9F9F").text("Empty");
             return;
         }
     }

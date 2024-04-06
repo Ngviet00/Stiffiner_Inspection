@@ -466,7 +466,7 @@
 .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok div {
   border-bottom: 1px solid white;
 }
-.wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .ok, .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .ng, .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .wait {
+.wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .ok, .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .ng, .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .wait, .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .empty {
   flex-basis: 48%;
   text-align: center;
   border-right: 1px solid #fff;
@@ -483,6 +483,9 @@
 }
 .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .wait {
   background: #cdcecf !important;
+}
+.wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .empty {
+  background: #9F9F9F !important;
 }
 .wrap-content #inspection-statistical #result .previous-tray .check-item .checking-tray-left {
   border-right: none;
