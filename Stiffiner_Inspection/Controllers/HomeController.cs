@@ -107,17 +107,19 @@ namespace Stiffiner_Inspection.Controllers
             }
         }
 
-        public void VisionBusy()
+        public async void VisionBusy()
         {
             while (true)
             {
                 if (CheckConditionVisionBusy() == false)
                 {
                     Global.controlPLC.VisionBusy(true);
+                    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 2, "");
                 } 
                 else
                 {
                     Global.controlPLC.VisionBusy(false);
+                    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 1, "");
                 }
 
                 Thread.Sleep(1500);

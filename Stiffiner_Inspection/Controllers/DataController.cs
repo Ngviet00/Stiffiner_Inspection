@@ -94,14 +94,6 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             { 
-                if (Global.StatusVisionChangeModel1 != 1 && Global.StatusVisionChangeModel2 != 1 && Global.StatusVisionChangeModel3 != 1 && Global.StatusVisionChangeModel4 != 1)
-                {
-                    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 1, message);
-                } 
-                else
-                {
-                    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 2, message);
-                }
 
                 if (clientId == CLIENT_1 && status == 1)
                 {
@@ -121,6 +113,15 @@ namespace Stiffiner_Inspection.Controllers
                 if (clientId == CLIENT_4 && status == 1)
                 {
                     Global.StatusVisionChangeModel4 = INACTIVE;
+                }
+
+                if (Global.StatusVisionChangeModel1 == INACTIVE && Global.StatusVisionChangeModel2 == INACTIVE && Global.StatusVisionChangeModel3 == INACTIVE && Global.StatusVisionChangeModel4 == INACTIVE)
+                {
+                    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 1, message);
+                }
+                else
+                {
+                    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 2, message);
                 }
 
                 return Ok(new
