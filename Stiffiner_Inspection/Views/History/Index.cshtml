@@ -142,6 +142,8 @@
         const MAX_TRAY = lengthArr;
         const MIN_TRAY = 1;
 
+        var isLoading = false;
+
         var currentTraySelect = null;
         var currentIndexSelect = null;
 
@@ -154,7 +156,7 @@
         function showItem(item, key) {
             let data = JSON.parse(decodeURIComponent(item))
 
-            if (GetResult(data) == 'NG') {
+            if (GetResult(data) == 'NG' && isLoading == false) {
                 if (key == currentIndexSelect && item.tray == currentTraySelect) {
                     return;
                 } else {
@@ -171,6 +173,8 @@
                 $('.no-data').addClass('d-none');
                 $('.error-image').removeClass('d-none');
                 $('.list-error').removeClass('d-none');
+
+                isLoading = true;
 
 
                 //set errors
@@ -246,6 +250,7 @@
                 })
                 .finally(function () {
                     $('.skeleton').addClass('d-none');
+                    isLoading = false;
                 });
             }
         }
