@@ -9,11 +9,6 @@ using CsvHelper;
 using log4net;
 using System.Net;
 using Stiffiner_Inspection.Models.Response;
-using Newtonsoft.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Ajax.Utilities;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -143,13 +138,13 @@ namespace Stiffiner_Inspection.Services
 
         public async Task SaveError(Data data, string listErrors)
         {
-            List<Models.Entity.Error> listErrs = new List<Models.Entity.Error>();
+            List<Error> listErrs = new List<Error>();
 
             string[] errors = listErrors.Split(',');
 
             foreach (string item in errors)
             {
-                listErrs.Add(new Models.Entity.Error
+                listErrs.Add(new Error
                 {
                     DataId = data.Id,
                     Description = item,
@@ -196,27 +191,8 @@ namespace Stiffiner_Inspection.Services
             return NG;
         }
 
-        public int GetClientIdPair(DataDTO dataDTO)
-        {
-            switch (dataDTO.client_id)
-            {
-                case CLIENT_1:
-                    return CLIENT_2;
-
-                case CLIENT_2:
-                    return CLIENT_1;
-
-                case CLIENT_3:
-                    return CLIENT_4;
-
-                default:
-                    return CLIENT_3;
-            }
-        }
-
         public async Task SendToPLC(DataDTO dataDTO)
         {
-            //=================== TEST ===================
             Global.CurrentTrayData.Add(dataDTO);
 
             if (Global.CurrentTrayData.Count == 80)

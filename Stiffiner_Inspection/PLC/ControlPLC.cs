@@ -13,7 +13,6 @@ namespace Stiffiner_Inspection
         private bool isExist = false;
         private const int timeSleep = 100;
         private readonly ILog _logger = LogManager.GetLogger(typeof(ControlPLC));
-        private static Timer timer;
 
         // Register read
         private const string REG_PLC_Read_STATUS = "D20";
@@ -114,7 +113,7 @@ namespace Stiffiner_Inspection
                 int valueReadedEndInspection = 0;
                 _plc.GetDevice(REG_PLC_EndInspection, out valueReadedEndInspection);
                 if (valueReadedEndInspection == 0) isEndHistory = false;
-                //kiem tra neu start nhan thi gui cho clent tin hieu star de clear tray
+
                 if (!isEndHistory && valueReadedEndInspection == 1)
                 {
                     isEndHistory = true;
@@ -209,14 +208,9 @@ namespace Stiffiner_Inspection
             
         }
 
-        private bool IsCheckBit(char value)
-        {
-            return value == '1' ? true : false;
-        }
         public void VisionBusy(bool status)
         {
             //busy = 1, ready 0
-            //vision busy true, 1
             int data = status ? 1 : 0;
             _plc.SetDevice(REG_Vision_Busy, data);
         }
@@ -230,11 +224,5 @@ namespace Stiffiner_Inspection
         {
             _plc.SetDevice(REG_PLC_NOT_ENOUGHT_TRAY, 1);                
         }
-
-        //public void WriteSampleStatusByIndex(eRunStatus sampleStatus, int index)
-        //{
-        //    ClassCommon.Common.SaveLogString(eSAVING_LOG_TYPE.PLC, string.Format("Write data to Register: {0} is {1}", GetWriteRegisterByIndex(index), (int)sampleStatus));
-        //    _plc.WriteDeviceBlock(GetWriteRegisterByIndex(index), 1, (int)sampleStatus);
-        //}
     }
 }

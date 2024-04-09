@@ -4,8 +4,6 @@ using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Models.DTO.Data;
 using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
-using System.Net;
-using static System.Net.WebRequestMethods;
 
 namespace Stiffiner_Inspection.Controllers
 {
@@ -15,7 +13,6 @@ namespace Stiffiner_Inspection.Controllers
     {
         private readonly DataService _dataService;
         private readonly IHubContext<HomeHub> _hubContext;
-        const int PERCENT = 100;
 
         const int CLIENT_1 = 1;
         const int CLIENT_2 = 2;

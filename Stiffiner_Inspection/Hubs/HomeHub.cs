@@ -7,41 +7,16 @@ namespace Stiffiner_Inspection.Hubs
 {
     public class HomeHub : Hub
     {
-        private readonly TargetService _targetService;
         private readonly DataService _dataService;
         private readonly ILog _logger = LogManager.GetLogger(typeof(HomeHub));
         private readonly IHubContext<HomeHub> _hubContext;
         const int PERCENT = 100;
 
-        public HomeHub(TargetService targetService, DataService dataService, IHubContext<HomeHub> hubContext)
+        public HomeHub(DataService dataService, IHubContext<HomeHub> hubContext)
         {
-            _targetService = targetService;
             _dataService = dataService;
             _hubContext = hubContext;
         }
-
-        //public async Task AddNewTarget(int targetValue)
-        //{
-        //    try
-        //    {
-        //        await _targetService.InsertTargetQty(Global.currentTargetId, targetValue);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.Error("Add new target failed: " + ex);
-        //    }
-        //}
-        //public async Task UpdateTarget(int targetValue)
-        //{
-        //    try
-        //    {
-        //        await _targetService.UpdateTargetQty(Global.currentTargetId, targetValue);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.Error("Update target failed: " + ex);
-        //    }
-        //}
 
         public async Task<StatisticalCalculationsResponse?> UpdateStatistical(string message)
         {
