@@ -1,5 +1,6 @@
 ﻿#header-control {
   padding: 5px 10px;
+  margin-top: 10px;
 }
 #header-control #time #date {
   font-size: 13px;

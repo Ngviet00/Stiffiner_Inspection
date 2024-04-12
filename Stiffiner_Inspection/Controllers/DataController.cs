@@ -33,8 +33,11 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
-                //get current target id
+                //set current tray
                 dataDTO.tray = Global.currentTray;
+
+                //set model
+                dataDTO.model = Global.currentSelectedModel == 1 ? "Stiffener Inspection" : "Stiffener Filler";
 
                 //event realtime result log
                 await _hubContext.Clients.All.SendAsync("ReceiveData", dataDTO);

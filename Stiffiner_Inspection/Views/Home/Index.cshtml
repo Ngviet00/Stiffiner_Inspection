@@ -1,7 +1,7 @@
 ﻿<div class="wrap-content">
     <div id="inspection-statistical" class="d-flex justify-content-between">
         <div id="result">
-            <input type="hidden" name="current-target-id" value="@ViewBag.currentTargetId" />
+            @* <input type="hidden" name="current-target-id" value="@ViewBag.currentTargetId" /> *@
             <div id="data-chart-percent" data-percent-chart-ok="@ViewBag.PercentChartOK" data-percent-chart-ng="@ViewBag.PercentChartNG" data-percent-chart-empty="@ViewBag.PercentChartEmpty"></div>
             <h3 class="genera-title">Result</h3>
             <div class="d-flex justify-content-between">
@@ -166,7 +166,7 @@
                                 <div class="d-inline-block" id="total-ok-ea">
                                     @ViewBag.TotalOK<span>EA</span>
                                 </div>
-                                <span class="percent" id="percent-ok">@ViewBag.PercentOK %</span>
+                                <span class="percent" id="percent-ok">@ViewBag.PercentChartOK %</span>
                             </div>
                         </div>
 
@@ -176,14 +176,17 @@
                                 <div class="d-inline-block" id="total-ng-ea">
                                     @ViewBag.TotalNG<span>EA</span>
                                 </div>
-                                <span class="percent" id="percent-ng">@ViewBag.PercentNG %</span>
+                                <span class="percent" id="percent-ng">@ViewBag.PercentChartNG %</span>
                             </div>
                         </div>
 
-                        <div class="second-row d-flex align-items-center justify-content-between mb-1">
+                        <div class="fifth-row d-flex align-items-center justify-content-between mb-1">
                             <div class="title">Empty</div>
-                            <div class="w-100 total" id="total-empty-ea">
-                                @ViewBag.TotalEmpty<span class="">EA</span>
+                            <div class="w-100 total">
+                                <div class="d-inline-block" id="total-ng-ea">
+                                    @ViewBag.TotalEmpty<span>EA</span>
+                                </div>
+                                <span class="percent" id="percent-empty">@ViewBag.PercentChartEmpty %</span>
                             </div>
                         </div>
                     </div>

@@ -197,6 +197,36 @@
   text-align: center;
   padding-top: 5px;
 }
+.wrap-content #overview .wrap-overview .counting-status .fifth-row .title {
+  font-size: 13px;
+  color: #767676;
+  font-weight: 700;
+  min-width: 60px;
+}
+.wrap-content #overview .wrap-overview .counting-status .fifth-row .total {
+  font-size: 24px;
+  color: #385083;
+  font-weight: 600;
+  padding-left: 42px;
+}
+.wrap-content #overview .wrap-overview .counting-status .fifth-row .total div {
+  min-width: 53px;
+}
+.wrap-content #overview .wrap-overview .counting-status .fifth-row .total div span {
+  font-size: 14px;
+}
+.wrap-content #overview .wrap-overview .counting-status .fifth-row .total span.percent {
+  display: inline-block;
+  background: rgba(77, 77, 75, 0.5);
+  color: #ffffff;
+  font-size: 14px;
+  width: 70px;
+  margin-left: 10px;
+  border-radius: 3px;
+  padding: 2px;
+  text-align: center;
+  padding-top: 5px;
+}
 .wrap-content #overview .wrap-overview #io-status {
   margin-left: 20px;
   flex-basis: 60%;
@@ -467,6 +497,7 @@
   border-bottom: 1px solid white;
 }
 .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .ok, .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .ng, .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .wait, .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray .ng-ok .empty {
+  max-height: 26px !important;
   flex-basis: 48%;
   text-align: center;
   border-right: 1px solid #fff;

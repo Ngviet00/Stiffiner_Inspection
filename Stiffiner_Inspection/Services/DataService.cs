@@ -41,7 +41,7 @@ namespace Stiffiner_Inspection.Services
             var indexItem = GetIndex(dataDTO);
 
             //check exist
-            var existEntity = await _dbContext.Data.Where(e => e.TargetId == Global.currentTargetId && e.Tray == Global.currentTray && e.Index == indexItem).FirstOrDefaultAsync();
+            var existEntity = await _dbContext.Data.Where(e => e.Tray == Global.currentTray && e.Index == indexItem).FirstOrDefaultAsync();
 
             if (existEntity != null)
             {
@@ -78,7 +78,7 @@ namespace Stiffiner_Inspection.Services
                     ClientId = dataDTO.client_id,
                     Side = dataDTO.side,
                     Camera = dataDTO.camera,
-                    TargetId = Global.currentTargetId
+                    TargetId = 0
                 };
 
                 //set index từ 1 đến 40 tính từ bên phải, từ trên xuống dưới
@@ -201,22 +201,21 @@ namespace Stiffiner_Inspection.Services
 
                 for (int i = 1; i <= 20; i++)
                 {
-                    //pair left 
-                    //await save to db
-                    //check if Ng => save image, error
+                    //pair left
                     var leftArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_1 && e.tray == Global.currentTray);
-                    
                     var leftLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_2 && e.tray == Global.currentTray);
-                    AddListPrepareSaveExcel(dataCSV, leftArea, leftLine); //add to list
-                    Global.controlPLC.WriteDataToRegister(GetResult(leftArea?.result, leftLine?.result), i - 1); //write register PLC
+                    //add to list to save excel
+                    AddListPrepareSaveExcel(dataCSV, leftArea, leftLine);
+                    //write register PLC
+                    Global.controlPLC.WriteDataToRegister(GetResult(leftArea?.result, leftLine?.result), i - 1); 
 
-                    //pair left 
-                    //await save to db area and line
-                    //check if Ng => save image, error
+                    //pair right 
                     var rightArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_3 && e.tray == Global.currentTray);
                     var rightLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_4 && e.tray == Global.currentTray);
-                    AddListPrepareSaveExcel(dataCSV, rightArea, rightLine); //add to list
-                    Global.controlPLC.WriteDataToRegister(GetResult(rightArea?.result, rightLine?.result), i + 19); //write register PLC
+                    //add to list to save excel
+                    AddListPrepareSaveExcel(dataCSV, rightArea, rightLine);
+                    //write register PLC
+                    Global.controlPLC.WriteDataToRegister(GetResult(rightArea?.result, rightLine?.result), i + 19);
 
                     //if enough 40 item => save to excel
                     if (dataCSV.Count == 40)
@@ -250,7 +249,8 @@ namespace Stiffiner_Inspection.Services
         private async Task SaveToExcel(List<DataCSV> dataCSV)
         {
             string directoryPath = @"D:\Export_Result\" + DateTime.Now.ToString(@"yyyy_MM_dd");
-            string fileNameCSV = "MAY_1_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + "_stiffiner.csv";
+            string model = Global.currentSelectedModel == 1 ? "_stiffiner.csv" : "_stiffener_filler.csv";
+            string fileNameCSV = "MAY_1_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + model;
             string filePath = Path.Combine(directoryPath, fileNameCSV);
 
             if (!Directory.Exists(directoryPath))
@@ -316,18 +316,11 @@ namespace Stiffiner_Inspection.Services
             }
         }
 
-        public async Task<int> GetTotal(long targetId)
+        public async Task<int> GetTotal()
         {
             try
             {
-                return await _dbContext.Data
-                 .AsNoTracking()
-                 .Where(d => d.TargetId == targetId &&
-                             d.ResultArea != null &&
-                             d.ResultLine != null)
-                 .GroupBy(d => d.TargetId)
-                 .Select(g => g.Count())
-                 .FirstOrDefaultAsync();
+                return await _dbContext.Data.AsNoTracking().Where(d => d.ResultArea != null && d.ResultLine != null).GroupBy(d => d.TargetId).Select(g => g.Count()).FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {
@@ -336,11 +329,11 @@ namespace Stiffiner_Inspection.Services
             }
         }
 
-        public async Task<int> GetTotalTray(long currtarget)
+        public async Task<int> GetTotalTray()
         {
             try
             {
-                return await _dbContext.Data.AsNoTracking().Where(d => d.TargetId == currtarget).Select(d => d.Tray).Distinct().CountAsync();
+                return await _dbContext.Data.AsNoTracking().Select(d => d.Tray).Distinct().CountAsync();
             }
             catch (Exception ex)
             {
@@ -349,15 +342,11 @@ namespace Stiffiner_Inspection.Services
             }
         }
 
-        public async Task<int> GetTotalEmpty(long currtarget)
+        public async Task<int> GetTotalEmpty()
         {
             try
             {
-                return await _dbContext.Data.AsNoTracking()
-              .Where(d => d.TargetId == currtarget && d.ResultArea == EMPTY && d.ResultLine == EMPTY)
-              .GroupBy(d => d.TargetId)
-              .Select(g => g.Count())
-              .FirstOrDefaultAsync();
+                return await _dbContext.Data.AsNoTracking().Where(d => d.ResultArea == EMPTY && d.ResultLine == EMPTY).GroupBy(d => d.TargetId).Select(g => g.Count()).FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {
@@ -366,12 +355,12 @@ namespace Stiffiner_Inspection.Services
             }
         }
 
-        public async Task<int> GettotalOK(long currtarget)
+        public async Task<int> GettotalOK()
         {
             try
             {
                 return await _dbContext.Data.AsNoTracking()
-                  .Where(d => d.TargetId == currtarget && (d.ResultArea == OK && d.ResultLine == OK || d.ResultArea == OK && d.ResultLine == EMPTY || d.ResultArea == EMPTY && d.ResultLine == OK))
+                  .Where(d => (d.ResultArea == OK && d.ResultLine == OK || d.ResultArea == OK && d.ResultLine == EMPTY || d.ResultArea == EMPTY && d.ResultLine == OK))
                   .GroupBy(d => d.TargetId)
                   .Select(g => g.Count())
                   .FirstOrDefaultAsync();
@@ -383,12 +372,12 @@ namespace Stiffiner_Inspection.Services
             }
         }
 
-        public async Task<int> GettotalNG(long currtarget)
+        public async Task<int> GettotalNG()
         {
             try
             {
                 return await _dbContext.Data.AsNoTracking()
-                .Where(d => d.TargetId == currtarget && ((d.ResultArea == NG && d.ResultLine == NG) || (d.ResultArea == NG && d.ResultLine == EMPTY) || (d.ResultArea == EMPTY && d.ResultLine == NG) || d.ResultLine == NG || d.ResultArea == NG))
+                .Where(d => ((d.ResultArea == NG && d.ResultLine == NG) || (d.ResultArea == NG && d.ResultLine == EMPTY) || (d.ResultArea == EMPTY && d.ResultLine == NG) || d.ResultLine == NG || d.ResultArea == NG))
                 .GroupBy(d => d.TargetId)
                 .Select(g => g.Count())
                 .FirstOrDefaultAsync();
@@ -400,13 +389,13 @@ namespace Stiffiner_Inspection.Services
             }
         }
 
-        public async Task<int> GetcurrTray(long currtarget)
+        public async Task<int> GetcurrTray()
         {
             int currTray = 0;
-            int maxTray = await _dbContext.Data.AsNoTracking().Where(x => x.TargetId == currtarget).OrderByDescending(x => x.Tray).Select(x => x.Tray).FirstOrDefaultAsync();
+            int maxTray = await _dbContext.Data.AsNoTracking().OrderByDescending(x => x.Tray).Select(x => x.Tray).FirstOrDefaultAsync();
 
             var total = await _dbContext.Data
-            .Where(d => d.TargetId == currtarget && d.ResultArea != null && d.ResultLine != null && d.Tray == maxTray)
+            .Where(d => d.ResultArea != null && d.ResultLine != null && d.Tray == maxTray)
             .CountAsync();
 
             if (total >= 40)

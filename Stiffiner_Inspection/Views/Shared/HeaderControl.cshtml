@@ -19,7 +19,7 @@
     @if (action == "Index" && controller == "Home")
     {
         <div id="action" class="d-flex align-items-center">
-            <div class="d-flex align-items-center" style="margin-right: 3em">
+            <div class="d-flex align-items-center" style="margin-right: 1.5em">
                 <label for="select-model d-inline-block mr-5" style="margin-right: 10px;font-weight: bold">Model</label>
                 @if (currentModel == 1)
                 {
@@ -36,7 +36,7 @@
                     </select>
                 }
             </div>
-            <button type="button" class="btn btn-danger btn-export-excel" data-toggle="modal" data-target="#exampleModal1">
+            <button type="button" class="btn btn-danger btn-export-excel" data-toggle="modal" data-target="#exampleModal1" style="margin-right: 1.5em">
                 Clear Data
             </button>
 
@@ -56,6 +56,40 @@
                                 <button type="submit" class="btn btn-danger btn-apply-target">Apply</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary px-4" data-toggle="modal" data-target="#modalSearch">
+                Search
+            </button>
+
+            <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title fw-bold" style="font-size: 18px;" id="exampleModalLabel">Search</h4>
+                            <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                                X
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <div>
+                                    <label for="start" style="font-size: 20px;">Start date:</label>
+                                    <input type="date" id="start-date" style="padding: 5px 10px;font-size: 20px;" />
+                                    <input type="time" id="start-time" min="00:00" max="23:59" required style="padding: 4px 10px;font-size: 20px;" />
+                                </div>
+
+                                <div style="margin-left: 3em">
+                                    <label for="end" style="font-size: 20px;">End date:</label>
+                                    <input type="date" id="end-date" style="padding: 5px 10px;font-size: 20px;" />
+                                    <input type="time" id="end-time" min="00:00" max="23:59" required style="padding: 4px 10px;font-size: 20px;" />
+                                </div>
+                                <button class="btn btn-primary" style="margin-left: 3em">Search</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -34,11 +34,11 @@ namespace Stiffiner_Inspection.Controllers
 
         public async Task<IActionResult> Index()
         {
-            long currtarget = await _dataService.GetCurrentTargetID();
-            Global.currentTargetId = (int) currtarget;
-            ViewBag.currentTargetId = Global.currentTargetId;
+            //long currtarget = await _dataService.GetCurrentTargetID();
+            //Global.currentTargetId = (int) currtarget;
+            //ViewBag.currentTargetId = Global.currentTargetId;
 
-            int currentTrayId = await _dataService.GetcurrTray(Global.currentTargetId);
+            int currentTrayId = await _dataService.GetcurrTray();
             ViewBag.currentTray = currentTrayId;
             Global.currentTray = currentTrayId;
 
@@ -62,25 +62,17 @@ namespace Stiffiner_Inspection.Controllers
             visionBusy.Name = "VISION_BUSY";
             visionBusy.Start();
 
-            double total = await _dataService.GetTotal(currtarget);
+            double total = await _dataService.GetTotal();
 
-            int allOK = await _dataService.GettotalOK(currtarget);
-            int allNG = await _dataService.GettotalNG(currtarget);
-            int allEMPTY = await _dataService.GetTotalEmpty(currtarget);
+            int allOK = await _dataService.GettotalOK();
+            int allNG = await _dataService.GettotalNG();
+            int allEMPTY = await _dataService.GetTotalEmpty();
 
-            double PercentOK = total > 0 ? Math.Round((allOK / total) * PERCENT, 2) : 0;
-            double PercentNG = total > 0 ? Math.Round((allNG / total) * PERCENT, 2) : 0;
-
-            ViewBag.TotalTray = await _dataService.GetTotalTray(currtarget);
+            ViewBag.TotalTray = await _dataService.GetTotalTray();
             ViewBag.Total = total;
             ViewBag.TotalOK = allOK;
             ViewBag.TotalNG = allNG;
             ViewBag.TotalEmpty = allEMPTY;
-
-            ViewBag.PercentOK = PercentOK;
-            ViewBag.PercentNG = PercentNG;
-
-            ViewBag.CurrTargetQty = await _dataService.GetCurrentTargetQty(currtarget);
 
             ViewBag.PercentChartOK = _dataService.CalculateChartOK(allOK, total, allEMPTY);
             ViewBag.PercentChartNG = _dataService.CalculateChartNG(allNG, total, allEMPTY);

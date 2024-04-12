@@ -178,7 +178,7 @@ $(function () {
         }
 
         if (status === SYSTEM_STATUS_CLIENT.PAUSE) {
-            _status.css("color", "#344054").css("background", "#F2F4F7").text("Pause");
+            _status.css("color", "#344054").css("background", "#E6E6E6").text("Pause");
             _message.addClass('d-none');
         }
 
@@ -313,25 +313,6 @@ $(function () {
         $('#result .current-tray .checking-tray-right .ng-ok .right-tray').empty().append(client4)
     }
 
-    function resetPreviousTray() {
-        let client1 = '';
-        let client2 = '';
-        let client3 = '';
-        let client4 = '';
-
-        for (let i = 1; i <= 20; i++) {
-            client1 += `<span class="wait">Wait</span>`;
-            client2 += `<span class="wait">Wait</span>`;
-            client3 += `<span class="wait">Wait</span>`;
-            client4 += `<span class="wait">Wait</span>`;
-        }
-
-        $('#result .previous-tray .checking-tray-left .ng-ok .left-tray').html(client1)
-        $('#result .previous-tray .checking-tray-left .ng-ok .right-tray').html(client2)
-        $('#result .previous-tray .checking-tray-right .ng-ok .left-tray').html(client3)
-        $('#result .previous-tray .checking-tray-right .ng-ok .right-tray').html(client4)
-    }
-
     function appendResultLog(data) {
         $("#result-log table tbody").prepend(`
             <tr>
@@ -452,8 +433,9 @@ $(function () {
                 $('#total-ng-ea').html(`${res.totalNG}<span class="">EA</span>`);
                 $('#total-empty-ea').html(`${res.totalEmpty}<span class="">EA</span>`);
 
-                $('#percent-ok').html(`${res.percentOK} %`);
-                $('#percent-ng').html(`${res.percentNG} %`);
+                $('#percent-ok').html(`${res.percentChartOk} %`);
+                $('#percent-ng').html(`${res.percentChartNG} %`);
+                $('#percent-empty').html(`${res.percentChartEmpty} %`);
 
                 if (res.percentChartOk == 0 && res.percentChartNG == 0 && res.percentChartEmpty == 0) {
                     res.percentChartOk = 100;
