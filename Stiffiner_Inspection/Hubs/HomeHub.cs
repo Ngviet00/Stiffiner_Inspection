@@ -1,5 +1,6 @@
 ﻿using log4net;
 using Microsoft.AspNetCore.SignalR;
+using Stiffiner_Inspection.Models.Entity;
 using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
 
@@ -102,6 +103,19 @@ namespace Stiffiner_Inspection.Hubs
             catch (Exception ex)
             {
                 Console.WriteLine("Error can not change model:" + ex.Message);
+            }
+        }
+
+        public async Task<SearchDataResponse> SearchData(string fromDate, string toDate, int page)
+        {
+            try
+            {
+                return await _dataService.SearchData(fromDate, toDate, page);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error can not get list data:" + ex.Message);
+                throw;
             }
         }
     }

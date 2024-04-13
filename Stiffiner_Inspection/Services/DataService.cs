@@ -9,6 +9,8 @@ using CsvHelper;
 using log4net;
 using System.Net;
 using Stiffiner_Inspection.Models.Response;
+using System.Text;
+using Microsoft.Ajax.Utilities;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -207,7 +209,7 @@ namespace Stiffiner_Inspection.Services
                     //add to list to save excel
                     AddListPrepareSaveExcel(dataCSV, leftArea, leftLine);
                     //write register PLC
-                    Global.controlPLC.WriteDataToRegister(GetResult(leftArea?.result, leftLine?.result), i - 1); 
+                    Global.controlPLC.WriteDataToRegister(GetResult(leftArea?.result, leftLine?.result), i - 1);
 
                     //pair right 
                     var rightArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_3 && e.tray == Global.currentTray);
@@ -600,6 +602,81 @@ namespace Stiffiner_Inspection.Services
             {
                 Global.DeepLearningCam4 = status;
                 return;
+            }
+        }
+
+        public async Task<SearchDataResponse> SearchData(string fromDate, string toDate, int page)
+        {
+            try
+            {
+                int pageSize = 15;
+
+                SearchDataResponse response = new SearchDataResponse();
+
+                StringBuilder baseSql = new StringBuilder();
+
+                StringBuilder results = new StringBuilder();
+
+                StringBuilder countOK = new StringBuilder();
+
+                StringBuilder countNG = new StringBuilder();
+
+                StringBuilder countEmpty = new StringBuilder();
+
+                StringBuilder countTotalTray = new StringBuilder();
+
+                baseSql.Append(@"SELECT * FROM data WHERE 1 = 1 AND CONVERT(VARCHAR(16), time, 120) >= {0} and CONVERT(VARCHAR(16), time, 120) <= {1} and result_area is not null and result_line is not null ");
+
+                //count OK
+                countOK.Append(@baseSql).Append("AND ((result_area = 1 and result_line = 1) or (result_area = 1 and result_line = 3) or (result_area = 3 and result_line = 1)) ");
+
+                //count NG
+                countNG.Append(@baseSql).Append("AND ((result_area = 2 or result_line = 2) or (result_area = 2 and result_line = 3) or (result_area = 3 and result_line = 2)) ");
+
+                //count Empty
+                countEmpty.Append(@baseSql).Append("AND (result_area = 3 and result_line = 3) ");
+
+                //count total tray
+                countTotalTray.Append(@"SELECT DISTINCT tray FROM data WHERE 1 = 1 AND CONVERT(VARCHAR(16), time, 120) >= {0} and CONVERT(VARCHAR(16), time, 120) <= {1}");
+
+                var total = await _dbContext.Data.FromSqlRaw(baseSql.ToString(), fromDate, toDate).CountAsync();
+
+                var _countOK = await _dbContext.Data.FromSqlRaw(countOK.ToString(), fromDate, toDate).CountAsync();
+
+                var _countNG = await _dbContext.Data.FromSqlRaw(countNG.ToString(), fromDate, toDate).CountAsync();
+
+                var _countEmpty = await _dbContext.Data.FromSqlRaw(countEmpty.ToString(), fromDate, toDate).CountAsync();
+
+                var totalTray = await _dbContext.Data.FromSqlRaw(countTotalTray.ToString(), fromDate, toDate).CountAsync();
+
+
+                response.Total = total;
+                response.TotalOK = _countOK;
+
+                response.TotalNG = _countNG;
+                response.TotalEmpty = _countEmpty;
+
+                response.TotalTray = totalTray;
+
+                response.PercentOK = CalculateChartOK(_countOK, total, _countEmpty);
+                response.PercentNG = CalculateChartNG(_countNG, total, _countEmpty);
+                response.PercentEmpty = CalculateChartEmpty(total, response.PercentNG, response.PercentOK);
+
+                response.results = new List<Data?>();
+
+                var total1 = await _dbContext.Data
+                    .FromSqlRaw(@"SELECT * FROM data WHERE 1 = 1 AND CONVERT(VARCHAR(16), time, 120) >= {0} and CONVERT(VARCHAR(16), time, 120) <= {1} and result_area is not null and result_line is not null ", fromDate, toDate)
+                    .Include(p => p.Errors)
+                    .Skip(page) // Offset for pagination
+                    .Take(15) // Number of records per page
+                    .ToListAsync();
+
+                return response;
+            } 
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
         }
     }

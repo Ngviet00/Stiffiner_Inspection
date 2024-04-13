@@ -8,10 +8,16 @@ const connection = new signalR.HubConnectionBuilder()
 $(function () {
     var timeouts = [null, null, null, null];
     var deepcores = [null, null, null, null];
-    var triggercams = [null, null, null, null];
     var clientConnects = [null, null, null, null];
     var previousTray = [];
     var resetPLC = 1;
+
+    for (let i = 1; i <= 4; i++) {
+        clearTimeout(timeouts[i]);
+        clearTimeout(deepcores[i]);
+        clearTimeout(clientConnects[i]);
+    }
+
 
     const STATUS_PLC = Object.freeze({
         'EMG': 0,
@@ -93,7 +99,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 2000);
+        }, 4000);
     });
 
     //event deep learning
@@ -111,7 +117,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 2000);
+        }, 4000);
     });
 
     //event check client connect
@@ -127,7 +133,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 2000);
+        }, 4000);
     });
 
     //event change plc
@@ -463,4 +469,36 @@ $(function () {
         });
     });
 
+    $('.btn-form-search').click(function () {
+        let fromDate = $('#start-date').val() + ' ' + $('#start-time').val();
+        let toDate = $('#end-date').val() + ' ' + $('#end-time').val();
+        let page = 1;
+
+        connection.invoke("SearchData", fromDate, toDate, page)
+            .then(function (res) {
+
+                $('#form-search-total-tray-ea').html(res.totalTray);
+                $('#form-search-total-ea').html(`${res.total}<span class="">EA</span>`);
+                $('#form-search-total-ok-ea').html(`${res.totalOK}<span class="">EA</span>`);
+                $('#form-search-total-ng-ea').html(`${res.totalNG}<span class="">EA</span>`);
+                $('#form-search-total-empty-ea').html(`${res.totalEmpty}<span class="">EA</span>`);
+                $('#form-search-percent-ok').html(`${res.percentOK} %`);
+                $('#form-search-percent-ng').html(`${res.percentNG} %`);
+                $('#form-search-percent-empty').html(`${res.percentEmpty} %`);
+
+            })
+            .catch(function (err) {
+                console.error("Error calling API:", err.toString());
+            })
+            .finally(function () {
+                
+            });
+    });
+
+    $("#modalSearch").on('hide.bs.modal', function () {
+
+        //clear date, time start, time end, status, clear list, clear counting
+
+        //alert('The modal is about to be hidden.');
+    });
 });
