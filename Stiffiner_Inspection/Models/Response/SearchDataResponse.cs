@@ -14,6 +14,6 @@ namespace Stiffiner_Inspection.Models.Response
         public double PercentNG { get; set; }
         public double PercentEmpty { get; set; }
 
-        public List<Data?>? results { get; set; }
+        public List<Data> results { get; set; }
     }
 }

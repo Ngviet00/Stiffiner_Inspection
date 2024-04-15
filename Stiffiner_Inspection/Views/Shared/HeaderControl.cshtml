@@ -89,7 +89,7 @@
                                         <input type="time" class="input-date-time" id="end-time" value="23:59" min="00:00" max="23:59" required />
                                     </div>
 
-                                    <button class="btn btn-primary px-5 btn-form-search" style="margin-left: 2em">Search</button>
+                                    <button class="btn btn-primary px-5 form-search-btn-search" style="margin-left: 2em">Search</button>
                                 </div>
 
                                 <div class="content mt-2">
@@ -130,7 +130,7 @@
                                                 <div class="fifth-row d-flex align-items-center justify-content-between mb-2">
                                                     <div class="title">Empty</div>
                                                     <div class="w-100 total">
-                                                        <div class="d-inline-block" id="form-search-total-ng-ea">
+                                                        <div class="d-inline-block" id="form-search-total-empty-ea">
                                                             0<span>EA</span>
                                                         </div>
                                                         <span class="percent" id="form-search-percent-empty">0 %</span>
@@ -143,8 +143,8 @@
                                             <table class="table table-hover" style="border-radius: -29px; border-radius: 3px;">
                                                 <thead style="background: #D9E2FF;">
                                                     <tr style="font-size: 14px; color: #323232; font-weight: 600;">
-                                                        <th scope="col">Date</th>
-                                                        <th scope="col">Time</th>
+                                                        <th scope="col">Id</th>
+                                                        <th scope="col">DateTime</th>
                                                         <th scope="col">Model</th>
                                                         <th scope="col">Tray</th>
                                                         <th scope="col">Position</th>
@@ -153,18 +153,6 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @*@for (int i = 1; i <= 15; i++)
-                                                    {
-                                                        <tr style="font-size: 14px; font-weight: 500;">
-                                                            <td>2023-13-04</td>
-                                                            <td>10:52:33</td>
-                                                            <td>Stiffener</td>
-                                                            <td>1</td>
-                                                            <td>1</td>
-                                                            <td>OK</td>
-                                                            <td>-</td>
-                                                        </tr>
-                                                    }*@
                                                     <tr>
                                                         <td colspan="12" class="text-center fw-bold text-dark tag-notice">Click search to show data</td>
                                                     </tr>
@@ -173,7 +161,7 @@
                                         </div>
                                     </div>
                                     <div class="my-3 text-center">
-                                        <button class="btn btn-warning">Load more</button>
+                                        <button class="btn btn-warning form-search-btn-load-more" disabled>Load more</button>
                                     </div>
                                 </div>
                             </div>

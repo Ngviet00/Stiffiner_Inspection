@@ -609,67 +609,54 @@ namespace Stiffiner_Inspection.Services
         {
             try
             {
-                int pageSize = 15;
+                int pageSize = 20;
 
                 SearchDataResponse response = new SearchDataResponse();
 
                 StringBuilder baseSql = new StringBuilder();
 
-                StringBuilder results = new StringBuilder();
-
-                StringBuilder countOK = new StringBuilder();
-
-                StringBuilder countNG = new StringBuilder();
-
-                StringBuilder countEmpty = new StringBuilder();
-
-                StringBuilder countTotalTray = new StringBuilder();
-
                 baseSql.Append(@"SELECT * FROM data WHERE 1 = 1 AND CONVERT(VARCHAR(16), time, 120) >= {0} and CONVERT(VARCHAR(16), time, 120) <= {1} and result_area is not null and result_line is not null ");
 
-                //count OK
-                countOK.Append(@baseSql).Append("AND ((result_area = 1 and result_line = 1) or (result_area = 1 and result_line = 3) or (result_area = 3 and result_line = 1)) ");
+                var total = await _dbContext.Data
+                    .FromSqlRaw(baseSql.ToString(), fromDate, toDate)
+                    .CountAsync();
 
-                //count NG
-                countNG.Append(@baseSql).Append("AND ((result_area = 2 or result_line = 2) or (result_area = 2 and result_line = 3) or (result_area = 3 and result_line = 2)) ");
+                var countOK = await _dbContext.Data
+                    .FromSqlRaw(baseSql.ToString() + "AND ((result_area = 1 and result_line = 1) or (result_area = 1 and result_line = 3) or (result_area = 3 and result_line = 1)) ", fromDate, toDate)
+                    .CountAsync();
 
-                //count Empty
-                countEmpty.Append(@baseSql).Append("AND (result_area = 3 and result_line = 3) ");
+                var countNG = await _dbContext.Data
+                    .FromSqlRaw(@baseSql.ToString() + "AND ((result_area = 2 or result_line = 2) or (result_area = 2 and result_line = 3) or (result_area = 3 and result_line = 2)) ", fromDate, toDate)
+                    .CountAsync();
 
-                //count total tray
-                countTotalTray.Append(@"SELECT DISTINCT tray FROM data WHERE 1 = 1 AND CONVERT(VARCHAR(16), time, 120) >= {0} and CONVERT(VARCHAR(16), time, 120) <= {1}");
+                var countEmpty = await _dbContext.Data
+                    .FromSqlRaw(baseSql.ToString() + "AND (result_area = 3 and result_line = 3) ", fromDate, toDate)
+                    .CountAsync();
 
-                var total = await _dbContext.Data.FromSqlRaw(baseSql.ToString(), fromDate, toDate).CountAsync();
+                var totalTray = await _dbContext.Data
+                    .FromSqlRaw(@"SELECT DISTINCT tray FROM data WHERE 1 = 1 AND CONVERT(VARCHAR(16), time, 120) >= {0} and CONVERT(VARCHAR(16), time, 120) <= {1}", fromDate, toDate)
+                    .CountAsync();
 
-                var _countOK = await _dbContext.Data.FromSqlRaw(countOK.ToString(), fromDate, toDate).CountAsync();
-
-                var _countNG = await _dbContext.Data.FromSqlRaw(countNG.ToString(), fromDate, toDate).CountAsync();
-
-                var _countEmpty = await _dbContext.Data.FromSqlRaw(countEmpty.ToString(), fromDate, toDate).CountAsync();
-
-                var totalTray = await _dbContext.Data.FromSqlRaw(countTotalTray.ToString(), fromDate, toDate).CountAsync();
-
+                var data = await _dbContext.Data
+                    .FromSqlRaw(baseSql.ToString(), fromDate, toDate)
+                    .Include(p => p.Errors)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
 
                 response.Total = total;
-                response.TotalOK = _countOK;
+                response.TotalOK = countOK;
 
-                response.TotalNG = _countNG;
-                response.TotalEmpty = _countEmpty;
+                response.TotalNG = countNG;
+                response.TotalEmpty = countEmpty;
 
                 response.TotalTray = totalTray;
 
-                response.PercentOK = CalculateChartOK(_countOK, total, _countEmpty);
-                response.PercentNG = CalculateChartNG(_countNG, total, _countEmpty);
-                response.PercentEmpty = CalculateChartEmpty(total, response.PercentNG, response.PercentOK);
+                response.PercentOK = CalculateChartOK(countOK, total, countEmpty);
+                response.PercentNG = CalculateChartNG(countNG, total, countEmpty);
+                response.PercentEmpty = CalculateChartEmpty(total, response.PercentNG, response.PercentOK);                
 
-                response.results = new List<Data?>();
-
-                var total1 = await _dbContext.Data
-                    .FromSqlRaw(@"SELECT * FROM data WHERE 1 = 1 AND CONVERT(VARCHAR(16), time, 120) >= {0} and CONVERT(VARCHAR(16), time, 120) <= {1} and result_area is not null and result_line is not null ", fromDate, toDate)
-                    .Include(p => p.Errors)
-                    .Skip(page) // Offset for pagination
-                    .Take(15) // Number of records per page
-                    .ToListAsync();
+                response.results = data;
 
                 return response;
             } 

@@ -99,7 +99,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 4000);
+        }, 5000);
     });
 
     //event deep learning
@@ -117,7 +117,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 4000);
+        }, 5000);
     });
 
     //event check client connect
@@ -133,7 +133,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 4000);
+        }, 5000);
     });
 
     //event change plc
@@ -176,21 +176,24 @@ $(function () {
         let _status = $('#value-system-status');
         let _message = $('#error-system-status');
 
-        status === SYSTEM_STATUS_CLIENT.ERROR ? _message.removeClass('d-none') : _message.addClass('d-none');
+        status == SYSTEM_STATUS_CLIENT.ERROR ? _message.removeClass('d-none') : _message.addClass('d-none');
 
-        if (status === SYSTEM_STATUS_CLIENT.RUNNING) {
+        if (status == SYSTEM_STATUS_CLIENT.RUNNING) {
             _status.css("color", "#ffffff").css("background", "#49A31D").text("Running");
             _message.addClass('d-none');
+            return;
         }
 
-        if (status === SYSTEM_STATUS_CLIENT.PAUSE) {
+        if (status == SYSTEM_STATUS_CLIENT.PAUSE) {
             _status.css("color", "#344054").css("background", "#E6E6E6").text("Pause");
             _message.addClass('d-none');
+            return;
         }
 
-        if (status === SYSTEM_STATUS_CLIENT.ERROR) {
+        if (status == SYSTEM_STATUS_CLIENT.ERROR) {
             _status.css("color", "#E34440").css("background", "#FD53083D").text("Error");
             _message.removeClass('d-none').text(message);
+            return;
         }
     });
 
@@ -469,14 +472,37 @@ $(function () {
         });
     });
 
-    $('.btn-form-search').click(function () {
+    function GetResult(item) {
+        if (item.resultArea == 1 && item.resultLine == 1) {
+            return 'OK';
+        }
+
+        if (item.resultArea == 1 && item.resultLine == 3 || item.resultArea == 3 && item.resultLine == 1) {
+            return 'OK';
+        }
+
+        if (item.resultArea == 2 && item.resultLine == 3 || item.resultArea == 3 && item.resultLine == 2) {
+            return 'NG';
+        }
+
+        if (item.resultArea == 3 && item.resultLine == 3) {
+            return 'Empty';
+        }
+
+        return 'NG';
+    }
+
+    var pageListResult = 1;
+    var totalListResult = 0;
+    var totalPage = 0;
+
+    $('.form-search-btn-search').click(function () {
+        $('.form-search-btn-search').prop('disabled', true).html('Loading...');
         let fromDate = $('#start-date').val() + ' ' + $('#start-time').val();
         let toDate = $('#end-date').val() + ' ' + $('#end-time').val();
-        let page = 1;
 
-        connection.invoke("SearchData", fromDate, toDate, page)
+        connection.invoke("SearchData", fromDate, toDate, pageListResult)
             .then(function (res) {
-
                 $('#form-search-total-tray-ea').html(res.totalTray);
                 $('#form-search-total-ea').html(`${res.total}<span class="">EA</span>`);
                 $('#form-search-total-ok-ea').html(`${res.totalOK}<span class="">EA</span>`);
@@ -486,19 +512,125 @@ $(function () {
                 $('#form-search-percent-ng').html(`${res.percentNG} %`);
                 $('#form-search-percent-empty').html(`${res.percentEmpty} %`);
 
+                totalListResult = res.total;
+
+                totalPage = Math.ceil(totalListResult / 20);
+
+
+                if (totalListResult > 40) {
+                    $('.form-search-btn-load-more').prop('disabled', false);
+                }
+
+                let data = '';
+                if (res.results.length > 0) {
+                    res.results.forEach(item => {
+                        let err = '';
+                        item.errors.forEach(itemErr => {
+                            err += itemErr.description;
+                        });
+
+                        data += `
+                        <tr style="font-size: 14px; font-weight: 500;">
+                            <td>${item.id}</td>
+                            <td>${item.time}</td>
+                            <td>${item.model}</td>
+                            <td>${item.tray}</td>
+                            <td>${item.index}</td>
+                            <td class="${GetResult(item) == 'NG' ? 'text-danger' : 'text-success'}">${GetResult(item)}</td>
+                            <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,|,$/g, '') }</td>
+                        </tr>
+                    `;
+                    });
+
+                    $('#action-form-search #list-result tbody').html('').append(data);
+                } else {
+                    $('#action-form-search #list-result tbody').html('').append(
+                        `<tr>
+                            <td colspan="12" class="text-center fw-bold text-dark tag-notice">Not Found Data</td>
+                        </tr>`
+                    );
+                }
+
+                console.log(res);
             })
             .catch(function (err) {
                 console.error("Error calling API:", err.toString());
             })
             .finally(function () {
-                
+                $('.form-search-btn-search').prop('disabled', false).html('Search');
+            });
+    });
+
+    $('.form-search-btn-load-more').click(function () {
+        $(this).prop('disabled', true).html('Loading...');
+
+        pageListResult++;
+
+        if (pageListResult == totalPage) {
+            $(this).prop('disabled', true);
+        }
+
+        let fromDate = $('#start-date').val() + ' ' + $('#start-time').val();
+        let toDate = $('#end-date').val() + ' ' + $('#end-time').val();
+
+        connection.invoke("SearchData", fromDate, toDate, pageListResult)
+            .then(function (res) {
+
+                let data = '';
+                if (res.results.length > 0) {
+                    res.results.forEach(item => {
+                        let err = '';
+                        item.errors.forEach(itemErr => {
+                            err += ',' +itemErr.description;
+                        });
+                        data += `
+                            <tr style="font-size: 14px; font-weight: 500;">
+                                <td>${item.id}</td>
+                                <td>${item.time}</td>
+                                <td>${item.model}</td>
+                                <td>${item.tray}</td>
+                                <td>${item.index}</td>
+                                <td>${GetResult(item)}</td>
+                                <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,|,$/g, '') }</td>
+                            </tr>
+                        `;
+                    });
+
+                    $('#action-form-search #list-result tbody').append(data);
+                }
+            })
+            .catch(function (err) {
+                console.error("Error calling API:", err.toString());
+            })
+            .finally(function () {
+                $('.form-search-btn-load-more').prop('disabled', false).html('Load more');
             });
     });
 
     $("#modalSearch").on('hide.bs.modal', function () {
+        $('#form-search-total-tray-ea').html(0);
+        $('#form-search-total-ea').html(`0<span class="">EA</span>`);
+        $('#form-search-total-ok-ea').html(`0<span class="">EA</span>`);
+        $('#form-search-total-ng-ea').html(`0<span class="">EA</span>`);
+        $('#form-search-total-empty-ea').html(`0<span class="">EA</span>`);
+        $('#form-search-percent-ok').html(`0 %`);
+        $('#form-search-percent-ng').html(`0 %`);
+        $('#form-search-percent-empty').html(`0 %`);
 
-        //clear date, time start, time end, status, clear list, clear counting
+        $('#action-form-search #list-result tbody').html('').append(
+            `<tr>
+                <td colspan="12" class="text-center fw-bold text-dark tag-notice">Click search to show data</td>
+            </tr>`
+        );
 
-        //alert('The modal is about to be hidden.');
+        $('#start-date').val(new Date().toISOString().split('T')[0]);
+        $('#end-date').val(new Date().toISOString().split('T')[0]);
+        $('#start-time').val('00:00');
+        $('#end-time').val('23:59');
+
+        pageListResult = 1;
+        totalListResult = 0;
+        totalPage = 0;
+        $('.form-search-btn-load-more').prop('disabled', true).html('Load more');
     });
 });
