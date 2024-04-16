@@ -117,5 +117,21 @@ namespace Stiffiner_Inspection.Hubs
                 throw;
             }
         }
+
+        public void ReloadModels()
+        {
+            try
+            {
+                Global.Client1IsPostModel = 1;
+                Global.Client2IsPostModel = 1;
+                Global.Client3IsPostModel = 1;
+                Global.Client4IsPostModel = 1;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error can not change model:" + ex.Message);
+                throw;
+            }
+        }
     }
 }

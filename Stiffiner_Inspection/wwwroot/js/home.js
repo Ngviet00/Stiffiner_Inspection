@@ -647,4 +647,21 @@ $(function () {
         totalPage = 0;
         $('.form-search-btn-load-more').prop('disabled', true).html('Load more');
     });
+
+    $('.btn-reload-model').click(function () {
+
+        $('.btn-reload-model').prop('disabled', true).html('Loading...');
+
+        connection.invoke("ReloadModels")
+            .then(function (res) {
+                alert("Reload models successfully!");
+            })
+            .catch(function (err) {
+                alert("Error can not reload models!");
+                console.error("Error calling API:", err.toString());
+            })
+            .finally(function () {
+                $('.btn-reload-model').prop('disabled', false).html('Reload');
+            });
+    });
 });
