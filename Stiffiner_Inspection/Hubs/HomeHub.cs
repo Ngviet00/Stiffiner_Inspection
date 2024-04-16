@@ -126,6 +126,12 @@ namespace Stiffiner_Inspection.Hubs
                 Global.Client2IsPostModel = 1;
                 Global.Client3IsPostModel = 1;
                 Global.Client4IsPostModel = 1;
+
+                Global.strModels = string.Empty;
+                Global._currentSelectedModel = string.Empty;
+                Global.ListModels.Clear();
+
+                Global.DeepLearningCam1 = 0;
             }
             catch (Exception ex)
             {

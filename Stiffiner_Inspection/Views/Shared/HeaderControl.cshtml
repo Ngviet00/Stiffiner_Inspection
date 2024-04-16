@@ -23,7 +23,7 @@
             <div class="d-flex align-items-center" style="margin-right: 1.5em">
                 <label for="select-model d-inline-block mr-5" style="margin-right: 10px;font-weight: bold">Model</label>
                 <select id="select-model" class="form-select" asp-for="@currentModel">
-                    <option value="">Choose Model</option>
+                    <option value="" selected disabled>Choose Model</option>
                     @foreach (var item in listModels)
                     {
                         <option value="@item">@item</option>

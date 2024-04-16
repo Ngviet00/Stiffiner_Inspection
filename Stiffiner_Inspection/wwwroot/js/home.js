@@ -225,13 +225,15 @@ $(function () {
 
     connection.on("ListModels", (results) => {
         if (results.length > 0) {
-            let options = '<option value="">Choose Model</option>';
+            let options = '<option value="" selected disabled>Choose Model</option>';
 
             results.forEach(item => {
                 options += `<option value="${item}">${item}</option>`;
             });
 
             $('#select-model').html(options);
+
+            alert('Please choose model!');
         }
     });
 
@@ -651,6 +653,8 @@ $(function () {
     $('.btn-reload-model').click(function () {
 
         $('.btn-reload-model').prop('disabled', true).html('Loading...');
+
+        $('#select-model').html(`<option value="" selected disabled>Choose Model</option>`);
 
         connection.invoke("ReloadModels")
             .then(function (res) {
