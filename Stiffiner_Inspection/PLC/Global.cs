@@ -57,9 +57,9 @@ namespace Stiffiner_Inspection
         public static List<string> ListModels = new List<string>();
 
         //check client is send model to server
-        public static int Client1IsPostModel = 0;
-        public static int Client2IsPostModel = 0;
-        public static int Client3IsPostModel = 0;
-        public static int Client4IsPostModel = 0;
+        public static int Client1IsPostModel = 1;
+        public static int Client2IsPostModel = 1;
+        public static int Client3IsPostModel = 1;
+        public static int Client4IsPostModel = 1;
     }
 }

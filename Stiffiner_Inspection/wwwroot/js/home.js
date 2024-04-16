@@ -166,7 +166,7 @@ $(function () {
 
         if (status === STATUS_PLC.STOP) {
             _status.css("color", "#ffffff").css("background", "#E4491D").text("Stop");
-            $('#select-model').removeAttr('disabled').prop('disabled', false);
+            //$('#select-model').removeAttr('disabled').prop('disabled', false);
             return;
         }
     });
@@ -477,11 +477,13 @@ $(function () {
 
     $(document).on('change', '#select-model', function () {
         var selectedValue = $(this).val();
-        connection.invoke("ChangeModel", selectedValue).then(function (res) {
-            alert("Change model successfully!");
-        }).catch(function (err) {
-            console.error("Error calling API:", err.toString());
-        });
+        if (selectedValue != "") {
+            connection.invoke("ChangeModel", selectedValue).then(function (res) {
+                alert("Change model successfully!");
+            }).catch(function (err) {
+                console.error("Error calling API:", err.toString());
+            });
+        }
     });
 
     function GetResult(item) {

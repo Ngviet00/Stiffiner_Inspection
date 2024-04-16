@@ -335,32 +335,54 @@ namespace Stiffiner_Inspection.Controllers
             }
         }
 
+        [Route("check-client-is-send-model")]
+        [HttpPost]
+        public IActionResult CheckClientIsSendModel(int clientId)
+        {
+            try
+            {
+                if (clientId == 1)
+                {
+                    Global.Client1IsPostModel = 0;
+                }
+
+                if (clientId == 2)
+                {
+                    Global.Client2IsPostModel = 0;
+                }
+
+                if (clientId == 3)
+                {
+                    Global.Client3IsPostModel = 0;
+                }
+
+                if (clientId == 4)
+                {
+                    Global.Client4IsPostModel = 0;
+                }
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "success",
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
         [Route("client-post-model")]
         [HttpPost]
         public async Task<IActionResult> PostModel(int clientId, string listModels)
         {
             try
             {
-                if (clientId == 1)
-                {
-                    Global.Client1IsPostModel = 1;
-                }
-
-                if (clientId == 2)
-                {
-                    Global.Client2IsPostModel = 1;
-                }
-
-                if (clientId == 3)
-                {
-                    Global.Client3IsPostModel = 1;
-                }
-
-                if (clientId == 4)
-                {
-                    Global.Client4IsPostModel = 1;
-                }
-
                 string models = Global.strModels;
 
                 if (!listModels.IsNullOrWhiteSpace())
