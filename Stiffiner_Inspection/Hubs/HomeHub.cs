@@ -1,6 +1,5 @@
 ﻿using log4net;
 using Microsoft.AspNetCore.SignalR;
-using Stiffiner_Inspection.Models.Entity;
 using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
 
@@ -93,7 +92,6 @@ namespace Stiffiner_Inspection.Hubs
         {
             try
             {
-                //Global.currentSelectedModel = model;
                 Global._currentSelectedModel= model;
 
                 Global.StatusVisionChangeModel1 = 1;

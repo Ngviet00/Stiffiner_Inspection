@@ -161,7 +161,6 @@ namespace Stiffiner_Inspection
 
             timer?.Dispose();
             timer = null;
-            Console.WriteLine("test timer check vision not enough tray");
         }
 
         private void SetStatusOfMachine(int binary)
