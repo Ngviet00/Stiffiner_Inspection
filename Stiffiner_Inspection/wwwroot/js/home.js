@@ -99,7 +99,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 5000);
+        }, 6000);
     });
 
     //event deep learning
@@ -117,7 +117,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 5000);
+        }, 6000);
     });
 
     //event check client connect
@@ -133,7 +133,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 5000);
+        }, 6000);
     });
 
     //event change plc
@@ -220,6 +220,18 @@ $(function () {
             `)
         } else {
             resetPLC = 1;
+        }
+    });
+
+    connection.on("ListModels", (results) => {
+        if (results.length > 0) {
+            let options = '<option value="">Choose Model</option>';
+
+            results.forEach(item => {
+                options += `<option value="${item}">${item}</option>`;
+            });
+
+            $('#select-model').html(options);
         }
     });
 
@@ -463,8 +475,8 @@ $(function () {
     }
     //============= END UPDATE STATISTICAL CALCULATIONS =============
 
-    $('#select-model').change(function () {
-        var selectedValue = parseInt($(this).val());
+    $(document).on('change', '#select-model', function () {
+        var selectedValue = $(this).val();
         connection.invoke("ChangeModel", selectedValue).then(function (res) {
             alert("Change model successfully!");
         }).catch(function (err) {

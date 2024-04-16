@@ -1,6 +1,7 @@
 ﻿using ActUtlType64Lib;
 using log4net;
 using System.IO.Ports;
+using System.Timers;
 
 namespace Stiffiner_Inspection
 {
@@ -13,6 +14,8 @@ namespace Stiffiner_Inspection
         private bool isExist = false;
         private const int timeSleep = 100;
         private readonly ILog _logger = LogManager.GetLogger(typeof(ControlPLC));
+
+        public static System.Timers.Timer? timer;
 
         // Register read
         private const string REG_PLC_Read_STATUS = "D20";
@@ -119,16 +122,46 @@ namespace Stiffiner_Inspection
                     isEndHistory = true;
                     TurnOffLightControl();
 
-                    //if miss data from client
-                    var quantityCurrentTrayData = Global.CurrentTrayData.Count;
-                    if (quantityCurrentTrayData > 0 && quantityCurrentTrayData < 80)
+                    if (timer is not null)
                     {
-                        VisionNotEnoughTray();
+                        timer.Dispose();
+                        timer = null;
                     }
+
+                    timer = new System.Timers.Timer(5000);
+                    timer.Elapsed += TimerCheckVisionEnoughTray;
+                    timer.Start();
+
+                    //check after 5s, if not enought tray will alert vision not enough tray
+
+                    //if miss data from client
+                    //var quantityCurrentTrayData = Global.CurrentTrayData.Count;
+                    //if (quantityCurrentTrayData > 0 && quantityCurrentTrayData < 80)
+                    //{
+                    //    VisionNotEnoughTray();
+                    //}
+                }
+
+                if (valueReadedEndInspection == 0)
+                {
+                    timer?.Dispose();
+                    timer = null;
                 }
 
                 Thread.Sleep(timeSleep);
             }
+        }
+
+        public void TimerCheckVisionEnoughTray(object sender, ElapsedEventArgs e)
+        {
+            if (Global.CurrentTrayData.Count < 80)
+            {
+                VisionNotEnoughTray();
+            }
+
+            timer?.Dispose();
+            timer = null;
+            Console.WriteLine("test timer check vision not enough tray");
         }
 
         private void SetStatusOfMachine(int binary)

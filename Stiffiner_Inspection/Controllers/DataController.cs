@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.Ajax.Utilities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Models.DTO.Data;
@@ -93,7 +94,7 @@ namespace Stiffiner_Inspection.Controllers
         public async Task<IActionResult> ChangeStatusSystemClient(int clientId, int status, string? message) //1:running, 2: pause, 3: error - with message
         {
             try
-            { 
+            {
 
                 if (clientId == CLIENT_1 && status == 1)
                 {
@@ -151,7 +152,7 @@ namespace Stiffiner_Inspection.Controllers
                 if (clientId == 1)
                 {
                     result = Global.resetPLC1;
-                } 
+                }
 
                 if (clientId == 2)
                 {
@@ -192,7 +193,7 @@ namespace Stiffiner_Inspection.Controllers
         [HttpPost]
         public IActionResult SaveResetPLC(int clientId)
         {
-            try 
+            try
             {
                 if (clientId == 1)
                 {
@@ -267,6 +268,138 @@ namespace Stiffiner_Inspection.Controllers
                     message = "success",
                     type_model = Global.currentSelectedModel,
                     name_model = Global.currentSelectedModel == 1 ? "Stiffener Inspection" : "Stiffener Filler"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Route("client-get-data-server")]
+        [HttpGet]
+        public async Task<IActionResult> ClientGetDataServer(int clientId)
+        {
+            try
+            {
+                //====================== STATUS RESET PLC ===================
+                int result = 0;
+
+                if (clientId == 1)
+                {
+                    result = Global.resetPLC1;
+                }
+
+                if (clientId == 2)
+                {
+                    result = Global.resetPLC2;
+                }
+
+                if (clientId == 3)
+                {
+                    result = Global.resetPLC3;
+                }
+
+                if (clientId == 4)
+                {
+                    result = Global.resetPLC4;
+                }
+
+                _dataService.ChangeConnectVisionBusy(clientId, 1);
+                await _hubContext.Clients.All.SendAsync("ChangeClientConnect", clientId);
+                //====================== END STATUS RESET PLC ===================
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "success",
+                    name_model = Global._currentSelectedModel,
+                    client_1_post_model = Global.Client1IsPostModel,
+                    client_2_post_model = Global.Client2IsPostModel,
+                    client_3_post_model = Global.Client3IsPostModel,
+                    client_4_post_model = Global.Client4IsPostModel,
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Route("check-client-is-send-model")]
+        [HttpPost]
+        public IActionResult ChangeStatusServer(int clientId)
+        {
+            try
+            {
+                if (clientId == 1)
+                {
+                    Global.Client1IsPostModel = true;
+                }
+
+                if (clientId == 2)
+                {
+                    Global.Client2IsPostModel = true;
+                }
+
+                if (clientId == 3)
+                {
+                    Global.Client3IsPostModel = true;
+                }
+
+                if (clientId == 4)
+                {
+                    Global.Client4IsPostModel = true;
+                }
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "success",
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Route("client-post-model")]
+        [HttpPost]
+        public async Task<IActionResult> PostModel(int clientId, string listModels)
+        {
+            try
+            {
+                string models = Global.strModels;
+
+                if (!listModels.IsNullOrWhiteSpace())
+                {
+                    models += "," + listModels;
+                }
+
+                models = models.Trim(',');
+                Global.strModels = models;
+
+                Global.ListModels = _dataService.GetListModelsAppearFourTime(models);
+                
+                await _hubContext.Clients.All.SendAsync("ListModels", Global.ListModels);
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "success",
                 });
             }
             catch (Exception ex)

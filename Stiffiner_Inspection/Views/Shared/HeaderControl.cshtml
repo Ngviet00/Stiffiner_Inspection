@@ -3,7 +3,9 @@
 @{
     var controller = ViewContext.RouteData.Values["controller"].ToString();
     var action = ViewContext.RouteData.Values["action"].ToString();
-    var currentModel = Global.currentSelectedModel;
+    //var currentModel = Global.currentSelectedModel;
+    var currentModel = Global._currentSelectedModel;
+    var listModels = Global.ListModels;
 }
 
 <div id="header-control" class="@(action == "History" ? "mt-3" : "") d-flex justify-content-between">
@@ -21,20 +23,13 @@
         <div id="action" class="d-flex align-items-center">
             <div class="d-flex align-items-center" style="margin-right: 1.5em">
                 <label for="select-model d-inline-block mr-5" style="margin-right: 10px;font-weight: bold">Model</label>
-                @if (currentModel == 1)
-                {
-                    <select id="select-model" class="form-select">
-                        <option value="1" selected="selected">Stiffener Inspection</option>
-                        <option value="2">Stiffener Filler</option>
-                    </select>
-                }
-                else
-                {
-                    <select id="select-model" class="form-select">
-                        <option value="1">Stiffener Inspection</option>
-                        <option value="2" selected="selected">Stiffener Filler</option>
-                    </select>
-                }
+                <select id="select-model" class="form-select">
+                    <option value="">Choose Model</option>
+                    @foreach (var item in listModels)
+                    {
+                        <option value="@item" selected="@(item == currentModel ? "selected" : "")">@item</option>
+                    }
+                </select>
             </div>
             <button type="button" class="btn btn-danger btn-export-excel" data-toggle="modal" data-target="#exampleModal1" style="margin-right: 1.5em">
                 Clear Data

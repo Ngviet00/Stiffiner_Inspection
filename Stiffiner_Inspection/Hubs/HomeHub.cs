@@ -89,11 +89,12 @@ namespace Stiffiner_Inspection.Hubs
             }
         }
 
-        public void ChangeModel(int model)
+        public void ChangeModel(string model)
         {
             try
             {
-                Global.currentSelectedModel = model;
+                //Global.currentSelectedModel = model;
+                Global._currentSelectedModel= model;
 
                 Global.StatusVisionChangeModel1 = 1;
                 Global.StatusVisionChangeModel2 = 1;

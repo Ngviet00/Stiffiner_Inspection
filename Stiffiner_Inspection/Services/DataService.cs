@@ -666,5 +666,13 @@ namespace Stiffiner_Inspection.Services
                 throw;
             }
         }
+
+        public List<string> GetListModelsAppearFourTime(string models)
+        {
+            string[] elements = models.Split(',');
+
+            //get item appear four time and push to list
+            return elements.GroupBy(x => x).Where(g => g.Count() == 4).Select(g => g.Key).ToList();
+        }
     }
 }

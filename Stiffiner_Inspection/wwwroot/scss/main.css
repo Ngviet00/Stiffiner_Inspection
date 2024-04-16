@@ -383,10 +383,13 @@
 }
 .wrap-content #inspection-statistical #result .current-tray .check-item .no-number .no {
   font-size: 12px;
+  text-align: center;
 }
 .wrap-content #inspection-statistical #result .current-tray .check-item .no-number .stt {
   font-size: 12px;
-  padding: 7px 0;
+  padding: 6.5px 0;
+  border-bottom: 1px solid #c3c3c3;
+  text-align: center;
 }
 .wrap-content #inspection-statistical #result .current-tray .check-item .is-check-tray {
   flex-basis: 36%;
@@ -470,10 +473,13 @@
 }
 .wrap-content #inspection-statistical #result .previous-tray .check-item .no-number .no {
   font-size: 12px;
+  text-align: center;
 }
 .wrap-content #inspection-statistical #result .previous-tray .check-item .no-number .stt {
   font-size: 12px;
-  padding: 7px 0;
+  padding: 6.5px 0;
+  border-bottom: 1px solid #c3c3c3;
+  text-align: center;
 }
 .wrap-content #inspection-statistical #result .previous-tray .check-item .is-check-tray {
   flex-basis: 36%;

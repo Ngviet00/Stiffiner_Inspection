@@ -14,15 +14,12 @@ namespace Stiffiner_Inspection
         }
 
         public static int resetClient { get; set; } = 0;
-
         public static int valuePLC { get; set; } = 4;
 
+        //reset PLC
         public static int resetPLC1 { get; set; } = 0;
-
         public static int resetPLC2 { get; set; } = 0;
-
         public static int resetPLC3 { get; set; } = 0;
-
         public static int resetPLC4 { get; set; } = 0;
 
         public static int currentTray { get; set; } = 0;
@@ -53,5 +50,16 @@ namespace Stiffiner_Inspection
         public static int StatusVisionChangeModel2 = 0; //1 busy
         public static int StatusVisionChangeModel3 = 0; //1 busy
         public static int StatusVisionChangeModel4 = 0; //1 busy
+
+        //string models
+        public static string strModels = string.Empty;
+        public static string _currentSelectedModel = string.Empty;
+        public static List<string> ListModels = new List<string>();
+
+        //check client is send model to server
+        public static bool Client1IsPostModel = false;
+        public static bool Client2IsPostModel = false;
+        public static bool Client3IsPostModel = false;
+        public static bool Client4IsPostModel = false;
     }
 }
