@@ -160,7 +160,7 @@ $(function () {
 
         if (status === STATUS_PLC.START) {
             _status.css("color", "#ffffff").css("background", "#49A31D").text("Start");
-            $('#select-model').prop('disabled', true);
+            //$('#select-model').prop('disabled', true);
             return;
         }
 
