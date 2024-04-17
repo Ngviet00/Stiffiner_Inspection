@@ -110,7 +110,7 @@ namespace Stiffiner_Inspection.Controllers
                     await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 1, "");
                 }
 
-                Thread.Sleep(2000);
+                Thread.Sleep(3000);
             }
         }
 
