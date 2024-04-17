@@ -68,11 +68,6 @@ namespace Stiffiner_Inspection
             }
         }
 
-        public void Disconneted()
-        {
-            _plc.Close();
-        }
-
         private void ReadDataFromRegister()
         {
             while (!isExist)
@@ -128,18 +123,10 @@ namespace Stiffiner_Inspection
                         timer = null;
                     }
 
+                    //check if after 5s, tray not enough will send signal to PLC vision not enough tray
                     timer = new System.Timers.Timer(5000);
                     timer.Elapsed += TimerCheckVisionEnoughTray;
                     timer.Start();
-
-                    //check after 5s, if not enought tray will alert vision not enough tray
-
-                    //if miss data from client
-                    //var quantityCurrentTrayData = Global.CurrentTrayData.Count;
-                    //if (quantityCurrentTrayData > 0 && quantityCurrentTrayData < 80)
-                    //{
-                    //    VisionNotEnoughTray();
-                    //}
                 }
 
                 if (valueReadedEndInspection == 0)

@@ -152,22 +152,22 @@ namespace Stiffiner_Inspection.Controllers
             {
                 int result = 0;
 
-                if (clientId == 1)
+                if (clientId == CLIENT_1)
                 {
                     result = Global.resetPLC1;
                 }
 
-                if (clientId == 2)
+                if (clientId == CLIENT_2)
                 {
                     result = Global.resetPLC2;
                 }
 
-                if (clientId == 3)
+                if (clientId == CLIENT_3)
                 {
                     result = Global.resetPLC3;
                 }
 
-                if (clientId == 4)
+                if (clientId == CLIENT_4)
                 {
                     result = Global.resetPLC4;
                 }
@@ -198,22 +198,22 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
-                if (clientId == 1)
+                if (clientId == CLIENT_1)
                 {
                     Global.resetPLC1 = 0;
                 }
 
-                if (clientId == 2)
+                if (clientId == CLIENT_2)
                 {
                     Global.resetPLC2 = 0;
                 }
 
-                if (clientId == 3)
+                if (clientId == CLIENT_3)
                 {
                     Global.resetPLC3 = 0;
                 }
 
-                if (clientId == 4)
+                if (clientId == CLIENT_4)
                 {
                     Global.resetPLC4 = 0;
                 }
@@ -296,25 +296,25 @@ namespace Stiffiner_Inspection.Controllers
 
                 int resultPLC = 0;
 
-                if (clientId == 1)
+                if (clientId == CLIENT_1)
                 {
                     resultPLC = Global.resetPLC1;
                     data.is_send_model = Global.Client1IsPostModel;
                 }
 
-                if (clientId == 2)
+                if (clientId == CLIENT_2)
                 {
                     resultPLC = Global.resetPLC2;
                     data.is_send_model = Global.Client2IsPostModel;
                 }
 
-                if (clientId == 3)
+                if (clientId == CLIENT_3)
                 {
                     resultPLC = Global.resetPLC3;
                     data.is_send_model = Global.Client3IsPostModel;
                 }
 
-                if (clientId == 4)
+                if (clientId == CLIENT_4)
                 {
                     resultPLC = Global.resetPLC4;
                     data.is_send_model = Global.Client4IsPostModel;
@@ -343,25 +343,25 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
-                if (clientId == 1)
+                if (clientId == CLIENT_1)
                 {
                     Global.Client1IsPostModel = 0;
                     Global.StatusVisionChangeModel1 = INACTIVE;
                 }
 
-                if (clientId == 2)
+                if (clientId == CLIENT_2)
                 {
                     Global.Client2IsPostModel = 0;
                     Global.StatusVisionChangeModel2 = INACTIVE;
                 }
 
-                if (clientId == 3)
+                if (clientId == CLIENT_3)
                 {
                     Global.Client3IsPostModel = 0;
                     Global.StatusVisionChangeModel3 = INACTIVE;
                 }
 
-                if (clientId == 4)
+                if (clientId == CLIENT_4)
                 {
                     Global.Client4IsPostModel = 0;
                     Global.StatusVisionChangeModel4 = INACTIVE;

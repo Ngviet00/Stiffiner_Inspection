@@ -9,13 +9,11 @@ namespace Stiffiner_Inspection.Hubs
     {
         private readonly DataService _dataService;
         private readonly ILog _logger = LogManager.GetLogger(typeof(HomeHub));
-        private readonly IHubContext<HomeHub> _hubContext;
         const int PERCENT = 100;
 
-        public HomeHub(DataService dataService, IHubContext<HomeHub> hubContext)
+        public HomeHub(DataService dataService)
         {
             _dataService = dataService;
-            _hubContext = hubContext;
         }
 
         public async Task<StatisticalCalculationsResponse?> UpdateStatistical(string message)
@@ -46,7 +44,8 @@ namespace Stiffiner_Inspection.Hubs
 
                 return result;
 
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.Error("Update statistical calculations failed: " + ex.Message);
                 return null;
@@ -58,9 +57,11 @@ namespace Stiffiner_Inspection.Hubs
             try
             {
                 _dataService.ChangeDeepLearningVisionBusy(clientId, status);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
-                Console.WriteLine("Error can not change status vision busy:" + ex.Message);
+                _logger.Error("Error can not change status vision busy:" + ex.Message);
+                throw;
             }
         }
 
@@ -72,7 +73,8 @@ namespace Stiffiner_Inspection.Hubs
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error can not change status vision busy:" + ex.Message);
+                _logger.Error("Error can not change status vision busy:" + ex.Message);
+                throw;
             }
         }
 
@@ -84,7 +86,8 @@ namespace Stiffiner_Inspection.Hubs
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error can not change status vision busy:" + ex.Message);
+                _logger.Error("Error can not change status vision busy:" + ex.Message);
+                throw;
             }
         }
 
@@ -92,7 +95,7 @@ namespace Stiffiner_Inspection.Hubs
         {
             try
             {
-                Global._currentSelectedModel= model;
+                Global._currentSelectedModel = model;
 
                 Global.StatusVisionChangeModel1 = 1;
                 Global.StatusVisionChangeModel2 = 1;
@@ -101,7 +104,8 @@ namespace Stiffiner_Inspection.Hubs
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error can not change model:" + ex.Message);
+                _logger.Error("Error can not change model:" + ex.Message);
+                throw;
             }
         }
 
@@ -113,7 +117,7 @@ namespace Stiffiner_Inspection.Hubs
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error can not get list data:" + ex.Message);
+                _logger.Error("Error can not get list data:" + ex.Message);
                 throw;
             }
         }
@@ -135,7 +139,7 @@ namespace Stiffiner_Inspection.Hubs
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error can not change model:" + ex.Message);
+                _logger.Error("Error can not change model:" + ex.Message);
                 throw;
             }
         }

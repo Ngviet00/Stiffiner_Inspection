@@ -12,7 +12,6 @@ namespace Stiffiner_Inspection.Controllers
     {
         private readonly IHubContext<HomeHub> _hubContext;
         private readonly DataService _dataService;
-        private readonly ErrorCodeService _errorCodeService;
         private readonly ILog _logger = LogManager.GetLogger(typeof(HomeController));
         private readonly ApplicationDbContext _context;
         const int timeSleep = 100;
@@ -22,13 +21,11 @@ namespace Stiffiner_Inspection.Controllers
         public HomeController(
             IHubContext<HomeHub> hubContext,
             DataService dataService,
-            ErrorCodeService errorCodeService,
             ApplicationDbContext context
         )
         {
             _hubContext = hubContext;
             _dataService = dataService;
-            _errorCodeService = errorCodeService;
             _context = context;
         }
 
@@ -40,24 +37,25 @@ namespace Stiffiner_Inspection.Controllers
 
             Global.controlPLC.Connect();
 
-            //Thread read value plc
+            //Thread read value PLC
             Thread threadValuePLC = new Thread(GetValuePLC);
             threadValuePLC.IsBackground = true;
             threadValuePLC.Name = "GET_CURRENT_STATUS_PLC";
             threadValuePLC.Start();
 
-            //reset client
+            //Thread check PLC reset
             Thread resetClient = new Thread(ResetClient);
             resetClient.IsBackground = true;
             resetClient.Name = "RESET_CLIENT";
             resetClient.Start();
 
-            //vision busy
+            //Thread check vision busy
             Thread visionBusy = new Thread(VisionBusy);
             visionBusy.IsBackground = true;
             visionBusy.Name = "VISION_BUSY";
             visionBusy.Start();
 
+            //Get info ok, ng, percent chart
             double total = await _dataService.GetTotal();
 
             int allOK = await _dataService.GettotalOK();
@@ -152,7 +150,7 @@ namespace Stiffiner_Inspection.Controllers
 
                 string folderPath = @"D:\publish_image\images";
 
-                // Check if the directory exists
+                // Check if exist folder => delete => create new folder
                 if (Directory.Exists(folderPath))
                 {
                     await Task.Run(() => Directory.Delete(folderPath, true));

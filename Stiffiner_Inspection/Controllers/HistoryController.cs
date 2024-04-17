@@ -14,16 +14,8 @@ namespace Stiffiner_Inspection.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var data = await _dataService.GetHistory(); 
-
-            var groupedData = data
-                .GroupBy(x => x.Tray)
-                .OrderByDescending(g => g.Key)
-                .Where(g => g.Count() >= 40)
-                .Take(10)
-                .ToList();
-
-            ViewBag.GroupedData = groupedData;
+            var data = await _dataService.GetHistory();
+            ViewBag.GroupedData = data?.GroupBy(x => x.Tray).OrderByDescending(g => g.Key).Where(g => g.Count() >= 40).Take(10).ToList();
 
             return View();
         }
