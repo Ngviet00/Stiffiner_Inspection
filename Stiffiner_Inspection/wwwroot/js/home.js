@@ -141,32 +141,39 @@ $(function () {
         let _status = $('#value-plc-status');
         let _message = $('#error-plc-status')
 
-        status === STATUS_PLC.ALARM ? _message.removeClass('d-none') : _message.addClass('d-none');
+        status == STATUS_PLC.ALARM ? _message.removeClass('d-none') : _message.addClass('d-none');
 
-        if (status === STATUS_PLC.DISCONNECTED) {
+        if (status == STATUS_PLC.DISCONNECTED) {
             _status.css("color", "#222222").css("background", "#E6E6E6").text("Disconnect");
+            $('#select-model').prop('disabled', false);
+            $('.btn-reload-model').prop('disabled', false);
+            $('.btn-clear-data').prop('disabled', false);
             return;
         }
 
-        if (status === STATUS_PLC.ALARM) {
+        if (status == STATUS_PLC.ALARM) {
             _status.css("color", "#3C3C3C").css("background", "#FFCA08").text("Alarm");
             return;
         }
 
-        if (status === STATUS_PLC.EMG) {
+        if (status == STATUS_PLC.EMG) {
             _status.css("color", "#E34440").css("background", "#FD53083D").text("EMG");
             return;
         }
 
-        if (status === STATUS_PLC.START) {
+        if (status == STATUS_PLC.START) {
             _status.css("color", "#ffffff").css("background", "#49A31D").text("Start");
-            //$('#select-model').prop('disabled', true);
+            $('#select-model').prop('disabled', true);
+            $('.btn-reload-model').prop('disabled', true);
+            $('.btn-clear-data').prop('disabled', true);
             return;
         }
 
-        if (status === STATUS_PLC.STOP) {
+        if (status == STATUS_PLC.STOP) {
             _status.css("color", "#ffffff").css("background", "#E4491D").text("Stop");
-            //$('#select-model').removeAttr('disabled').prop('disabled', false);
+            $('#select-model').prop('disabled', false);
+            $('.btn-reload-model').prop('disabled', false);
+            $('.btn-clear-data').prop('disabled', false);
             return;
         }
     });

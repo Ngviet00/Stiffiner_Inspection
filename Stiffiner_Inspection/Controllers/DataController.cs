@@ -1,4 +1,5 @@
-﻿using Microsoft.Ajax.Utilities;
+﻿using log4net;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Hubs;
@@ -15,6 +16,7 @@ namespace Stiffiner_Inspection.Controllers
     {
         private readonly DataService _dataService;
         private readonly IHubContext<HomeHub> _hubContext;
+        private readonly ILog _logger = LogManager.GetLogger(typeof(DataController));
 
         const int CLIENT_1 = 1;
         const int CLIENT_2 = 2;
@@ -344,21 +346,25 @@ namespace Stiffiner_Inspection.Controllers
                 if (clientId == 1)
                 {
                     Global.Client1IsPostModel = 0;
+                    Global.StatusVisionChangeModel1 = INACTIVE;
                 }
 
                 if (clientId == 2)
                 {
                     Global.Client2IsPostModel = 0;
+                    Global.StatusVisionChangeModel2 = INACTIVE;
                 }
 
                 if (clientId == 3)
                 {
                     Global.Client3IsPostModel = 0;
+                    Global.StatusVisionChangeModel3 = INACTIVE;
                 }
 
                 if (clientId == 4)
                 {
                     Global.Client4IsPostModel = 0;
+                    Global.StatusVisionChangeModel4 = INACTIVE;
                 }
 
                 return Ok(new
