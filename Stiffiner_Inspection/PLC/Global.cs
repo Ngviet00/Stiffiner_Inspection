@@ -1,10 +1,13 @@
 ﻿using Stiffiner_Inspection.Models.DTO.Data;
+using MSFactoryDLL;
 
 namespace Stiffiner_Inspection
 {
     public static class Global
     {
         public static ControlPLC controlPLC = new ControlPLC();
+
+        public static FolderAutoCreate? FolderAutoCreate { get; set; } = null;
 
         public static int resetClient { get; set; } = 0;
         public static int valuePLC { get; set; } = 4;
