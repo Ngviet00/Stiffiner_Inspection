@@ -375,11 +375,9 @@
   flex-basis: 7%;
 }
 .wrap-content #inspection-statistical #result .current-tray .check-item .no-number .empty-row {
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 24px;
-  letter-spacing: 0;
-  color: #F2F5FF;
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 25px;
 }
 .wrap-content #inspection-statistical #result .current-tray .check-item .no-number .no {
   font-size: 12px;
@@ -465,11 +463,9 @@
   flex-basis: 7%;
 }
 .wrap-content #inspection-statistical #result .previous-tray .check-item .no-number .empty-row {
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 24px;
-  letter-spacing: 0;
-  color: #F2F5FF;
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 25px;
 }
 .wrap-content #inspection-statistical #result .previous-tray .check-item .no-number .no {
   font-size: 12px;
