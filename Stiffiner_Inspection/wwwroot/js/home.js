@@ -12,6 +12,15 @@ $(function () {
     var previousTray = [];
     var resetPLC = 1;
 
+    const noDataTimeLogRow = $('.time-log-no-data');
+
+    var statusPLC = null;
+    var statusClient = null;
+
+    var ConnectPC = [null, null, null, null]
+    var CamPC = [null, null, null, null]
+    var DeepLearningPC = [null, null, null, null]
+
     for (let i = 1; i <= 4; i++) {
         clearTimeout(timeouts[i]);
         clearTimeout(deepcores[i]);
@@ -46,6 +55,8 @@ $(function () {
         'CLIENT_4': 4,
     });
 
+    //====================================================== EVENT REALTIME ======================================================
+
     //connection start
     connection.start()
         .then(() => {
@@ -68,33 +79,23 @@ $(function () {
         appendResultLog(data);
     });
 
-    //event time log
-    connection.on("ReceiveTimeLog", (time, type, message) => {
-        const noDataTimeLogRow = $('.time-log-no-data');
-        if (noDataTimeLogRow) {
-            noDataTimeLogRow.remove();
-        }
-
-        $("#time-log table tbody").prepend(`
-            <tr>
-                <td class="max-w90">${convertDate(time)}</td>
-                <td class="max-w105">${type}</td>
-                <td>${message}</td>
-            </tr>
-        `);
-    });
-
     //event check status camera pc
     connection.on("ChangeCAM", (client_id, status) => {
         clearTimeout(timeouts[client_id]);
 
         $(".dot-cam-" + client_id).removeClass('cam-is-active').css("background", status == 1 ? '#0ad90a' : '#b6b9b6');
 
+        if (CamPC[client_id] != status) {
+            appendTimeLog(getCurrentDateTime(), "Client", `Cam PC ${client_id} is connected`)
+            CamPC[client_id] = status;
+        }
+
         timeouts[client_id] = setTimeout(function () {
             $(".dot-cam-" + client_id).css("background", '#b6b9b6');
             connection.invoke("ChangeStatusCamVisionBusy", client_id, 0)
                 .then(function (res) {
-
+                    CamPC[client_id] = null;
+                    appendTimeLog(getCurrentDateTime(), "Client", `CAM PC ${client_id} is disconnected!`)
                 })
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
@@ -108,11 +109,17 @@ $(function () {
 
         $(".dot-deep-core-" + client_id).css("background", status == 1 ? '#0ad90a' : '#b6b9b6');
 
+        if (DeepLearningPC[client_id] != status) {
+            appendTimeLog(getCurrentDateTime(), "Client", `Deep Learning PC ${client_id} is connected`)
+            DeepLearningPC[client_id] = status;
+        }
+
         deepcores[client_id] = setTimeout(function () {
             $(".dot-deep-core-" + client_id).css("background", '#b6b9b6');
             connection.invoke("ChangeDeepCoreVisionBusy", client_id, 0)
                 .then(function (res) {
-                    
+                    appendTimeLog(getCurrentDateTime(), "Client", `Deep learning PC ${client_id} is disconnected!`)
+                    DeepLearningPC[client_id] = null;
                 })
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
@@ -124,11 +131,17 @@ $(function () {
     connection.on("ChangeClientConnect", (clientId) => {
         clearTimeout(clientConnects[clientId])
         $(".dot-connect-" + clientId).css("background", "#0ad90a")
+
+        if (ConnectPC[clientId] == null) {
+            appendTimeLog(getCurrentDateTime(), "Client", `Client PC ${clientId} is connected`)
+            ConnectPC[clientId] = 1;
+        }
         clientConnects[clientId] = setTimeout(function () {
             $(".dot-connect-" + clientId).css("background", '#b6b9b6')
             connection.invoke("ChangeConnectVisionBusy", clientId, 0)
                 .then(function (res) {
-
+                    ConnectPC[clientId] = null
+                    appendTimeLog(getCurrentDateTime(), "Client", `Client PC ${clientId} is disconnected!`)
                 })
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
@@ -148,16 +161,30 @@ $(function () {
             $('#select-model').prop('disabled', false);
             $('.btn-reload-model').prop('disabled', false);
             $('.btn-clear-data').prop('disabled', false);
+
+            if (statusPLC != status) {
+                appendTimeLog(getCurrentDateTime(), "PLC", `PLC Disconnected!`);
+                statusPLC = status;
+            }
+
             return;
         }
 
         if (status == STATUS_PLC.ALARM) {
             _status.css("color", "#3C3C3C").css("background", "#FFCA08").text("Alarm");
+            if (statusPLC != status) {
+                appendTimeLog(getCurrentDateTime(), "PLC", `PLC Alarm!`);
+                statusPLC = status;
+            }
             return;
         }
 
         if (status == STATUS_PLC.EMG) {
             _status.css("color", "#E34440").css("background", "#FD53083D").text("EMG");
+            if (statusPLC != status) {
+                appendTimeLog(getCurrentDateTime(), "PLC", `PLC EMG!`);
+                statusPLC = status;
+            }
             return;
         }
 
@@ -166,6 +193,10 @@ $(function () {
             $('#select-model').prop('disabled', true);
             $('.btn-reload-model').prop('disabled', true);
             $('.btn-clear-data').prop('disabled', true);
+            if (statusPLC != status) {
+                appendTimeLog(getCurrentDateTime(), "PLC", `PLC Start!`);
+                statusPLC = status;
+            }
             return;
         }
 
@@ -174,6 +205,10 @@ $(function () {
             $('#select-model').prop('disabled', false);
             $('.btn-reload-model').prop('disabled', false);
             $('.btn-clear-data').prop('disabled', false);
+            if (statusPLC != status) {
+                appendTimeLog(getCurrentDateTime(), "PLC", `PLC Stop!`);
+                statusPLC = status;
+            }
             return;
         }
     });
@@ -188,18 +223,30 @@ $(function () {
         if (status == SYSTEM_STATUS_CLIENT.RUNNING) {
             _status.css("color", "#ffffff").css("background", "#49A31D").text("Running");
             _message.addClass('d-none');
+            if (statusClient != status) {
+                appendTimeLog(getCurrentDateTime(), "Client", "Client is running!");
+                statusClient = status;
+            }
             return;
         }
 
         if (status == SYSTEM_STATUS_CLIENT.PAUSE) {
             _status.css("color", "#344054").css("background", "#E6E6E6").text("Pause");
             _message.addClass('d-none');
+            if (statusClient != status) {
+                appendTimeLog(getCurrentDateTime(), "Client", "Client is pause!");
+                statusClient = status;
+            }
             return;
         }
 
         if (status == SYSTEM_STATUS_CLIENT.ERROR) {
             _status.css("color", "#E34440").css("background", "#FD53083D").text("Error");
             _message.removeClass('d-none').text(message);
+            if (statusClient != status) {
+                appendTimeLog(getCurrentDateTime(), "Client", "Client is error!");
+                statusClient = status;
+            }
             return;
         }
     });
@@ -211,13 +258,6 @@ $(function () {
             resetPLC++;
             resetCurrentTray();
             appendPreviousTray();
-
-            //clear log
-            $('#time-log table tbody').html(`
-                <tr class="time-log-no-data">
-                    <td colspan="12" class="w-100 text-lg-center text-dark fw-bold mt-1" style="font-size: 14px;">No data</td>
-                </tr>
-            `)
 
             //clear result log
             $('#result-log table tbody').html(`
@@ -243,6 +283,102 @@ $(function () {
             alert('Please choose model!');
         }
     });
+
+    //====================================================== CONFIG CHART ======================================================
+    var ctx = document.getElementById('pie-chart').getContext('2d');
+
+    var valueChart = document.getElementById('data-chart-percent');
+
+    var values = [
+        parseFloat(valueChart.getAttribute('data-percent-chart-ok')),
+        parseFloat(valueChart.getAttribute('data-percent-chart-ng')),
+        parseFloat(valueChart.getAttribute('data-percent-chart-empty')),
+    ];
+
+    if (values[0] == 0 && values[1] == 0 && values[2] == 0) {
+        values = [100, 0, 0]
+    }
+
+    var myPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ["OK", "NG", "Empty"],
+            datasets: [{
+                data: values,
+                backgroundColor: [
+                    '#66b032', '#e4491d', '#9F9F9F',
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            title: {
+                display: false,
+                text: null,
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#667085',
+                    }
+                },
+                tooltip: {
+                    enabled: false,
+                },
+                datalabels: {
+                    formatter: (value, context) => {
+                        const datapoints = context.chart.data.datasets[0].data;
+                        function totalSum(total, datapoint) {
+                            return total + datapoint;
+                        }
+                        const totalValue = datapoints.reduce(totalSum, 0);
+                        const percentageValue = (value / totalValue * 100).toFixed(2);
+                        return `${percentageValue}%`;
+                    },
+                    color: '#ffffff',
+                    font: {
+                        weight: 'bold',
+                        size: 15,
+                    },
+                    align: 'end',
+                    anchor: 'center'
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+
+    //====================================================== FUNCTION ======================================================
+    function UpdateStatisticalCalculations() {
+        connection.invoke("UpdateStatistical", "UpdateStatictical")
+            .then(function (res) {
+                $('#total-tray-ea').html(res.totalTray);
+                $('#total-ea').html(`${res.total}<span class="">EA</span>`);
+                $('#total-ok-ea').html(`${res.totalOK}<span class="">EA</span>`);
+                $('#total-ng-ea').html(`${res.totalNG}<span class="">EA</span>`);
+                $('#total-empty-ea').html(`${res.totalEmpty}<span class="">EA</span>`);
+
+                $('#percent-ok').html(`${res.percentChartOk} %`);
+                $('#percent-ng').html(`${res.percentChartNG} %`);
+                $('#percent-empty').html(`${res.percentChartEmpty} %`);
+
+                if (res.percentChartOk == 0 && res.percentChartNG == 0 && res.percentChartEmpty == 0) {
+                    res.percentChartOk = 100;
+                }
+
+                myPieChart.data.datasets[0].data = [res.percentChartOk, res.percentChartNG, res.percentChartEmpty];
+                myPieChart.data.labels = ["OK", "NG", "Empty"];
+                myPieChart.update('none');
+            })
+            .catch(function (err) {
+                console.error("Error calling API:", err.toString());
+            })
+            .finally(function () {
+                setTimeout(UpdateStatisticalCalculations, 3000)
+            });
+    }
 
     function appendPreviousTray() {
         let client1 = "";
@@ -324,6 +460,20 @@ $(function () {
         previousTray = [];
     }
 
+    function appendTimeLog(time, type, message) {
+        if (noDataTimeLogRow) {
+            noDataTimeLogRow.remove();
+        }
+
+        $("#time-log table tbody").prepend(`
+            <tr>
+                <td class="max-w90">${convertDate(time)}</td>
+                <td class="max-w105">${type}</td>
+                <td>${message}</td>
+            </tr>
+        `);
+    }
+
     function resetCurrentTray() {
         let client1 = '';
         let client2 = '';
@@ -385,116 +535,6 @@ $(function () {
         return hours + ":" + minutes + ":" + seconds;
     }
 
-    //============= CONFIG CHART ============= 
-    var ctx = document.getElementById('pie-chart').getContext('2d');
-
-    var valueChart = document.getElementById('data-chart-percent');
-
-    var values = [
-        parseFloat(valueChart.getAttribute('data-percent-chart-ok')),
-        parseFloat(valueChart.getAttribute('data-percent-chart-ng')),
-        parseFloat(valueChart.getAttribute('data-percent-chart-empty')),
-    ];
-
-    if (values[0] == 0 && values[1] == 0 && values[2] == 0) {
-        values = [100, 0, 0]
-    }
-
-    var myPieChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ["OK", "NG", "Empty"],
-            datasets: [{
-                data: values,
-                backgroundColor: [
-                    '#66b032', '#e4491d', '#9F9F9F',
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            title: {
-                display: false,
-                text: null,
-            },
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        color: '#667085',
-                    }
-                },
-                tooltip: {
-                    enabled: false,
-                },
-                datalabels: {
-                    formatter: (value, context) => {
-                        const datapoints = context.chart.data.datasets[0].data;
-                        function totalSum(total, datapoint) {
-                            return total + datapoint;
-                        }
-                        const totalValue = datapoints.reduce(totalSum, 0);
-                        const percentageValue = (value / totalValue * 100).toFixed(2);
-                        return `${percentageValue}%`;
-                    },
-                    color: '#ffffff',
-                    font: {
-                        weight: 'bold',
-                        size: 15,
-                    },
-                    align: 'end',
-                    anchor: 'center'
-                }
-            }
-        },
-        plugins: [ChartDataLabels]
-    });
-
-    //============= END CONFIG CHART ============= 
-
-    //============= UPDATE STATISTICAL CALCULATIONS =============
-    function UpdateStatisticalCalculations() {
-        connection.invoke("UpdateStatistical", "UpdateStatictical")
-            .then(function (res) {
-                $('#total-tray-ea').html(res.totalTray);
-                $('#total-ea').html(`${res.total}<span class="">EA</span>`);
-                $('#total-ok-ea').html(`${res.totalOK}<span class="">EA</span>`);
-                $('#total-ng-ea').html(`${res.totalNG}<span class="">EA</span>`);
-                $('#total-empty-ea').html(`${res.totalEmpty}<span class="">EA</span>`);
-
-                $('#percent-ok').html(`${res.percentChartOk} %`);
-                $('#percent-ng').html(`${res.percentChartNG} %`);
-                $('#percent-empty').html(`${res.percentChartEmpty} %`);
-
-                if (res.percentChartOk == 0 && res.percentChartNG == 0 && res.percentChartEmpty == 0) {
-                    res.percentChartOk = 100;
-                }
-
-                myPieChart.data.datasets[0].data = [res.percentChartOk, res.percentChartNG, res.percentChartEmpty];
-                myPieChart.data.labels = ["OK", "NG", "Empty"];
-                myPieChart.update('none');
-            })
-            .catch(function (err) {
-                console.error("Error calling API:", err.toString());
-            })
-            .finally(function () {
-                setTimeout(UpdateStatisticalCalculations, 3000)
-            });
-    }
-    //============= END UPDATE STATISTICAL CALCULATIONS =============
-
-    $(document).on('change', '#select-model', function () {
-        var selectedValue = $(this).val();
-        if (selectedValue != "") {
-            connection.invoke("ChangeModel", selectedValue).then(function (res) {
-                alert("Change model successfully!");
-            }).catch(function (err) {
-                console.error("Error calling API:", err.toString());
-            });
-        }
-    });
-
     function GetResult(item) {
         if (item.resultArea == 1 && item.resultLine == 1) {
             return 'OK';
@@ -515,6 +555,23 @@ $(function () {
         return 'NG';
     }
 
+    function getCurrentDateTime() {
+        return new Date().toISOString().slice(0, 23) + 'Z';
+    }
+
+    $(document).on('change', '#select-model', function () {
+        var selectedValue = $(this).val();
+        if (selectedValue != "") {
+            connection.invoke("ChangeModel", selectedValue).then(function (res) {
+                appendTimeLog(getCurrentDateTime(), "Server", `Server change to model ${selectedValue}`);
+                alert("Change model successfully!");
+            }).catch(function (err) {
+                console.error("Error calling API:", err.toString());
+            });
+        }
+    });
+
+    //====================================================== HANDLE USER EVENT ======================================================
     var pageListResult = 1;
     var totalListResult = 0;
     var totalPage = 0;
@@ -665,6 +722,7 @@ $(function () {
 
         connection.invoke("ReloadModels")
             .then(function (res) {
+                appendTimeLog(getCurrentDateTime(), "Server", "Server reload models");
                 alert("Reload models successfully!");
             })
             .catch(function (err) {

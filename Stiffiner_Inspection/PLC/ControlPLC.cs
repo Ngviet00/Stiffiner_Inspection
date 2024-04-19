@@ -7,8 +7,6 @@ namespace Stiffiner_Inspection
 {
     public class ControlPLC
     {
-        public EventHandler? PLCEvent;
-
         private ActUtlType64 _plc = new ActUtlType64();
         private const int _plcStation = 1;
         private bool isExist = false;
@@ -22,7 +20,7 @@ namespace Stiffiner_Inspection
         private const string REG_PLC_RefeshData = "M2010";
         private const string REG_PLC_EndInspection = "M2008";
         private const string REG_PLC_VisionDoneInspection = "M240";
-        
+
         // Register Write
         private const string REG_PLC_Write = "D";
         private const int REG_PLC_Start = 900;
@@ -64,7 +62,6 @@ namespace Stiffiner_Inspection
             else
             {
                 _logger.Error("Can not connect to PLC");
-                Console.WriteLine("Can not connect to PLC");
             }
         }
 
@@ -101,7 +98,7 @@ namespace Stiffiner_Inspection
 
                     TurnOnLightControl();
                     isStartHistory = true;
-                } 
+                }
                 else
                 {
                     Global.resetClient = 0;
@@ -198,11 +195,11 @@ namespace Stiffiner_Inspection
 
                 lightControl1.Close();
                 lightControl2.Close();
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.Error("Cannot turn on light control: " + ex.Message);
             }
-            
         }
 
         public void TurnOffLightControl()
@@ -220,28 +217,28 @@ namespace Stiffiner_Inspection
 
                 lightControl1.Close();
                 lightControl2.Close();
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.Error("Cannot turn off the light: " + ex.Message);
             }
-            
+
         }
 
+        //busy = 1, ready 0
         public void VisionBusy(bool status)
         {
-            //busy = 1, ready 0
-            int data = status ? 1 : 0;
-            _plc.SetDevice(REG_Vision_Busy, data);
+            _plc.SetDevice(REG_Vision_Busy, status ? 1 : 0);
         }
 
         public void VisionDoneIns()
         {
-            _plc.SetDevice(REG_PLC_VisionDoneInspection, 1); // DA Inspection xong
+            _plc.SetDevice(REG_PLC_VisionDoneInspection, 1);
         }
 
         public void VisionNotEnoughTray()
         {
-            _plc.SetDevice(REG_PLC_NOT_ENOUGHT_TRAY, 1);                
+            _plc.SetDevice(REG_PLC_NOT_ENOUGHT_TRAY, 1);
         }
     }
 }

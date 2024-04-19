@@ -251,7 +251,7 @@ namespace Stiffiner_Inspection.Services
         private async Task SaveToExcel(List<DataCSV> dataCSV)
         {
             string directoryPath = @"D:\Export_Result\" + DateTime.Now.ToString(@"yyyy_MM_dd");
-            string model = Global.currentSelectedModel == 1 ? "_stiffiner.csv" : "_stiffener_filler.csv";
+            string model = "_" + Global._currentSelectedModel + ".csv";
             string fileNameCSV = "MAY_1_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + model;
             string filePath = Path.Combine(directoryPath, fileNameCSV);
 

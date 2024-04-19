@@ -1,13 +1,10 @@
 ﻿using Stiffiner_Inspection.Models.DTO.Data;
-using MSFactoryDLL;
 
 namespace Stiffiner_Inspection
 {
     public static class Global
     {
         public static ControlPLC controlPLC = new ControlPLC();
-
-        public static FolderAutoCreate? FolderAutoCreate { get; set; } = null;
 
         public static int resetClient { get; set; } = 0;
         public static int valuePLC { get; set; } = 4;
@@ -39,8 +36,6 @@ namespace Stiffiner_Inspection
         public static int DeepLearningCam2 { get; set; } = 0;
         public static int DeepLearningCam3 { get; set; } = 0;
         public static int DeepLearningCam4 { get; set; } = 0;
-        
-        public static int currentSelectedModel = 1;
 
         public static int StatusVisionChangeModel1 = 0; //1 busy
         public static int StatusVisionChangeModel2 = 0; //1 busy

@@ -54,9 +54,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="MSFactoryDLL">
-	    <HintPath>DLL\AutoCreateFolder.dll</HintPath>
-	  </Reference>
 	  <Reference Include="Interop.ActUtlType64Lib">
 	    <HintPath>PLC\Interop.ActUtlType64Lib.dll</HintPath>
 	  </Reference>

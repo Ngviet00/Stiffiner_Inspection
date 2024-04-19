@@ -41,13 +41,10 @@ namespace Stiffiner_Inspection.Controllers
                 dataDTO.tray = Global.currentTray;
 
                 //set model
-                dataDTO.model = Global.currentSelectedModel == 1 ? "Stiffener Inspection" : "Stiffener Filler";
+                dataDTO.model = Global._currentSelectedModel;
 
                 //event realtime result log
                 await _hubContext.Clients.All.SendAsync("ReceiveData", dataDTO);
-
-                //event realtime timelog
-                await _hubContext.Clients.All.SendAsync("ReceiveTimeLog", dataDTO.time, "Program", "Send signals from Server to PLC");
 
                 //send to PLC
                 await _dataService.SendToPLC(dataDTO);
@@ -144,54 +141,6 @@ namespace Stiffiner_Inspection.Controllers
             }
         }
 
-        [Route("get-reset-plc")]
-        [HttpGet]
-        public async Task<IActionResult> ResetPLC(int clientId)
-        {
-            try
-            {
-                int result = 0;
-
-                if (clientId == CLIENT_1)
-                {
-                    result = Global.resetPLC1;
-                }
-
-                if (clientId == CLIENT_2)
-                {
-                    result = Global.resetPLC2;
-                }
-
-                if (clientId == CLIENT_3)
-                {
-                    result = Global.resetPLC3;
-                }
-
-                if (clientId == CLIENT_4)
-                {
-                    result = Global.resetPLC4;
-                }
-
-                _dataService.ChangeConnectVisionBusy(clientId, 1);
-                await _hubContext.Clients.All.SendAsync("ChangeClientConnect", clientId);
-
-                return Ok(new
-                {
-                    status = 200,
-                    message = "Send API Success",
-                    result = result
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ErrorResponse
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
-            }
-        }
-
         [Route("post-reset-plc")]
         [HttpPost]
         public IActionResult SaveResetPLC(int clientId)
@@ -247,30 +196,6 @@ namespace Stiffiner_Inspection.Controllers
                 {
                     status = 200,
                     message = "Change deep core successfully!"
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ErrorResponse
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
-            }
-        }
-
-        [Route("get-model")]
-        [HttpGet]
-        public IActionResult GetModel()
-        {
-            try
-            {
-                return Ok(new
-                {
-                    status = 200,
-                    message = "success",
-                    type_model = Global.currentSelectedModel,
-                    name_model = Global.currentSelectedModel == 1 ? "Stiffener Inspection" : "Stiffener Filler"
                 });
             }
             catch (Exception ex)
