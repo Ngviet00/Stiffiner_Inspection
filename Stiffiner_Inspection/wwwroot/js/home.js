@@ -556,7 +556,7 @@ $(function () {
     }
 
     function getCurrentDateTime() {
-        return new Date().toISOString().slice(0, 23) + 'Z';
+        return new Date(new Date().getTime() + (7 * 60 * 60 * 1000)).toISOString().slice(0, 23) + 'Z';
     }
 
     $(document).on('change', '#select-model', function () {
