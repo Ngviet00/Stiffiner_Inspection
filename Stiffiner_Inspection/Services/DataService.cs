@@ -662,7 +662,7 @@ namespace Stiffiner_Inspection.Services
             } 
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.Error("Error cannot get data: " + e.Message);
                 throw;
             }
         }

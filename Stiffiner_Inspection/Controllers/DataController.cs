@@ -25,6 +25,9 @@ namespace Stiffiner_Inspection.Controllers
 
         const int INACTIVE = 0;
 
+        const int CLIENT_RUNNING = 1;
+        const int CLIENT_PAUSE = 2;
+
         public DataController(DataService dataService, IHubContext<HomeHub> hubContext)
         {
             _dataService = dataService;
@@ -95,28 +98,32 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
-
-                if (clientId == CLIENT_1 && status == 1)
+                if (clientId == CLIENT_1)
                 {
-                    Global.StatusVisionChangeModel1 = INACTIVE;
+                    Global.ClientStatus1 = status;
                 }
 
-                if (clientId == CLIENT_2 && status == 1)
+                if (clientId == CLIENT_2)
                 {
-                    Global.StatusVisionChangeModel2 = INACTIVE;
+                    Global.ClientStatus2 = status;
                 }
 
-                if (clientId == CLIENT_3 && status == 1)
+                if (clientId == CLIENT_3)
                 {
-                    Global.StatusVisionChangeModel3 = INACTIVE;
+                    Global.ClientStatus3 = status;
                 }
 
-                if (clientId == CLIENT_4 && status == 1)
+                if (clientId == CLIENT_4)
                 {
-                    Global.StatusVisionChangeModel4 = INACTIVE;
+                    Global.ClientStatus4 = status;
                 }
 
-                if (Global.StatusVisionChangeModel1 == INACTIVE && Global.StatusVisionChangeModel2 == INACTIVE && Global.StatusVisionChangeModel3 == INACTIVE && Global.StatusVisionChangeModel4 == INACTIVE)
+                if (
+                    Global.ClientStatus1 == CLIENT_RUNNING &&
+                    Global.ClientStatus2 == CLIENT_RUNNING &&
+                    Global.ClientStatus3 == CLIENT_RUNNING &&
+                    Global.ClientStatus4 == CLIENT_RUNNING
+                )
                 {
                     await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 1, message);
                 }
@@ -271,25 +278,21 @@ namespace Stiffiner_Inspection.Controllers
                 if (clientId == CLIENT_1)
                 {
                     Global.Client1IsPostModel = 0;
-                    Global.StatusVisionChangeModel1 = INACTIVE;
                 }
 
                 if (clientId == CLIENT_2)
                 {
                     Global.Client2IsPostModel = 0;
-                    Global.StatusVisionChangeModel2 = INACTIVE;
                 }
 
                 if (clientId == CLIENT_3)
                 {
                     Global.Client3IsPostModel = 0;
-                    Global.StatusVisionChangeModel3 = INACTIVE;
                 }
 
                 if (clientId == CLIENT_4)
                 {
                     Global.Client4IsPostModel = 0;
-                    Global.StatusVisionChangeModel4 = INACTIVE;
                 }
 
                 return Ok(new
@@ -325,7 +328,7 @@ namespace Stiffiner_Inspection.Controllers
                 Global.strModels = models;
 
                 Global.ListModels = _dataService.GetListModelsAppearFourTime(models);
-                
+
                 await _hubContext.Clients.All.SendAsync("ListModels", Global.ListModels);
 
                 return Ok(new

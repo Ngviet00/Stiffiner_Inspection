@@ -37,11 +37,6 @@ namespace Stiffiner_Inspection
         public static int DeepLearningCam3 { get; set; } = 0;
         public static int DeepLearningCam4 { get; set; } = 0;
 
-        public static int StatusVisionChangeModel1 = 0; //1 busy
-        public static int StatusVisionChangeModel2 = 0; //1 busy
-        public static int StatusVisionChangeModel3 = 0; //1 busy
-        public static int StatusVisionChangeModel4 = 0; //1 busy
-
         //string models
         public static string strModels = string.Empty;
         public static string _currentSelectedModel = string.Empty;
@@ -52,5 +47,11 @@ namespace Stiffiner_Inspection
         public static int Client2IsPostModel = 1;
         public static int Client3IsPostModel = 1;
         public static int Client4IsPostModel = 1;
+
+        // client status
+        public static int ClientStatus1 = 2; //1 running, 2 pause
+        public static int ClientStatus2 = 2; //1 running, 2 pause
+        public static int ClientStatus3 = 2; //1 running, 2 pause
+        public static int ClientStatus4 = 2; //1 running, 2 pause
     }
 }

@@ -96,11 +96,6 @@ namespace Stiffiner_Inspection.Hubs
             try
             {
                 Global._currentSelectedModel = model;
-
-                Global.StatusVisionChangeModel1 = 1;
-                Global.StatusVisionChangeModel2 = 1;
-                Global.StatusVisionChangeModel3 = 1;
-                Global.StatusVisionChangeModel4 = 1;
             }
             catch (Exception ex)
             {
@@ -134,8 +129,6 @@ namespace Stiffiner_Inspection.Hubs
                 Global.strModels = string.Empty;
                 Global._currentSelectedModel = string.Empty;
                 Global.ListModels.Clear();
-
-                Global.DeepLearningCam1 = 0;
             }
             catch (Exception ex)
             {
