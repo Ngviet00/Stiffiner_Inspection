@@ -238,7 +238,7 @@ namespace Stiffiner_Inspection.Services
         {
             dataCSV.Add(new DataCSV
             {
-                model = "Stiffiner",
+                model = Global._currentSelectedModel,
                 time = dataArea?.time,
                 index = dataArea?.client_id == CLIENT_1 || dataArea?.client_id == CLIENT_2 ? dataArea.index : dataArea.index + 20,
                 result_area = dataArea?.result == 1 ? "OK" : (dataArea?.result == 2 ? "NG" : "Empty"),
