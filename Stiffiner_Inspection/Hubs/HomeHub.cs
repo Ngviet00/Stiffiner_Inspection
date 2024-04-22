@@ -127,7 +127,7 @@ namespace Stiffiner_Inspection.Hubs
                 Global.Client4IsPostModel = 1;
 
                 Global.strModels = string.Empty;
-                Global._currentSelectedModel = string.Empty;
+                Global._currentSelectedModel = "default";
                 Global.ListModels.Clear();
             }
             catch (Exception ex)
