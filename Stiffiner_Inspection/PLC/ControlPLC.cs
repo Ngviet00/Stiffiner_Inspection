@@ -140,8 +140,12 @@ namespace Stiffiner_Inspection
         {
             if (Global.CurrentTrayData.Count < 80)
             {
+                if (Global.currentTray > 0)
+                {
+                    Global.currentTray -= 1;
+                }
+
                 VisionNotEnoughTray();
-                Global.currentTray = Global.currentTray == 0 ? 0 : Global.currentTray--;
             }
 
             timer?.Dispose();
