@@ -10,7 +10,6 @@ using log4net;
 using System.Net;
 using Stiffiner_Inspection.Models.Response;
 using System.Text;
-using Microsoft.Ajax.Utilities;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -37,125 +36,93 @@ namespace Stiffiner_Inspection.Services
             _historyContext = historyContext;
         }
 
-        public async Task<Data> Save(DataDTO dataDTO)
-        {
-            //get index
-            var indexItem = GetIndex(dataDTO);
-
-            //check exist
-            var existEntity = await _dbContext.Data.Where(e => e.Tray == Global.currentTray && e.Index == indexItem).FirstOrDefaultAsync();
-
-            if (existEntity != null)
-            {
-                if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_3)
-                {
-                    existEntity.ResultArea = dataDTO.result;
-                }
-                else
-                {
-                    existEntity.ResultLine = dataDTO.result;
-                }
-
-                if (dataDTO.result == NG)
-                {
-                    //save image
-                    await SaveImage(existEntity, dataDTO);
-
-                    //save error
-                    await SaveError(existEntity, dataDTO.error);
-                }
-
-                await _dbContext.SaveChangesAsync();
-
-                return existEntity;
-            }
-            else
-            {
-                var data = new Data
-                {
-                    Id = dataDTO.id,
-                    Time = dataDTO.time,
-                    Model = dataDTO.model,
-                    Tray = dataDTO.tray,
-                    ClientId = dataDTO.client_id,
-                    Side = dataDTO.side,
-                    Camera = dataDTO.camera,
-                    TargetId = 0
-                };
-
-                //set index từ 1 đến 40 tính từ bên phải, từ trên xuống dưới
-                data.Index = indexItem;
-
-                //client là 1 hoặc 3 là cam area, client 2 hoặc 4 là cam line
-                if (dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_3)
-                {
-                    data.ResultArea = dataDTO.result;
-                }
-                else
-                {
-                    data.ResultLine = dataDTO.result;
-                }
-
-                await _dbContext.Data.AddAsync(data);
-                await _dbContext.SaveChangesAsync();
-
-                //nếu như là NG thì sẽ lưu lỗi vào bảng error và lưu hình ảnh vào bảng image
-                if (dataDTO.result == NG)
-                {
-                    //save image
-                    await SaveImage(data, dataDTO);
-
-                    //save error
-                    await SaveError(data, dataDTO.error);
-                }
-
-                return data;
-            }
-        }
-
         public int GetIndex(DataDTO dataDTO)
         {
             return dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2 ? dataDTO.index + 20 : dataDTO.index;
         }
 
-        private async Task SaveImage(Data data, DataDTO dataDto)
+        private async Task SaveImageV2(Data data, DataDTO dataArea, DataDTO dataLine)
         {
-            List<Image> listImages = new List<Image>();
-
-            string[] imgs = dataDto.image.Split(',');
-
-            foreach (string item in imgs)
+            try
             {
-                listImages.Add(new Image
-                {
-                    DataId = data.Id,
-                    Path = item,
-                    ClientId = (int)dataDto.client_id
-                });
-            }
+                List<Image> listImages = new List<Image>();
 
-            await _dbContext.Images.AddRangeAsync(listImages);
-            await _dbContext.SaveChangesAsync();
+                string[]? imgArea = dataArea?.image.Split(',');
+                string[]? imgLine = dataLine?.image?.Split(',');
+
+                foreach (string item in imgArea)
+                {
+                    if (item != "" || item is null)
+                    {
+                        listImages.Add(new Image
+                        {
+                            DataId = data.Id,
+                            Path = item,
+                            ClientId = (int)dataArea.client_id
+                        });
+                    }
+                }
+
+                foreach (string item in imgLine)
+                {
+                    if (item != "" || item is null)
+                    {
+                        listImages.Add(new Image
+                        {
+                            DataId = data.Id,
+                            Path = item,
+                            ClientId = (int)dataLine.client_id
+                        });
+                    }
+                }
+
+                await _dbContext.Images.AddRangeAsync(listImages);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Can not save images: " + ex.Message);
+                throw;
+            }
         }
 
-        public async Task SaveError(Data data, string listErrors)
+        public async Task SaveErrorV2(Data data, DataDTO dataArea, DataDTO dataLine)
         {
-            List<Error> listErrs = new List<Error>();
-
-            string[] errors = listErrors.Split(',');
-
-            foreach (string item in errors)
+            try
             {
-                listErrs.Add(new Error
-                {
-                    DataId = data.Id,
-                    Description = item,
-                    Type = data.ClientId == CLIENT_1 || data.ClientId == CLIENT_3 ? 1 : 2, //(1,3 type area, 2,4 type line)
-                });
-            }
+                List<Error> listErrs = new List<Error>();
 
-            await _dbContext.Errors.AddRangeAsync(listErrs);
-            await _dbContext.SaveChangesAsync();
+                string[] errorsArea = dataArea?.error.Split(',');
+                string[] errorsLine = dataLine?.error.Split(',');
+
+                foreach (string item in errorsArea)
+                {
+                    listErrs.Add(new Error
+                    {
+                        DataId = data.Id,
+                        Description = item,
+                        Type = (int)dataArea.client_id, //(1,3 type area, 2,4 type line)
+                    });
+                }
+
+                foreach (string item in errorsLine)
+                {
+                    listErrs.Add(new Error
+                    {
+                        DataId = data.Id,
+                        Description = item,
+                        Type = (int)dataLine.client_id, //(1,3 type area, 2,4 type line)
+                    });
+                }
+
+                await _dbContext.Errors.AddRangeAsync(listErrs);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Can not save errors: " + ex.Message);
+                throw;
+            }
         }
 
         public int GetPosition(int index, int? clientId)
@@ -206,18 +173,28 @@ namespace Stiffiner_Inspection.Services
                     //pair left
                     var leftArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_1 && e.tray == Global.currentTray);
                     var leftLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_2 && e.tray == Global.currentTray);
+                    
                     //add to list to save excel
                     AddListPrepareSaveExcel(dataCSV, leftArea, leftLine);
+                    
                     //write register PLC
                     Global.controlPLC.WriteDataToRegister(GetResult(leftArea?.result, leftLine?.result), i - 1);
+
+                    //save to db
+                    await SaveToDB(leftArea, leftLine);
 
                     //pair right 
                     var rightArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_3 && e.tray == Global.currentTray);
                     var rightLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_4 && e.tray == Global.currentTray);
+                    
                     //add to list to save excel
                     AddListPrepareSaveExcel(dataCSV, rightArea, rightLine);
+                    
                     //write register PLC
                     Global.controlPLC.WriteDataToRegister(GetResult(rightArea?.result, rightLine?.result), i + 19);
+
+                    //save to db
+                    await SaveToDB(rightArea, rightLine);
 
                     //if enough 40 item => save to excel
                     if (dataCSV.Count == 40)
@@ -241,6 +218,7 @@ namespace Stiffiner_Inspection.Services
                 model = Global._currentSelectedModel,
                 time = dataArea?.time,
                 index = dataArea?.client_id == CLIENT_1 || dataArea?.client_id == CLIENT_2 ? dataArea.index : dataArea.index + 20,
+                tray = dataArea.tray,
                 result_area = dataArea?.result == 1 ? "OK" : (dataArea?.result == 2 ? "NG" : "Empty"),
                 result_line = dataLine?.result == 1 ? "OK" : (dataLine?.result == 2 ? "NG" : "Empty"),
                 image = dataArea?.image + "," + dataLine?.image,
@@ -271,6 +249,32 @@ namespace Stiffiner_Inspection.Services
             catch (Exception ex)
             {
                 _logger.Error("Can not save to file CSV: " + ex.Message);
+            }
+        }
+
+        public async Task SaveToDB(DataDTO? dataArea, DataDTO? dataLine)
+        {
+            var data = new Data
+            {
+                Time = dataArea?.time,
+                Model = dataArea?.model,
+                Tray = dataArea.tray,
+                ClientId = dataArea.client_id,
+                Side = dataArea.side,
+                Camera = dataArea.camera,
+                TargetId = 0,
+                ResultArea = dataArea.result,
+                ResultLine = dataLine?.result,
+                Index = GetIndex(dataArea),
+            };
+
+            await _dbContext.Data.AddAsync(data);
+            await _dbContext.SaveChangesAsync();
+
+            if (dataArea.result == NG || dataLine?.result == NG)
+            {
+                await SaveImageV2(data, dataArea, dataLine);
+                await SaveErrorV2(data, dataArea, dataLine);
             }
         }
 
@@ -734,6 +738,37 @@ namespace Stiffiner_Inspection.Services
             catch (Exception ex)
             {
                 _logger.Error("Can not read many line: " + ex.Message);
+                throw;
+            }
+        }
+
+        public async Task DeleteAllData()
+        {
+            try
+            {
+                _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE errors");
+                _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE images");
+                _dbContext.Database.ExecuteSqlRaw("DELETE FROM data");
+                _dbContext.Database.ExecuteSqlRaw("DBCC CHECKIDENT ('stiffiner_inspection.dbo.data', RESEED, 0)");
+
+                string folderPath = @"D:\publish_image\images";
+
+                // Check if exist folder => delete => create new folder
+                if (Directory.Exists(folderPath))
+                {
+                    await Task.Run(() => Directory.Delete(folderPath, true));
+                    Directory.CreateDirectory(folderPath);
+                }
+                else
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
+                await RefreshHistoryWhenClearData();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error can not delete all data: " + ex.Message);
                 throw;
             }
         }

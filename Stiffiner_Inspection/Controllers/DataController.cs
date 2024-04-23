@@ -52,10 +52,11 @@ namespace Stiffiner_Inspection.Controllers
                 //send to PLC
                 await _dataService.SendToPLC(dataDTO);
 
-                //save db
-                var result = await _dataService.Save(dataDTO);
-
-                return Ok(result);
+                return Ok(new
+                {
+                    status = 200,
+                    message = "Save data successfully!"
+                });
             }
             catch (Exception ex)
             {

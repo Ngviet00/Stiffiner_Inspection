@@ -144,35 +144,9 @@ namespace Stiffiner_Inspection.Controllers
         [HttpPost]
         public async Task<IActionResult> ClearData()
         {
-            try
-            {
-                _context.Database.ExecuteSqlRaw("TRUNCATE TABLE errors");
-                _context.Database.ExecuteSqlRaw("TRUNCATE TABLE images");
-                _context.Database.ExecuteSqlRaw("DELETE FROM data");
-                _context.Database.ExecuteSqlRaw("DBCC CHECKIDENT ('stiffiner_inspection.dbo.data', RESEED, 0)");
+            await _dataService.DeleteAllData();
 
-                string folderPath = @"D:\publish_image\images";
-
-                // Check if exist folder => delete => create new folder
-                if (Directory.Exists(folderPath))
-                {
-                    await Task.Run(() => Directory.Delete(folderPath, true));
-                    Directory.CreateDirectory(folderPath);
-                }
-                else
-                {
-                    Directory.CreateDirectory(folderPath);
-                }
-
-                await _dataService.RefreshHistoryWhenClearData();
-
-                return RedirectToAction("Index");
-            } catch (Exception ex)
-            {
-                _logger.Error("Error can not delete all data: " + ex.Message);
-                return RedirectToAction("Index");
-            }
-           
+            return RedirectToAction("Index");
         }
     }
 }
