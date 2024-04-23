@@ -91,11 +91,12 @@ namespace Stiffiner_Inspection.Hubs
             }
         }
 
-        public void ChangeModel(string model)
+        public async Task ChangeModel(string model)
         {
             try
             {
                 Global._currentSelectedModel = model;
+                await _dataService.WriteOneLine(Global.PathFileCurrentModel, model);
             }
             catch (Exception ex)
             {
@@ -117,7 +118,7 @@ namespace Stiffiner_Inspection.Hubs
             }
         }
 
-        public void ReloadModels()
+        public async Task ReloadModels()
         {
             try
             {
@@ -129,6 +130,9 @@ namespace Stiffiner_Inspection.Hubs
                 Global.strModels = string.Empty;
                 Global._currentSelectedModel = string.Empty;
                 Global.ListModels.Clear();
+
+                await _dataService.WriteOneLine(Global.PathFileCurrentModel, string.Empty);
+                await _dataService.WriteOneLine(Global.PathFileListModel, string.Empty);
             }
             catch (Exception ex)
             {

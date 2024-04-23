@@ -35,6 +35,9 @@ namespace Stiffiner_Inspection.Controllers
             ViewBag.currentTray = currentTrayId;
             Global.currentTray = currentTrayId;
 
+            Global._currentSelectedModel = await _dataService.ReadOneLine(Global.PathFileCurrentModel);
+            Global.ListModels = await _dataService.ReadManyLine(Global.PathFileListModel);
+
             Global.controlPLC.Connect();
 
             //Thread read value PLC

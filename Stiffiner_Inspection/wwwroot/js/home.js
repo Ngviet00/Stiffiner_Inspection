@@ -271,17 +271,15 @@ $(function () {
     });
 
     connection.on("ListModels", (results) => {
-        if (results.length > 0) {
-            let options = '<option value="" selected disabled>Choose Model</option>';
+        let options = '<option value="" selected disabled>Choose Model</option>';
 
-            results.forEach(item => {
-                options += `<option value="${item}">${item}</option>`;
-            });
+        results.forEach(item => {
+            options += `<option value="${item}">${item}</option>`;
+        });
 
-            $('#select-model').html(options);
+        $('#select-model').html(options);
 
-            alert('Please choose model!');
-        }
+        alert('Please choose model!');
     });
 
     //====================================================== CONFIG CHART ======================================================

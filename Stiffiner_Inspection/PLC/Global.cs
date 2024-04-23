@@ -43,15 +43,18 @@ namespace Stiffiner_Inspection
         public static List<string> ListModels = new List<string>();
 
         //check client is send model to server
-        public static int Client1IsPostModel = 1;
-        public static int Client2IsPostModel = 1;
-        public static int Client3IsPostModel = 1;
-        public static int Client4IsPostModel = 1;
+        public static int Client1IsPostModel = 0;
+        public static int Client2IsPostModel = 0;
+        public static int Client3IsPostModel = 0;
+        public static int Client4IsPostModel = 0;
 
         // client status
         public static int ClientStatus1 = 2; //1 running, 2 pause
         public static int ClientStatus2 = 2; //1 running, 2 pause
         public static int ClientStatus3 = 2; //1 running, 2 pause
         public static int ClientStatus4 = 2; //1 running, 2 pause
+
+        public static string PathFileCurrentModel = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\CurrentModel.txt";
+        public static string PathFileListModel = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\ListModels.txt";
     }
 }

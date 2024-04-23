@@ -329,7 +329,11 @@ namespace Stiffiner_Inspection.Controllers
 
                 Global.ListModels = _dataService.GetListModelsAppearFourTime(models);
 
-                await _hubContext.Clients.All.SendAsync("ListModels", Global.ListModels);
+                if (Global.ListModels.Count > 0)
+                {
+                    await _dataService.WriteManyLine(Global.PathFileListModel, Global.ListModels);
+                    await _hubContext.Clients.All.SendAsync("ListModels", Global.ListModels);
+                }
 
                 return Ok(new
                 {

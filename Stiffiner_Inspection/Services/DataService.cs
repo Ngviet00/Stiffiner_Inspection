@@ -654,12 +654,12 @@ namespace Stiffiner_Inspection.Services
 
                 response.PercentOK = CalculateChartOK(countOK, total, countEmpty);
                 response.PercentNG = CalculateChartNG(countNG, total, countEmpty);
-                response.PercentEmpty = CalculateChartEmpty(total, response.PercentNG, response.PercentOK);                
+                response.PercentEmpty = CalculateChartEmpty(total, response.PercentNG, response.PercentOK);
 
                 response.results = data;
 
                 return response;
-            } 
+            }
             catch (Exception e)
             {
                 _logger.Error("Error cannot get data: " + e.Message);
@@ -673,6 +673,69 @@ namespace Stiffiner_Inspection.Services
 
             //get item appear four time and push to list
             return elements.GroupBy(x => x).Where(g => g.Count() == 4).Select(g => g.Key).ToList();
+        }
+
+        public async Task WriteOneLine(string path, string content)
+        {
+            try
+            {
+                await File.WriteAllTextAsync(path, content);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Can not write line: " + ex.Message);
+                throw;
+            }
+        }
+
+        public async Task WriteManyLine(string path, List<string> content)
+        {
+            try
+            {
+                await File.WriteAllLinesAsync(path, content);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Can not write line: " + ex.Message);
+                throw;
+            }
+        }
+
+        public async Task<string> ReadOneLine(string path)
+        {
+            try
+            {
+                return await File.ReadAllTextAsync(path);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Can not read line: " + ex.Message);
+                throw;
+            }
+        }
+
+        public async Task<List<string>> ReadManyLine(string path)
+        {
+            try
+            {
+                List<string> result = new List<string>();
+
+                using (StreamReader reader = new StreamReader(path))
+                {
+                    string line;
+                    while ((line = await reader.ReadLineAsync()) != null)
+                    {
+                        result.Add(line);
+                    }
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Can not read many line: " + ex.Message);
+                throw;
+            }
         }
     }
 }
