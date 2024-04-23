@@ -218,7 +218,6 @@ namespace Stiffiner_Inspection.Services
                 model = Global._currentSelectedModel,
                 time = dataArea?.time,
                 index = dataArea?.client_id == CLIENT_1 || dataArea?.client_id == CLIENT_2 ? dataArea.index : dataArea.index + 20,
-                tray = dataArea.tray,
                 result_area = dataArea?.result == 1 ? "OK" : (dataArea?.result == 2 ? "NG" : "Empty"),
                 result_line = dataLine?.result == 1 ? "OK" : (dataLine?.result == 2 ? "NG" : "Empty"),
                 image = dataArea?.image + "," + dataLine?.image,

@@ -5,7 +5,6 @@
         public string? model { get; set; } = string.Empty;
         public DateTime? time { get; set; }
         public int index { get; set; }
-        public int tray { get; set; }
         public string? result_area { get; set; }
         public string? result_line { get; set; }
         public string? image { get; set; }
