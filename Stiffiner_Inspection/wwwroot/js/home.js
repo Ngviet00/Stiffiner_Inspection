@@ -529,8 +529,9 @@ $(function () {
         let hours = date.substr(11, 2);
         let minutes = date.substr(14, 2);
         let seconds = date.substr(17, 2);
+        let milliseconds = date.substr(20, 3);
 
-        return hours + ":" + minutes + ":" + seconds;
+        return hours + ":" + minutes + ":" + seconds + ":" + milliseconds;
     }
 
     function GetResult(item) {
