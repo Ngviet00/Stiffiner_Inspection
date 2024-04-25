@@ -29,6 +29,7 @@
 
                 <div class="image">
                     <div>
+                        <h3 id="position-item" class="text-center" style="font-weight: bold; font-size: 25px;margin-bottom: 5px;">Position: -</h3>
                         <h3 id="type-item-stiffiner">Area Camera</h3>
 
                         <div class="skeleton d-none">
@@ -66,10 +67,6 @@
                     <div class="info">
                         <span class="information">Information</span> <br />
 
-                        <span class="position">
-                            Position: <b class="b-position">-</b>
-                        </span>
-                        <br />
                         <span class="side">
                             Side: <b class="b-side">-</b>
                         </span>
@@ -164,7 +161,8 @@
                 }
 
                 //set info
-                $('.b-position').html(key + 1);
+                $('#position-item').html('Position: ' + (key + 1));
+
                 $('.b-side').html(key >= 20 ? 'Left' : 'Right');
                 $('.b-result-item').html('NG');
                 $('.b-tray-number').html(data.tray);
