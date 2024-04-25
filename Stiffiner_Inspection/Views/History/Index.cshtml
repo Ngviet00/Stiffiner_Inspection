@@ -155,7 +155,6 @@
 
         function showItem(item, key) {
             let data = JSON.parse(decodeURIComponent(item))
-
             if (GetResult(data) == 'NG' && isLoading == false) {
                 if (key == currentIndexSelect && item.tray == currentTraySelect) {
                     return;
@@ -289,14 +288,6 @@
         function GetResult(item) {
             if (item.resultArea == 1 && item.resultLine == 1) {
                 return 'OK';
-            }
-
-            if (item.resultArea == 1 && item.resultLine == 3 || item.resultArea == 3 && item.resultLine == 1) {
-                return 'OK';
-            }
-
-            if (item.resultArea == 2 && item.resultLine == 3 || item.resultArea == 3 && item.resultLine == 2) {
-                return 'NG';
             }
 
             if (item.resultArea == 3 && item.resultLine == 3) {

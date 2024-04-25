@@ -100,7 +100,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 6000);
+        }, 4000);
     });
 
     //event deep learning
@@ -124,7 +124,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 6000);
+        }, 4000);
     });
 
     //event check client connect
@@ -146,7 +146,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 6000);
+        }, 4000);
     });
 
     //event change plc
@@ -537,14 +537,6 @@ $(function () {
     function GetResult(item) {
         if (item.resultArea == 1 && item.resultLine == 1) {
             return 'OK';
-        }
-
-        if (item.resultArea == 1 && item.resultLine == 3 || item.resultArea == 3 && item.resultLine == 1) {
-            return 'OK';
-        }
-
-        if (item.resultArea == 2 && item.resultLine == 3 || item.resultArea == 3 && item.resultLine == 2) {
-            return 'NG';
         }
 
         if (item.resultArea == 3 && item.resultLine == 3) {

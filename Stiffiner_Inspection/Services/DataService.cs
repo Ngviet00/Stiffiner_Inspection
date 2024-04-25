@@ -142,16 +142,6 @@ namespace Stiffiner_Inspection.Services
                 return OK;
             }
 
-            if (result1 == EMPTY && result2 == OK || result1 == OK && result2 == EMPTY)
-            {
-                return OK;
-            }
-
-            if (result1 == EMPTY && result2 == NG || result1 == NG && result2 == EMPTY)
-            {
-                return NG;
-            }
-
             if (result1 == EMPTY && result2 == EMPTY)
             {
                 return 0;
@@ -270,7 +260,7 @@ namespace Stiffiner_Inspection.Services
             await _dbContext.Data.AddAsync(data);
             await _dbContext.SaveChangesAsync();
 
-            if (dataArea.result == NG || dataLine?.result == NG)
+            if (dataArea.result == NG || dataLine?.result == NG || (dataArea.result == OK && dataLine?.result == EMPTY) || (dataArea.result == EMPTY && dataLine?.result == OK))
             {
                 await SaveImageV2(data, dataArea, dataLine);
                 await SaveErrorV2(data, dataArea, dataLine);
@@ -365,7 +355,7 @@ namespace Stiffiner_Inspection.Services
             try
             {
                 return await _dbContext.Data.AsNoTracking()
-                  .Where(d => (d.ResultArea == OK && d.ResultLine == OK || d.ResultArea == OK && d.ResultLine == EMPTY || d.ResultArea == EMPTY && d.ResultLine == OK))
+                  .Where(d => d.ResultArea == OK && d.ResultLine == OK)
                   .GroupBy(d => d.TargetId)
                   .Select(g => g.Count())
                   .FirstOrDefaultAsync();
@@ -382,7 +372,13 @@ namespace Stiffiner_Inspection.Services
             try
             {
                 return await _dbContext.Data.AsNoTracking()
-                .Where(d => ((d.ResultArea == NG && d.ResultLine == NG) || (d.ResultArea == NG && d.ResultLine == EMPTY) || (d.ResultArea == EMPTY && d.ResultLine == NG) || d.ResultLine == NG || d.ResultArea == NG))
+                .Where(d => (
+                    (d.ResultArea == NG && d.ResultLine == NG) || 
+                    (d.ResultArea == NG && d.ResultLine == EMPTY) || 
+                    (d.ResultArea == EMPTY && d.ResultLine == NG) ||
+                    (d.ResultArea == OK && d.ResultLine == EMPTY) ||
+                    (d.ResultArea == EMPTY && d.ResultLine == OK) ||
+                    d.ResultLine == NG || d.ResultArea == NG))
                 .GroupBy(d => d.TargetId)
                 .Select(g => g.Count())
                 .FirstOrDefaultAsync();
