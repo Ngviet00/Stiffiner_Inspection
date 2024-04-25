@@ -62,6 +62,32 @@ $(function () {
         .then(() => {
             console.log('Connection established!');
             UpdateStatisticalCalculations();
+
+            for (let i = 1; i <= 4; i++) {
+                connection.invoke("ChangeStatusCamVisionBusy", i, 0)
+                    .then(function (res) {
+                        console.log(`Turn off cam PC ${i} successfully`)
+                    })
+                    .catch(function (err) {
+                        console.error("Error calling API:", err.toString());
+                    });
+
+                connection.invoke("ChangeDeepCoreVisionBusy", i, 0)
+                    .then(function (res) {
+                        console.log(`Turn off deep core PC ${i} successfully`)
+                    })
+                    .catch(function (err) {
+                        console.error("Error calling API:", err.toString());
+                    });
+
+                connection.invoke("ChangeConnectVisionBusy", i, 0)
+                    .then(function (res) {
+                        console.log(`Turn off connect PC ${i} successfully`)
+                    })
+                    .catch(function (err) {
+                        console.error("Error calling API:", err.toString());
+                    });
+            }
         })
         .catch((err) => {
             console.error(err.toString())
