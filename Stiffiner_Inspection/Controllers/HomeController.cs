@@ -102,6 +102,7 @@ namespace Stiffiner_Inspection.Controllers
             {
                 if (CheckConditionVisionBusy() == false)
                 {
+                    _logger.Error("vision busy ne!");
                     Global.controlPLC.VisionBusy(true);
                     await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 2, "");
                 } 
@@ -137,6 +138,11 @@ namespace Stiffiner_Inspection.Controllers
             {
                 return false;
             }
+
+            _logger.Error(Global.StatusCam1 + "-" + Global.StatusCam2 + "-" + Global.StatusCam3 + "-" + Global.StatusCam4);
+            _logger.Error(Global.ConnectCam1 + "-" + Global.ConnectCam2 + "-" + Global.ConnectCam3 + "-" + Global.ConnectCam4);
+            _logger.Error(Global.DeepLearningCam1 + "-" + Global.DeepLearningCam2 + "-" + Global.DeepLearningCam3 + "-" + Global.DeepLearningCam4);
+            _logger.Error(Global.ClientStatus1 + "-" + Global.ClientStatus2 + "-" + Global.ClientStatus3 + "-" + Global.ClientStatus4);
 
             return true;
         }
