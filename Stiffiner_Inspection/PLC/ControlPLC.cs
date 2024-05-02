@@ -121,7 +121,7 @@ namespace Stiffiner_Inspection
                     }
 
                     //check if after 3s, tray not enough will send signal to PLC vision not enough tray
-                    timer = new System.Timers.Timer(3000);
+                    timer = new System.Timers.Timer(10000);
                     timer.Elapsed += TimerCheckVisionEnoughTray;
                     timer.Start();
                 }

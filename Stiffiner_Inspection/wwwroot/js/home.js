@@ -117,6 +117,8 @@ $(function () {
         }
 
         timeouts[client_id] = setTimeout(function () {
+            console.log('cam turn off', client_id, status);
+
             $(".dot-cam-" + client_id).css("background", '#b6b9b6');
             connection.invoke("ChangeStatusCamVisionBusy", client_id, 0)
                 .then(function (res) {
