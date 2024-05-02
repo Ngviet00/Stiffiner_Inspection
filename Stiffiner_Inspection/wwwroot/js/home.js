@@ -128,7 +128,7 @@ $(function () {
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
                 });
-        }, 4000);
+        }, 6000);
     });
 
     //event deep learning
