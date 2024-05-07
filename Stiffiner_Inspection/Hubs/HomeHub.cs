@@ -98,7 +98,7 @@ namespace Stiffiner_Inspection.Hubs
                 Global._currentSelectedModel = model;
                 await _dataService.WriteOneLine(Global.PathFileCurrentModel, model);
 
-                await _dataService.DeleteAllData();
+                //await _dataService.DeleteAllData();
             }
             catch (Exception ex)
             {
