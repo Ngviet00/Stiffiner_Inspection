@@ -38,7 +38,7 @@ namespace Stiffiner_Inspection.Services
 
         public int GetIndex(DataDTO dataDTO)
         {
-            return dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2 ? dataDTO.index + 20 : dataDTO.index;
+            return dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2 ? dataDTO.index : dataDTO.index + 20;
         }
 
         private async Task SaveImageV2(Data data, DataDTO dataArea, DataDTO dataLine)

@@ -13,7 +13,7 @@ namespace Stiffiner_Inspection
         private const int timeSleep = 100;
         private readonly ILog _logger = LogManager.GetLogger(typeof(ControlPLC));
 
-        public static System.Timers.Timer? timer;
+        public static System.Timers.Timer? timer = null;
 
         // Register read
         private const string REG_PLC_Read_STATUS = "D20";
@@ -114,20 +114,22 @@ namespace Stiffiner_Inspection
                     isEndHistory = true;
                     TurnOffLightControl();
 
-                    if (timer is not null)
+                    if (timer != null)
                     {
+                        timer.Stop();
                         timer.Dispose();
                         timer = null;
                     }
 
-                    //check if after 3s, tray not enough will send signal to PLC vision not enough tray
+                    //check if after 10s, tray not enough will send signal to PLC vision not enough tray
                     timer = new System.Timers.Timer(10000);
                     timer.Elapsed += TimerCheckVisionEnoughTray;
                     timer.Start();
                 }
 
-                if (valueReadedEndInspection == 0)
+                if (valueReadedEndInspection != 1)
                 {
+                    timer?.Stop();
                     timer?.Dispose();
                     timer = null;
                 }
@@ -138,7 +140,11 @@ namespace Stiffiner_Inspection
 
         public void TimerCheckVisionEnoughTray(object sender, ElapsedEventArgs e)
         {
-            if (Global.CurrentTrayData.Count < 80)
+            timer?.Stop();
+            timer?.Dispose();
+            timer = null;
+
+            if (Global.CurrentTrayData.Count < 80 && Global.CurrentTrayData.Count > 0)
             {
                 if (Global.currentTray > 0)
                 {
@@ -147,9 +153,6 @@ namespace Stiffiner_Inspection
 
                 VisionNotEnoughTray();
             }
-
-            timer?.Dispose();
-            timer = null;
         }
 
         private void SetStatusOfMachine(int binary)

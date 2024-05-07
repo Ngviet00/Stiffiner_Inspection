@@ -259,23 +259,23 @@
                 let rs = GetResult(item);
 
                 if (key < 20) {
-                    rsRight += `
-                        <div class="result-left-tray" onclick="showItem('${encodeURIComponent(JSON.stringify(item))}', ${key})" style="background: ${rs == 'OK' ? '#66B032' : (rs == 'Empty' ? '#B5B5B5' : '#E4491D')};cursor: ${rs != 'NG' ? 'not-allowed' : ''}">
-                            <span class="position">${key + 1}</span>
-                            <span class="result">
-                                ${rs}
-                            </span>
-                        </div>
-                    `
-                } else {
                     rsLeft += `
-                        <div class="result-left-tray" onclick="showItem('${encodeURIComponent(JSON.stringify(item))}', ${key})" style="background: ${rs == 'OK' ? '#66B032' : (rs == 'Empty' ? '#B5B5B5' : '#E4491D')};cursor: ${rs != 'NG' ? 'not-allowed' : ''}">
-                            <span class="position">${key + 1}</span>
-                            <span class="result">
-                               ${rs}
-                            </span>
-                        </div>
-                    `
+                                <div class="result-left-tray" onclick="showItem('${encodeURIComponent(JSON.stringify(item))}', ${key})" style="background: ${rs == 'OK' ? '#66B032' : (rs == 'Empty' ? '#B5B5B5' : '#E4491D')};cursor: ${rs != 'NG' ? 'not-allowed' : ''}">
+                                    <span class="position">${key + 1}</span>
+                                    <span class="result">
+                                       ${rs}
+                                    </span>
+                                </div>
+                            `
+                } else {
+                    rsRight += `
+                                <div class="result-left-tray" onclick="showItem('${encodeURIComponent(JSON.stringify(item))}', ${key})" style="background: ${rs == 'OK' ? '#66B032' : (rs == 'Empty' ? '#B5B5B5' : '#E4491D')};cursor: ${rs != 'NG' ? 'not-allowed' : ''}">
+                                    <span class="position">${key + 1}</span>
+                                    <span class="result">
+                                        ${rs}
+                                    </span>
+                                </div>
+                            `
                 }
             });
 
