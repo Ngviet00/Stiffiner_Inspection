@@ -94,7 +94,6 @@ namespace Stiffiner_Inspection
                     Global.resetPLC4 = 1;
                     Global.resetClient = 1;
                     Global.currentTray++;
-                    //Global.CurrentTrayData.Clear();
 
                     Global.CurrentTrayDataV2.Clear();
 
@@ -123,8 +122,8 @@ namespace Stiffiner_Inspection
                         timer = null;
                     }
 
-                    //check if after 10s, tray not enough will send signal to PLC vision not enough tray
-                    timer = new System.Timers.Timer(10000);
+                    //check if after 5s, tray not enough will send signal to PLC vision not enough tray
+                    timer = new System.Timers.Timer(5000);
                     timer.Elapsed += TimerCheckVisionEnoughTray;
                     timer.Start();
                 }
@@ -145,16 +144,6 @@ namespace Stiffiner_Inspection
             timer?.Stop();
             timer?.Dispose();
             timer = null;
-
-            //if (Global.CurrentTrayData.Count < 80 && Global.CurrentTrayData.Count > 0)
-            //{
-            //    if (Global.currentTray > 0)
-            //    {
-            //        Global.currentTray -= 1;
-            //    }
-
-            //    VisionNotEnoughTray();
-            //}
 
             if (Global.CurrentTrayDataV2.Count < 80 && Global.CurrentTrayDataV2.Count > 0)
             {
@@ -253,7 +242,6 @@ namespace Stiffiner_Inspection
 
         public void VisionDoneIns()
         {
-            _logger.Error("test vision done ne");
             _plc.SetDevice(REG_PLC_VisionDoneInspection, 1);
         }
 
