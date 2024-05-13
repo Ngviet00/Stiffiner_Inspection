@@ -342,32 +342,6 @@ namespace Stiffiner_Inspection.Services
 
         }
 
-        public async Task<int> GetCurrentTargetQty(long currTargetid)
-        {
-            try
-            {
-                int targetQty = 0;
-
-                var target = await _dbContext.Targets
-                    .AsNoTracking()
-                    .Where(t => t.TargetId == currTargetid)
-                    .Select(t => t.Target_qty)
-                    .FirstOrDefaultAsync();
-
-                if (target != null)
-                {
-                    targetQty = target;
-                }
-
-                return targetQty;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("Error Get Current Target Qty: " + ex.Message);
-                return 0;
-            }
-        }
-
         public async Task<int> GetTotal()
         {
             try
