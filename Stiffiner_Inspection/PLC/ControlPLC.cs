@@ -253,6 +253,7 @@ namespace Stiffiner_Inspection
 
         public void VisionDoneIns()
         {
+            _logger.Error("test vision done ne");
             _plc.SetDevice(REG_PLC_VisionDoneInspection, 1);
         }
 

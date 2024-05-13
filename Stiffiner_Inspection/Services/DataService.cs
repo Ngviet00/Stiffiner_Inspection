@@ -218,6 +218,7 @@ namespace Stiffiner_Inspection.Services
                     //pair left
                     var leftArea = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == CLIENT_1 && e.tray == Global.currentTray);
                     var leftLine = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == CLIENT_2 && e.tray == Global.currentTray);
+                    _logger.Error(leftArea.client_id);
 
                     //add to list to save excel
                     AddListPrepareSaveExcel(dataCSV, leftArea, leftLine);
@@ -240,10 +241,12 @@ namespace Stiffiner_Inspection.Services
 
                     //save to db
                     await SaveToDB(rightArea, rightLine);
+                    _logger.Error("Save excel");
 
                     //if enough 40 item => save to excel
                     if (dataCSV.Count == 40)
                     {
+                        _logger.Error("Save excel");
                         await SaveToExcel(dataCSV);
                     }
                 }
