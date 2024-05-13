@@ -160,18 +160,17 @@
                         <div class="first-row d-flex align-items-center justify-content-between">
                             <div class="lbl-counting">Counting</div>
                             <div class="lbl-tray-total">
-                                @* Target *@
                                 Tray Total
                             </div>
                             <div class="lbl-number" id="total-tray-ea">
-                                @ViewBag.TotalTray
+                                @(ViewBag.TotalTray.ToString("#,##0").Replace(",", "."))
                             </div>
                         </div>
 
                         <div class="second-row d-flex align-items-center justify-content-between mb-1">
                             <div class="title">Total</div>
                             <div class="w-100 total" id="total-ea">
-                                @ViewBag.Total<span class="">EA</span>
+                                @(ViewBag.Total.ToString("#,##0").Replace(",", "."))<span class="">&nbspEA</span>
                             </div>
                         </div>
 
@@ -179,7 +178,7 @@
                             <div class="title">OK</div>
                             <div class="w-100 total">
                                 <div class="d-inline-block" id="total-ok-ea">
-                                    @ViewBag.TotalOK<span>EA</span>
+                                    @ViewBag.TotalOK.ToString("#,##0").Replace(",", ".")<span>&nbspEA</span>
                                 </div>
                                 <span class="percent" id="percent-ok">@ViewBag.PercentChartOK %</span>
                             </div>
@@ -189,7 +188,7 @@
                             <div class="title">NG</div>
                             <div class="w-100 total">
                                 <div class="d-inline-block" id="total-ng-ea">
-                                    @ViewBag.TotalNG<span>EA</span>
+                                    @ViewBag.TotalNG.ToString("#,##0").Replace(",", ".")<span>&nbspEA</span>
                                 </div>
                                 <span class="percent" id="percent-ng">@ViewBag.PercentChartNG %</span>
                             </div>
@@ -199,7 +198,7 @@
                             <div class="title">Empty</div>
                             <div class="w-100 total">
                                 <div class="d-inline-block" id="total-empty-ea">
-                                    @ViewBag.TotalEmpty<span>EA</span>
+                                    @ViewBag.TotalEmpty.ToString("#,##0").Replace(",", ".")<span>&nbspEA</span>
                                 </div>
                                 <span class="percent" id="percent-empty">@ViewBag.PercentChartEmpty %</span>
                             </div>

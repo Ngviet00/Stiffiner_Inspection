@@ -18,6 +18,7 @@ namespace Stiffiner_Inspection.Services
         private readonly ApplicationDbContext _dbContext;
         private readonly IHubContext<HistoryHub> _historyContext;
         private readonly ILog _logger = LogManager.GetLogger(typeof(DataService));
+        private readonly IHubContext<HomeHub> _hubContext;
 
         const int CLIENT_1 = 1;
         const int CLIENT_2 = 2;
@@ -34,6 +35,7 @@ namespace Stiffiner_Inspection.Services
         {
             _dbContext = dbContext;
             _historyContext = historyContext;
+            _hubContext = hubContext;
         }
 
         public int GetIndex(DataDTO dataDTO)
@@ -150,23 +152,76 @@ namespace Stiffiner_Inspection.Services
             return NG;
         }
 
-        public async Task SendToPLC(DataDTO dataDTO)
-        {
-            Global.CurrentTrayData.Add(dataDTO);
+        //public async Task SendToPLC(DataDTO dataDTO)
+        //{
+        //    Global.CurrentTrayData.Add(dataDTO);
 
-            if (Global.CurrentTrayData.Count == 80)
+        //    if (Global.CurrentTrayData.Count == 80)
+        //    {
+        //        List<DataCSV> dataCSV = [];
+
+        //        for (int i = 1; i <= 20; i++)
+        //        {
+        //            //pair left
+        //            var leftArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_1 && e.tray == Global.currentTray);
+        //            var leftLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_2 && e.tray == Global.currentTray);
+                    
+        //            //add to list to save excel
+        //            AddListPrepareSaveExcel(dataCSV, leftArea, leftLine);
+                    
+        //            //write register PLC
+        //            Global.controlPLC.WriteDataToRegister(GetResult(leftArea?.result, leftLine?.result), i - 1);
+
+        //            //save to db
+        //            await SaveToDB(leftArea, leftLine);
+
+        //            //pair right 
+        //            var rightArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_3 && e.tray == Global.currentTray);
+        //            var rightLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_4 && e.tray == Global.currentTray);
+                    
+        //            //add to list to save excel
+        //            AddListPrepareSaveExcel(dataCSV, rightArea, rightLine);
+                    
+        //            //write register PLC
+        //            Global.controlPLC.WriteDataToRegister(GetResult(rightArea?.result, rightLine?.result), i + 19);
+
+        //            //save to db
+        //            await SaveToDB(rightArea, rightLine);
+
+        //            //if enough 40 item => save to excel
+        //            if (dataCSV.Count == 40)
+        //            {
+        //                await SaveToExcel(dataCSV);
+        //            }
+        //        }
+
+        //        await _hubContext.Clients.All.SendAsync("RefreshData");
+
+        //        //ater vision done, send signal
+        //        Global.controlPLC.VisionDoneIns();
+
+        //        //after vision done, call method refresh data in history page
+        //        await _historyContext.Clients.All.SendAsync("RefreshData");
+        //    }
+        //}
+
+        public async Task SendToPLCV2(DataDTO dataDTO)
+        {
+            Global.CurrentTrayDataV2.Enqueue(dataDTO);
+
+            if (Global.CurrentTrayDataV2.Count == 80)
             {
                 List<DataCSV> dataCSV = [];
 
                 for (int i = 1; i <= 20; i++)
                 {
                     //pair left
-                    var leftArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_1 && e.tray == Global.currentTray);
-                    var leftLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_2 && e.tray == Global.currentTray);
-                    
+                    var leftArea = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == CLIENT_1 && e.tray == Global.currentTray);
+                    var leftLine = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == CLIENT_2 && e.tray == Global.currentTray);
+
                     //add to list to save excel
                     AddListPrepareSaveExcel(dataCSV, leftArea, leftLine);
-                    
+
                     //write register PLC
                     Global.controlPLC.WriteDataToRegister(GetResult(leftArea?.result, leftLine?.result), i - 1);
 
@@ -174,12 +229,12 @@ namespace Stiffiner_Inspection.Services
                     await SaveToDB(leftArea, leftLine);
 
                     //pair right 
-                    var rightArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_3 && e.tray == Global.currentTray);
-                    var rightLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_4 && e.tray == Global.currentTray);
-                    
+                    var rightArea = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == CLIENT_3 && e.tray == Global.currentTray);
+                    var rightLine = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == CLIENT_4 && e.tray == Global.currentTray);
+
                     //add to list to save excel
                     AddListPrepareSaveExcel(dataCSV, rightArea, rightLine);
-                    
+
                     //write register PLC
                     Global.controlPLC.WriteDataToRegister(GetResult(rightArea?.result, rightLine?.result), i + 19);
 
@@ -192,6 +247,8 @@ namespace Stiffiner_Inspection.Services
                         await SaveToExcel(dataCSV);
                     }
                 }
+
+                await _hubContext.Clients.All.SendAsync("RefreshData");
 
                 //ater vision done, send signal
                 Global.controlPLC.VisionDoneIns();

@@ -94,7 +94,9 @@ namespace Stiffiner_Inspection
                     Global.resetPLC4 = 1;
                     Global.resetClient = 1;
                     Global.currentTray++;
-                    Global.CurrentTrayData.Clear();
+                    //Global.CurrentTrayData.Clear();
+
+                    Global.CurrentTrayDataV2.Clear();
 
                     TurnOnLightControl();
                     isStartHistory = true;
@@ -144,7 +146,17 @@ namespace Stiffiner_Inspection
             timer?.Dispose();
             timer = null;
 
-            if (Global.CurrentTrayData.Count < 80 && Global.CurrentTrayData.Count > 0)
+            //if (Global.CurrentTrayData.Count < 80 && Global.CurrentTrayData.Count > 0)
+            //{
+            //    if (Global.currentTray > 0)
+            //    {
+            //        Global.currentTray -= 1;
+            //    }
+
+            //    VisionNotEnoughTray();
+            //}
+
+            if (Global.CurrentTrayDataV2.Count < 80 && Global.CurrentTrayDataV2.Count > 0)
             {
                 if (Global.currentTray > 0)
                 {

@@ -50,7 +50,7 @@ namespace Stiffiner_Inspection.Controllers
                 await _hubContext.Clients.All.SendAsync("ReceiveData", dataDTO);
 
                 //send to PLC
-                await _dataService.SendToPLC(dataDTO);
+                await _dataService.SendToPLCV2(dataDTO);
 
                 return Ok(new
                 {

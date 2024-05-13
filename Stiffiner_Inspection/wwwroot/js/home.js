@@ -61,7 +61,7 @@ $(function () {
     connection.start()
         .then(() => {
             console.log('Connection established!');
-            UpdateStatisticalCalculations();
+            //UpdateStatisticalCalculations();
 
             for (let i = 1; i <= 4; i++) {
                 connection.invoke("ChangeStatusCamVisionBusy", i, 0)
@@ -310,6 +310,10 @@ $(function () {
         alert('Please choose model!');
     });
 
+    connection.on("RefreshData", function () {
+        UpdateStatisticalCalculations();
+    });
+
     //====================================================== CONFIG CHART ======================================================
     var ctx = document.getElementById('pie-chart').getContext('2d');
 
@@ -380,11 +384,11 @@ $(function () {
     function UpdateStatisticalCalculations() {
         connection.invoke("UpdateStatistical", "UpdateStatictical")
             .then(function (res) {
-                $('#total-tray-ea').html(res.totalTray);
-                $('#total-ea').html(`${res.total}<span class="">EA</span>`);
-                $('#total-ok-ea').html(`${res.totalOK}<span class="">EA</span>`);
-                $('#total-ng-ea').html(`${res.totalNG}<span class="">EA</span>`);
-                $('#total-empty-ea').html(`${res.totalEmpty}<span class="">EA</span>`);
+                $('#total-tray-ea').html(formatNumberWithDot(res.totalTray));
+                $('#total-ea').html(`${formatNumberWithDot(res.total)}<span class="">&nbspEA</span>`);
+                $('#total-ok-ea').html(`${formatNumberWithDot(res.totalOK)}<span class="">&nbspEA</span>`);
+                $('#total-ng-ea').html(`${formatNumberWithDot(res.totalNG)}<span class="">&nbspEA</span>`);
+                $('#total-empty-ea').html(`${formatNumberWithDot(res.totalEmpty)}<span class="">&nbspEA</span>`);
 
                 $('#percent-ok').html(`${res.percentChartOk} %`);
                 $('#percent-ng').html(`${res.percentChartNG} %`);
@@ -402,7 +406,7 @@ $(function () {
                 console.error("Error calling API:", err.toString());
             })
             .finally(function () {
-                setTimeout(UpdateStatisticalCalculations, 2500)
+                //setTimeout(UpdateStatisticalCalculations, 2500)
             });
     }
 
@@ -576,6 +580,10 @@ $(function () {
 
     function getCurrentDateTime() {
         return new Date(new Date().getTime() + (7 * 60 * 60 * 1000)).toISOString().slice(0, 23) + 'Z';
+    }
+
+    function formatNumberWithDot(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
     $(document).on('change', '#select-model', function () {

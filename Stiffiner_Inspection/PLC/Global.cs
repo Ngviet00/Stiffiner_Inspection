@@ -1,4 +1,5 @@
 ﻿using Stiffiner_Inspection.Models.DTO.Data;
+using System.Collections.Concurrent;
 
 namespace Stiffiner_Inspection
 {
@@ -18,6 +19,8 @@ namespace Stiffiner_Inspection
         public static int currentTray { get; set; } = 0;
 
         public static List<DataDTO> CurrentTrayData = new List<DataDTO>();
+
+        public static ConcurrentQueue<DataDTO> CurrentTrayDataV2 = new ConcurrentQueue<DataDTO>();
 
         //status CAM
         public static int StatusCam1 { get; set; } = 0;
