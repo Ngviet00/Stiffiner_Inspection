@@ -1,7 +1,6 @@
 using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using Stiffiner_Inspection.Contexts;
 using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Services;
@@ -102,7 +101,6 @@ namespace Stiffiner_Inspection.Controllers
             {
                 if (CheckConditionVisionBusy() == false)
                 {
-                    _logger.Error("vision busy ne!");
                     Global.controlPLC.VisionBusy(true);
                     await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 2, "");
                 } 

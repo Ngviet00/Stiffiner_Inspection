@@ -244,7 +244,6 @@ namespace Stiffiner_Inspection.Services
                     //if enough 40 item => save to excel
                     if (dataCSV.Count == 40)
                     {
-                        _logger.Error("Save excel");
                         await SaveToExcel(dataCSV);
                     }
                 }
