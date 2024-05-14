@@ -95,43 +95,43 @@ namespace Stiffiner_Inspection.Controllers
 
         [Route("change-status-system-client")]
         [HttpPost]
-        public async Task<IActionResult> ChangeStatusSystemClient(int clientId, int status, string? message) //1:running, 2: pause, 3: error - with message
+        public IActionResult ChangeStatusSystemClient(int clientId, int status, string? message) //1:running, 2: pause, 3: error - with message
         {
             try
             {
                 if (clientId == CLIENT_1)
                 {
-                    Global.ClientStatus1 = status;
+                    Global.DeepLearningCam1 = status;
                 }
 
                 if (clientId == CLIENT_2)
                 {
-                    Global.ClientStatus2 = status;
+                    Global.DeepLearningCam2 = status;
                 }
 
                 if (clientId == CLIENT_3)
                 {
-                    Global.ClientStatus3 = status;
+                    Global.DeepLearningCam3 = status;
                 }
 
                 if (clientId == CLIENT_4)
                 {
-                    Global.ClientStatus4 = status;
+                    Global.DeepLearningCam4 = status;
                 }
 
-                if (
-                    Global.ClientStatus1 == CLIENT_RUNNING &&
-                    Global.ClientStatus2 == CLIENT_RUNNING &&
-                    Global.ClientStatus3 == CLIENT_RUNNING &&
-                    Global.ClientStatus4 == CLIENT_RUNNING
-                )
-                {
-                    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 1, message);
-                }
-                else
-                {
-                    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 2, message);
-                }
+                //if (
+                //    Global.ClientStatus1 == CLIENT_RUNNING &&
+                //    Global.ClientStatus2 == CLIENT_RUNNING &&
+                //    Global.ClientStatus3 == CLIENT_RUNNING &&
+                //    Global.ClientStatus4 == CLIENT_RUNNING
+                //)
+                //{
+                //    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 1, message);
+                //}
+                //else
+                //{
+                //    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 2, message);
+                //}
 
                 return Ok(new
                 {

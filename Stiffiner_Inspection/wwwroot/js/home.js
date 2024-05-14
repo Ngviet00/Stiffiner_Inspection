@@ -257,8 +257,8 @@ $(function () {
             }
             return;
         }
-
-        if (status == SYSTEM_STATUS_CLIENT.PAUSE) {
+        else
+        {
             _status.css("color", "#344054").css("background", "#E6E6E6").text("Pause");
             _message.addClass('d-none');
             if (statusClient != status) {
@@ -268,15 +268,25 @@ $(function () {
             return;
         }
 
-        if (status == SYSTEM_STATUS_CLIENT.ERROR) {
-            _status.css("color", "#E34440").css("background", "#FD53083D").text("Error");
-            _message.removeClass('d-none').text(message);
-            if (statusClient != status) {
-                appendTimeLog(getCurrentDateTime(), "Client", "Client is error!");
-                statusClient = status;
-            }
-            return;
-        }
+        //if (status == SYSTEM_STATUS_CLIENT.PAUSE) {
+        //    _status.css("color", "#344054").css("background", "#E6E6E6").text("Pause");
+        //    _message.addClass('d-none');
+        //    if (statusClient != status) {
+        //        appendTimeLog(getCurrentDateTime(), "Client", "Client is pause!");
+        //        statusClient = status;
+        //    }
+        //    return;
+        //}
+
+        //if (status == SYSTEM_STATUS_CLIENT.ERROR) {
+        //    _status.css("color", "#E34440").css("background", "#FD53083D").text("Error");
+        //    _message.removeClass('d-none').text(message);
+        //    if (statusClient != status) {
+        //        appendTimeLog(getCurrentDateTime(), "Client", "Client is error!");
+        //        statusClient = status;
+        //    }
+        //    return;
+        //}
     });
 
     //event plc reset

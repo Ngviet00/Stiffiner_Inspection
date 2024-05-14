@@ -110,7 +110,7 @@ namespace Stiffiner_Inspection.Controllers
                     await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 1, "");
                 }
 
-                Thread.Sleep(3000);
+                Thread.Sleep(2000);
             }
         }
 
@@ -132,10 +132,15 @@ namespace Stiffiner_Inspection.Controllers
                 return false;
             }
 
-            if (Global.ClientStatus1 != ACTIVE || Global.ClientStatus2 != ACTIVE || Global.ClientStatus3 != ACTIVE || Global.ClientStatus4 != ACTIVE)
+            if (string.IsNullOrWhiteSpace(Global._currentSelectedModel))
             {
                 return false;
             }
+
+            //if (Global.ClientStatus1 != ACTIVE || Global.ClientStatus2 != ACTIVE || Global.ClientStatus3 != ACTIVE || Global.ClientStatus4 != ACTIVE)
+            //{
+            //    return false;
+            //}
 
             return true;
         }
