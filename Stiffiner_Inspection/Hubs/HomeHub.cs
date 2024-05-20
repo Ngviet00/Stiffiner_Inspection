@@ -140,5 +140,19 @@ namespace Stiffiner_Inspection.Hubs
                 throw;
             }
         }
+
+        public async Task ChangeModeRun(string mode)
+        {
+            try
+            {
+                Global.Mode = int.Parse(mode);
+                await _dataService.WriteOneLine(Global.PathFileMode, mode);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error can not change model:" + ex.Message);
+                throw;
+            }
+        }
     }
 }

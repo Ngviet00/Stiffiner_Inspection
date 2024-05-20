@@ -5,6 +5,7 @@
     var action = ViewContext.RouteData.Values["action"].ToString();
     var currentModel = Global._currentSelectedModel;
     var listModels = Global.ListModels;
+    var currentMode = Global.Mode;
 }
 
 <div id="header-control" class="@(action == "History" ? "mt-3" : "") d-flex justify-content-between">
@@ -165,10 +166,8 @@
                 </div>
             </div>
 
-            @* <div id="form-setting">
-                <button type="button" class="btn btn-info px-4" data-toggle="modal" data-target="#modalSetting" style="margin-left: 20px;color:white;">
-                    Setting
-                </button>
+            <div id="form-setting">
+                <i class="fa fa-cog icon-form-setting" style="margin-left: 10px;" aria-hidden="true" data-toggle="modal" data-target="#modalSetting"></i>
 
                 <div class="modal fade" id="modalSetting" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-xl" role="document">
@@ -180,22 +179,26 @@
                                 </button>
                             </div>
 
-                            <div class="modal-body">
+                            <div class="modal-body" style="padding-bottom: 2em;">
                                 <div>
-                                    <h3 class="mb-2" style="font-weight: bold;font-size: 18px;">Model:</h3>
                                     <div class="d-flex align-items-center">
+                                        <span style="font-weight: bold;font-size: 18px;margin-right: 15px;">Model:</span>
                                         <label style="font-size: 18px;margin-right: 5px;" for="mode_master">Master</label>
-                                        <input type="radio" name="mode" value="1" class="mr-3" style="margin-right: 20px" id="mode_master" />
+                                        <input disabled type="radio" name="mode_run" value="1" class="mr-3 mode-run" style="margin-right: 20px" id="mode_master" @(currentMode == 1 ? "checked" : "") />
 
                                         <label style="font-size: 18px;margin-right: 5px;" for="mode_normal">Normal</label>
-                                        <input type="radio" name="mode" value="2" id="mode_normal" />
+                                        <input disabled type="radio" class="mode-run" name="mode_run" value="2" id="mode_normal" style="margin-right: 20px" @(currentMode == 2 ? "checked" : "") />
+
+
+                                        <label style="font-size: 18px;margin-right: 5px;" for="mode_audit">Audit</label>
+                                        <input disabled type="radio" class="mode-run" name="mode_run" value="3" id="mode_audit" @(currentMode == 3 ? "checked" : "") />
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div> *@
+            </div>
 
         </div>
     }

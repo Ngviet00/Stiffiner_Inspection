@@ -189,6 +189,7 @@ $(function () {
             $('#select-model').prop('disabled', false);
             $('.btn-reload-model').prop('disabled', false);
             $('.btn-clear-data').prop('disabled', false);
+            $('.mode-run').('disabled', false);
 
             if (statusPLC != status) {
                 appendTimeLog(getCurrentDateTime(), "PLC", `PLC Disconnected!`);
@@ -221,6 +222,7 @@ $(function () {
             $('#select-model').prop('disabled', true);
             $('.btn-reload-model').prop('disabled', true);
             $('.btn-clear-data').prop('disabled', true);
+            $('.mode-run').('disabled', true);
             if (statusPLC != status) {
                 appendTimeLog(getCurrentDateTime(), "PLC", `PLC Start!`);
                 statusPLC = status;
@@ -233,6 +235,7 @@ $(function () {
             $('#select-model').prop('disabled', false);
             $('.btn-reload-model').prop('disabled', false);
             $('.btn-clear-data').prop('disabled', false);
+            $('.mode-run').('disabled', false);
             if (statusPLC != status) {
                 appendTimeLog(getCurrentDateTime(), "PLC", `PLC Stop!`);
                 statusPLC = status;
@@ -257,8 +260,7 @@ $(function () {
             }
             return;
         }
-        else
-        {
+        else {
             _status.css("color", "#344054").css("background", "#E6E6E6").text("Pause");
             _message.addClass('d-none');
             if (statusClient != status) {
@@ -267,26 +269,6 @@ $(function () {
             }
             return;
         }
-
-        //if (status == SYSTEM_STATUS_CLIENT.PAUSE) {
-        //    _status.css("color", "#344054").css("background", "#E6E6E6").text("Pause");
-        //    _message.addClass('d-none');
-        //    if (statusClient != status) {
-        //        appendTimeLog(getCurrentDateTime(), "Client", "Client is pause!");
-        //        statusClient = status;
-        //    }
-        //    return;
-        //}
-
-        //if (status == SYSTEM_STATUS_CLIENT.ERROR) {
-        //    _status.css("color", "#E34440").css("background", "#FD53083D").text("Error");
-        //    _message.removeClass('d-none').text(message);
-        //    if (statusClient != status) {
-        //        appendTimeLog(getCurrentDateTime(), "Client", "Client is error!");
-        //        statusClient = status;
-        //    }
-        //    return;
-        //}
     });
 
     //event plc reset
@@ -655,7 +637,7 @@ $(function () {
                             <td>${item.tray}</td>
                             <td>${item.index}</td>
                             <td class="${GetResult(item) == 'NG' ? 'text-danger' : 'text-success'}">${GetResult(item)}</td>
-                            <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,|,$/g, '') }</td>
+                            <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,|,$/g, '')}</td>
                         </tr>
                     `;
                     });
@@ -699,7 +681,7 @@ $(function () {
                     res.results.forEach(item => {
                         let err = '';
                         item.errors.forEach(itemErr => {
-                            err += ',' +itemErr.description;
+                            err += ',' + itemErr.description;
                         });
                         data += `
                             <tr style="font-size: 14px; font-weight: 500;">
@@ -709,7 +691,7 @@ $(function () {
                                 <td>${item.tray}</td>
                                 <td>${item.index}</td>
                                 <td>${GetResult(item)}</td>
-                                <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,|,$/g, '') }</td>
+                                <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,|,$/g, '')}</td>
                             </tr>
                         `;
                     });
@@ -770,5 +752,22 @@ $(function () {
             .finally(function () {
                 $('.btn-reload-model').prop('disabled', false).html('Reload');
             });
+    });
+
+    $('input[type=radio][name=mode_run]').change(function () {
+        let mode = this.value;
+        connection.invoke("ChangeModeRun", this.value)
+            .then(function (err) {
+                alert("You choose mode " + (mode == 1 ? 'Master' : (mode == 2 ? 'Normal' : 'Audit')) + " successfully!");
+                $('#modalSetting').modal('hide');
+            })
+            .catch(function (err) {
+                alert("Error can not change mode!");
+                console.error("Error calling API:", err.toString());
+            });
+    });
+
+    $("#form-setting").on('hide.bs.modal', function () {
+        //alert(1);
     });
 });
