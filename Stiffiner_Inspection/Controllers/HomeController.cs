@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Contexts;
 using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Services;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Stiffiner_Inspection.Controllers
 {
@@ -36,6 +37,18 @@ namespace Stiffiner_Inspection.Controllers
 
             Global._currentSelectedModel = await _dataService.ReadOneLine(Global.PathFileCurrentModel);
             Global.ListModels = await _dataService.ReadManyLine(Global.PathFileListModel);
+
+            string mode = await _dataService.ReadOneLine(Global.PathFileMode);
+
+            if (string.IsNullOrWhiteSpace(mode))
+            {
+                Global.Mode = 1;
+                await _dataService.WriteOneLine(Global.PathFileMode, "1");
+            }
+            else
+            {
+                Global.Mode = int.Parse(mode);
+            }
 
             Global.controlPLC.Connect();
 
@@ -136,11 +149,6 @@ namespace Stiffiner_Inspection.Controllers
             {
                 return false;
             }
-
-            //if (Global.ClientStatus1 != ACTIVE || Global.ClientStatus2 != ACTIVE || Global.ClientStatus3 != ACTIVE || Global.ClientStatus4 != ACTIVE)
-            //{
-            //    return false;
-            //}
 
             return true;
         }

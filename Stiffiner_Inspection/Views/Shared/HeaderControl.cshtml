@@ -10,10 +10,10 @@
 <div id="header-control" class="@(action == "History" ? "mt-3" : "") d-flex justify-content-between">
     <div id="time" class="d-flex align-items-center">
         <div id="date">
-            Thursday, Jan 18, 2024
+            Thursday, Jan 01, 1970
         </div>
         <div id="current-time">
-            13:33:53
+            00:00:00
         </div>
     </div>
 
@@ -164,6 +164,39 @@
                     </div>
                 </div>
             </div>
+
+            @* <div id="form-setting">
+                <button type="button" class="btn btn-info px-4" data-toggle="modal" data-target="#modalSetting" style="margin-left: 20px;color:white;">
+                    Setting
+                </button>
+
+                <div class="modal fade" id="modalSetting" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title fw-bold" style="font-size: 18px;" id="exampleModalLabel">Setting</h4>
+                                <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                                    X
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                                <div>
+                                    <h3 class="mb-2" style="font-weight: bold;font-size: 18px;">Model:</h3>
+                                    <div class="d-flex align-items-center">
+                                        <label style="font-size: 18px;margin-right: 5px;" for="mode_master">Master</label>
+                                        <input type="radio" name="mode" value="1" class="mr-3" style="margin-right: 20px" id="mode_master" />
+
+                                        <label style="font-size: 18px;margin-right: 5px;" for="mode_normal">Normal</label>
+                                        <input type="radio" name="mode" value="2" id="mode_normal" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> *@
+
         </div>
     }
     else

@@ -34,6 +34,31 @@ namespace Stiffiner_Inspection.Controllers
             _hubContext = hubContext;
         }
 
+        [Route("change-mode")]
+        [HttpPost]
+        public async Task<IActionResult> ChangeModel(int mode)
+        {
+            try
+            {
+                Global.Mode = mode;
+                await _dataService.WriteOneLine(Global.PathFileMode, mode.ToString());
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = $"Change to mode {mode} successfully!"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
         [Route("save-data")]
         [HttpPost]
         public async Task<IActionResult> SaveData(DataDTO dataDTO)
@@ -118,20 +143,6 @@ namespace Stiffiner_Inspection.Controllers
                 {
                     Global.DeepLearningCam4 = status;
                 }
-
-                //if (
-                //    Global.ClientStatus1 == CLIENT_RUNNING &&
-                //    Global.ClientStatus2 == CLIENT_RUNNING &&
-                //    Global.ClientStatus3 == CLIENT_RUNNING &&
-                //    Global.ClientStatus4 == CLIENT_RUNNING
-                //)
-                //{
-                //    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 1, message);
-                //}
-                //else
-                //{
-                //    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 2, message);
-                //}
 
                 return Ok(new
                 {
@@ -226,6 +237,7 @@ namespace Stiffiner_Inspection.Controllers
                 data.status = 200;
                 data.message = "success";
                 data.name_model = Global._currentSelectedModel;
+                data.mode_run = Global.Mode;
 
                 int resultPLC = 0;
 

@@ -59,5 +59,8 @@ namespace Stiffiner_Inspection
 
         public static string PathFileCurrentModel = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\CurrentModel.txt";
         public static string PathFileListModel = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\ListModels.txt";
+        public static string PathFileMode = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\Mode.txt";
+
+        public static int Mode = 1; //1 master, 2 normal
     }
 }
