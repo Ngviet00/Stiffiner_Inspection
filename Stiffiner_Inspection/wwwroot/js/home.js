@@ -192,7 +192,7 @@ $(function () {
             $('#select-model').prop('disabled', false);
             $('.btn-reload-model').prop('disabled', false);
             $('.btn-clear-data').prop('disabled', false);
-            $('.mode-run').('disabled', false);
+            $('.mode-run').prop('disabled', false);
 
             if (statusPLC != status) {
                 appendTimeLog(getCurrentDateTime(), "PLC", `PLC Disconnected!`);
@@ -225,7 +225,7 @@ $(function () {
             $('#select-model').prop('disabled', true);
             $('.btn-reload-model').prop('disabled', true);
             $('.btn-clear-data').prop('disabled', true);
-            $('.mode-run').('disabled', true);
+            $('.mode-run').prop('disabled', true);
             if (statusPLC != status) {
                 appendTimeLog(getCurrentDateTime(), "PLC", `PLC Start!`);
                 statusPLC = status;
@@ -238,7 +238,7 @@ $(function () {
             $('#select-model').prop('disabled', false);
             $('.btn-reload-model').prop('disabled', false);
             $('.btn-clear-data').prop('disabled', false);
-            $('.mode-run').('disabled', false);
+            $('.mode-run').prop('disabled', false);
             if (statusPLC != status) {
                 appendTimeLog(getCurrentDateTime(), "PLC", `PLC Stop!`);
                 statusPLC = status;
