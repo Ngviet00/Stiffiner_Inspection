@@ -127,8 +127,9 @@ $(function () {
                 })
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
+                    location.reload();
                 });
-        }, 6000);
+        }, 4000);
     });
 
     //event deep learning
@@ -151,6 +152,7 @@ $(function () {
                 })
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
+                    location.reload();
                 });
         }, 4000);
     });
@@ -173,6 +175,7 @@ $(function () {
                 })
                 .catch(function (err) {
                     console.error("Error calling API:", err.toString());
+                    location.reload();
                 });
         }, 4000);
     });
@@ -584,7 +587,7 @@ $(function () {
             connection.invoke("ChangeModel", selectedValue).then(function (res) {
                 appendTimeLog(getCurrentDateTime(), "Server", `Server change to model ${selectedValue}`);
                 alert("Change model successfully!");
-                location.reload();
+                //location.reload();
             }).catch(function (err) {
                 console.error("Error calling API:", err.toString());
             });
