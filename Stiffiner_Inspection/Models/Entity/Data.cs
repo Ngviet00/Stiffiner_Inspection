@@ -41,6 +41,9 @@ namespace Stiffiner_Inspection.Models.Entity
         [Column("target_id")]
         public int? TargetId { get; set; }
 
+        [Column("timeline")]
+        public string? TimeLine { get; set; }
+
         public ICollection<Error>? Errors { get; set; }
 
         public ICollection<Image>? Images { get; set; }

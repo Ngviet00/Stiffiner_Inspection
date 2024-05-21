@@ -497,6 +497,14 @@ $(function () {
                 <td>${message}</td>
             </tr>
         `);
+
+        let msg = convertDate(time) + '-' + type + '-' + message;
+
+        connection.invoke("SaveToFileLog", msg).then(function (res) {
+
+        }).catch(function (err) {
+            console.error("Error calling API:", err.toString());
+        });
     }
 
     function resetCurrentTray() {
@@ -587,7 +595,6 @@ $(function () {
             connection.invoke("ChangeModel", selectedValue).then(function (res) {
                 appendTimeLog(getCurrentDateTime(), "Server", `Server change to model ${selectedValue}`);
                 alert("Change model successfully!");
-                //location.reload();
             }).catch(function (err) {
                 console.error("Error calling API:", err.toString());
             });

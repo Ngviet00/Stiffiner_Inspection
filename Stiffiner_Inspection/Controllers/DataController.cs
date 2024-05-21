@@ -71,6 +71,8 @@ namespace Stiffiner_Inspection.Controllers
                 //set model
                 dataDTO.model = Global._currentSelectedModel;
 
+                dataDTO.TimeLine = Global.TimeLine;
+
                 //event realtime result log
                 await _hubContext.Clients.All.SendAsync("ReceiveData", dataDTO);
 

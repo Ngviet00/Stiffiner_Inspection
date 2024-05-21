@@ -10,6 +10,7 @@ using log4net;
 using System.Net;
 using Stiffiner_Inspection.Models.Response;
 using System.Text;
+using System.IO;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -152,59 +153,6 @@ namespace Stiffiner_Inspection.Services
             return NG;
         }
 
-        //public async Task SendToPLC(DataDTO dataDTO)
-        //{
-        //    Global.CurrentTrayData.Add(dataDTO);
-
-        //    if (Global.CurrentTrayData.Count == 80)
-        //    {
-        //        List<DataCSV> dataCSV = [];
-
-        //        for (int i = 1; i <= 20; i++)
-        //        {
-        //            //pair left
-        //            var leftArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_1 && e.tray == Global.currentTray);
-        //            var leftLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_2 && e.tray == Global.currentTray);
-                    
-        //            //add to list to save excel
-        //            AddListPrepareSaveExcel(dataCSV, leftArea, leftLine);
-                    
-        //            //write register PLC
-        //            Global.controlPLC.WriteDataToRegister(GetResult(leftArea?.result, leftLine?.result), i - 1);
-
-        //            //save to db
-        //            await SaveToDB(leftArea, leftLine);
-
-        //            //pair right 
-        //            var rightArea = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_3 && e.tray == Global.currentTray);
-        //            var rightLine = Global.CurrentTrayData.Find(e => e.index == i && e.client_id == CLIENT_4 && e.tray == Global.currentTray);
-                    
-        //            //add to list to save excel
-        //            AddListPrepareSaveExcel(dataCSV, rightArea, rightLine);
-                    
-        //            //write register PLC
-        //            Global.controlPLC.WriteDataToRegister(GetResult(rightArea?.result, rightLine?.result), i + 19);
-
-        //            //save to db
-        //            await SaveToDB(rightArea, rightLine);
-
-        //            //if enough 40 item => save to excel
-        //            if (dataCSV.Count == 40)
-        //            {
-        //                await SaveToExcel(dataCSV);
-        //            }
-        //        }
-
-        //        await _hubContext.Clients.All.SendAsync("RefreshData");
-
-        //        //ater vision done, send signal
-        //        Global.controlPLC.VisionDoneIns();
-
-        //        //after vision done, call method refresh data in history page
-        //        await _historyContext.Clients.All.SendAsync("RefreshData");
-        //    }
-        //}
-
         public async Task SendToPLCV2(DataDTO dataDTO)
         {
             Global.CurrentTrayDataV2.Enqueue(dataDTO);
@@ -312,6 +260,7 @@ namespace Stiffiner_Inspection.Services
                 ResultArea = dataArea.result,
                 ResultLine = dataLine?.result,
                 Index = GetIndex(dataArea),
+                TimeLine = Global.TimeLine,
             };
 
             await _dbContext.Data.AddAsync(data);
@@ -324,29 +273,11 @@ namespace Stiffiner_Inspection.Services
             }
         }
 
-        public async Task<long> GetCurrentTargetID()
-        {
-            try
-            {
-                return await _dbContext.Targets
-                .AsNoTracking()
-                .OrderByDescending(t => t.TargetId)
-                .Select(t => t.TargetId)
-                .FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("Error Get Current Target ID: " + ex.Message);
-                return 0;
-            }
-
-        }
-
         public async Task<int> GetTotal()
         {
             try
             {
-                return await _dbContext.Data.AsNoTracking().Where(d => d.ResultArea != null && d.ResultLine != null).GroupBy(d => d.TargetId).Select(g => g.Count()).FirstOrDefaultAsync();
+                return await _dbContext.Data.AsNoTracking().Where(d => d.ResultArea != null && d.ResultLine != null && d.TimeLine == Global.TimeLine).GroupBy(d => d.TargetId).Select(g => g.Count()).FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {
@@ -359,7 +290,7 @@ namespace Stiffiner_Inspection.Services
         {
             try
             {
-                return await _dbContext.Data.AsNoTracking().Select(d => d.Tray).Distinct().CountAsync();
+                return await _dbContext.Data.AsNoTracking().Where(e => e.TimeLine == Global.TimeLine).Select(d => d.Tray).Distinct().CountAsync();
             }
             catch (Exception ex)
             {
@@ -372,7 +303,7 @@ namespace Stiffiner_Inspection.Services
         {
             try
             {
-                return await _dbContext.Data.AsNoTracking().Where(d => d.ResultArea == EMPTY && d.ResultLine == EMPTY).GroupBy(d => d.TargetId).Select(g => g.Count()).FirstOrDefaultAsync();
+                return await _dbContext.Data.AsNoTracking().Where(d => d.ResultArea == EMPTY && d.ResultLine == EMPTY && d.TimeLine == Global.TimeLine).GroupBy(d => d.TargetId).Select(g => g.Count()).FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {
@@ -386,7 +317,7 @@ namespace Stiffiner_Inspection.Services
             try
             {
                 return await _dbContext.Data.AsNoTracking()
-                  .Where(d => d.ResultArea == OK && d.ResultLine == OK)
+                  .Where(d => d.ResultArea == OK && d.ResultLine == OK && d.TimeLine == Global.TimeLine)
                   .GroupBy(d => d.TargetId)
                   .Select(g => g.Count())
                   .FirstOrDefaultAsync();
@@ -403,7 +334,7 @@ namespace Stiffiner_Inspection.Services
             try
             {
                 return await _dbContext.Data.AsNoTracking()
-                .Where(d => (
+                .Where(d => d.TimeLine == Global.TimeLine && (
                     (d.ResultArea == NG && d.ResultLine == NG) || 
                     (d.ResultArea == NG && d.ResultLine == EMPTY) || 
                     (d.ResultArea == EMPTY && d.ResultLine == NG) ||
@@ -424,10 +355,10 @@ namespace Stiffiner_Inspection.Services
         public async Task<int> GetcurrTray()
         {
             int currTray = 0;
-            int maxTray = await _dbContext.Data.AsNoTracking().OrderByDescending(x => x.Tray).Select(x => x.Tray).FirstOrDefaultAsync();
+            int maxTray = await _dbContext.Data.AsNoTracking().Where(e => e.TimeLine == Global.TimeLine).OrderByDescending(x => x.Tray).Select(x => x.Tray).FirstOrDefaultAsync();
 
             var total = await _dbContext.Data
-            .Where(d => d.ResultArea != null && d.ResultLine != null && d.Tray == maxTray)
+            .Where(d => d.ResultArea != null && d.ResultLine != null && d.Tray == maxTray && d.TimeLine == Global.TimeLine)
             .CountAsync();
 
             if (total >= 40)
@@ -447,6 +378,7 @@ namespace Stiffiner_Inspection.Services
             {
                 return await _dbContext.Data
                     .AsNoTracking()
+                    .Where(e => e.TimeLine == Global.TimeLine)
                     .OrderBy(e => e.Index)
                     .Include(p => p.Errors)
                     .Include(p => p.Images)
@@ -795,6 +727,42 @@ namespace Stiffiner_Inspection.Services
             catch (Exception ex)
             {
                 _logger.Error("Error can not delete all data: " + ex.Message);
+                throw;
+            }
+        }
+
+        public async Task SaveToFileLog(string msg)
+        {
+            try
+            {
+                string directory = Path.GetDirectoryName(Global.PathFileLogProgram);
+
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                // Check if the file exists
+                if (!File.Exists(Global.PathFileLogProgram))
+                {
+                    // If the file does not exist, create it and write the lines
+                    using (StreamWriter writer = File.CreateText(Global.PathFileLogProgram))
+                    {
+                        await writer.WriteLineAsync(msg);
+                    }
+                }
+                else
+                {
+                    // If the file already exists, append the lines
+                    using (StreamWriter writer = File.AppendText(Global.PathFileLogProgram))
+                    {
+                        await writer.WriteLineAsync(msg);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error can not save to file log: " + ex.Message);
                 throw;
             }
         }

@@ -1,8 +1,11 @@
 using log4net;
+using Microsoft.Ajax.Utilities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Contexts;
 using Stiffiner_Inspection.Hubs;
+using Stiffiner_Inspection.Models.Entity;
 using Stiffiner_Inspection.Services;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -37,6 +40,19 @@ namespace Stiffiner_Inspection.Controllers
 
             Global._currentSelectedModel = await _dataService.ReadOneLine(Global.PathFileCurrentModel);
             Global.ListModels = await _dataService.ReadManyLine(Global.PathFileListModel);
+
+            string timeLine = await _dataService.ReadOneLine(Global.PathFileTimeLine);
+
+            if (string.IsNullOrWhiteSpace(timeLine))
+            {
+                string currentTimeLine = DateTime.Now.ToString("yyyyMMddHHmmss");
+                Global.TimeLine = currentTimeLine;
+                await _dataService.WriteOneLine(Global.TimeLine, currentTimeLine);
+            }
+            else
+            {
+                Global.TimeLine = timeLine;
+            }
 
             string mode = await _dataService.ReadOneLine(Global.PathFileMode);
 
@@ -156,6 +172,19 @@ namespace Stiffiner_Inspection.Controllers
         [HttpPost]
         public async Task<IActionResult> ClearData()
         {
+            string currentTimeLine = DateTime.Now.ToString("yyyyMMddHHmmss");
+            Global.TimeLine = currentTimeLine;
+            await _dataService.WriteOneLine(Global.PathFileTimeLine, currentTimeLine);
+            await _dataService.SaveToFileLog(DateTime.Now.ToString("yyyy_MM_dd_HH:mm:ss:fff") + "-Program-" + "Clear data!");
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAllData()
+        {
+            string currentTimeLine = DateTime.Now.ToString("yyyyMMddHHmmss");
+            Global.TimeLine = currentTimeLine;
+            await _dataService.WriteOneLine(Global.PathFileTimeLine, currentTimeLine);
             await _dataService.DeleteAllData();
 
             return RedirectToAction("Index");
