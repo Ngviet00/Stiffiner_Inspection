@@ -12,8 +12,8 @@ using Stiffiner_Inspection.Contexts;
 namespace Stiffiner_Inspection.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240330024156_add column client_id to table image")]
-    partial class addcolumnclient_idtotableimage
+    [Migration("20240521111605_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,6 +72,10 @@ namespace Stiffiner_Inspection.Migrations
                     b.Property<DateTime?>("Time")
                         .HasColumnType("datetime2")
                         .HasColumnName("time");
+
+                    b.Property<string>("TimeLine")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("timeline");
 
                     b.Property<int>("Tray")
                         .HasColumnType("int")
