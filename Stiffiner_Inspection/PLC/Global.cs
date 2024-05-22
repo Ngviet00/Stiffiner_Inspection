@@ -66,5 +66,10 @@ namespace Stiffiner_Inspection
         public static int Mode = 1; //1 master, 2 normal
 
         public static string? TimeLine = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+        public static int ResetCamClient1 = 0;
+        public static int ResetCamClient2 = 0;
+        public static int ResetCamClient3 = 0;
+        public static int ResetCamClient4 = 0;
     }
 }

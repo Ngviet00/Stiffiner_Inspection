@@ -166,5 +166,36 @@ namespace Stiffiner_Inspection.Hubs
                 throw;
             }
         }
+
+        public void ResetCamClient(int client)
+        {
+            try
+            {
+                if (client == 1)
+                {
+                    Global.ResetCamClient1 = 1;
+                }
+
+                if (client == 2)
+                {
+                    Global.ResetCamClient2 = 1;
+                }
+
+                if (client == 3)
+                {
+                    Global.ResetCamClient3 = 1;
+                }
+
+                if (client == 4)
+                {
+                    Global.ResetCamClient4 = 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error can not save file log: " + ex.Message);
+                throw;
+            }
+        }
     }
 }

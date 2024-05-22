@@ -223,6 +223,7 @@ namespace Stiffiner_Inspection.Controllers
                     resultPLC = Global.resetPLC1;
                     data.is_send_model = Global.Client1IsPostModel;
                     data.client_clear_data = Global.ClearClient1;
+                    data.reset_cam = Global.ResetCamClient1;
                 }
 
                 if (clientId == CLIENT_2)
@@ -230,6 +231,7 @@ namespace Stiffiner_Inspection.Controllers
                     resultPLC = Global.resetPLC2;
                     data.is_send_model = Global.Client2IsPostModel;
                     data.client_clear_data = Global.ClearClient2;
+                    data.reset_cam = Global.ResetCamClient2;
                 }
 
                 if (clientId == CLIENT_3)
@@ -237,6 +239,7 @@ namespace Stiffiner_Inspection.Controllers
                     resultPLC = Global.resetPLC3;
                     data.is_send_model = Global.Client3IsPostModel;
                     data.client_clear_data = Global.ClearClient3;
+                    data.reset_cam = Global.ResetCamClient3;
                 }
 
                 if (clientId == CLIENT_4)
@@ -244,6 +247,7 @@ namespace Stiffiner_Inspection.Controllers
                     resultPLC = Global.resetPLC4;
                     data.is_send_model = Global.Client4IsPostModel;
                     data.client_clear_data = Global.ClearClient4;
+                    data.reset_cam = Global.ResetCamClient4;
                 }
 
                 data.result_plc = resultPLC;
@@ -375,6 +379,48 @@ namespace Stiffiner_Inspection.Controllers
                 {
                     status = 200,
                     message = "success",
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Route("post-reset-cam")]
+        [HttpPost]
+        public IActionResult SaveResetCam(int clientId)
+        {
+            try
+            {
+                if (clientId == CLIENT_1)
+                {
+                    Global.ResetCamClient1 = 0;
+                }
+
+                if (clientId == CLIENT_2)
+                {
+                    Global.ResetCamClient2 = 0;
+                }
+
+                if (clientId == CLIENT_3)
+                {
+                    Global.ResetCamClient3 = 0;
+                }
+
+                if (clientId == CLIENT_4)
+                {
+                    Global.ResetCamClient4 = 0;
+                }
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "Send API Success",
                 });
             }
             catch (Exception ex)

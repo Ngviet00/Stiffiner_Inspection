@@ -656,7 +656,7 @@ $(function () {
                             <td>${item.tray}</td>
                             <td>${item.index}</td>
                             <td class="${GetResult(item) == 'NG' ? 'text-danger' : 'text-success'}">${GetResult(item)}</td>
-                            <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,+|,+$/g, '') }</td>
+                            <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,+|,+$/g, '')}</td>
                         </tr>
                     `;
                     });
@@ -709,7 +709,7 @@ $(function () {
                                 <td>${item.tray}</td>
                                 <td>${item.index}</td>
                                 <td class="${GetResult(item) == 'NG' ? 'text-danger' : 'text-success'}">${GetResult(item)}</td>
-                                <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,+|,+$/g, '') }</td>
+                                <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,+|,+$/g, '')}</td>
                             </tr>
                         `;
                     });
@@ -784,5 +784,39 @@ $(function () {
                 alert("Error can not change mode!");
                 console.error("Error calling API:", err.toString());
             });
+    });
+
+    const countdownTime = 20;
+
+    function startCountdown($button) {
+        let timeRemaining = countdownTime;
+        let client = $button.data('client');
+        $button.prop('disabled', true);
+        $button.text(`Wait ${timeRemaining} seconds`);
+
+
+        connection.invoke("ResetCamClient", parseInt(client))
+            .then((res) => {
+
+            }).catch((err) => {
+                alert("Error can not reset cam!");
+                console.error("Error reset cam: ", err.toString());
+            });
+
+        const countdownInterval = setInterval(function () {
+            timeRemaining--;
+            $button.text(`Wait ${timeRemaining} seconds`);
+
+            if (timeRemaining <= 1) {
+                clearInterval(countdownInterval);
+                $button.prop('disabled', false);
+                $button.text(`Reset Cam Client ${client}`);
+            }
+        }, 1000);
+    }
+
+    $('.btn-reset-cam').click(function () {
+        const $button = $(this);
+        startCountdown($button);
     });
 });
