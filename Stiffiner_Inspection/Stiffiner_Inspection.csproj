@@ -29,12 +29,15 @@
 
 	<ItemGroup>
 		<Folder Include="Migrations\" />
-		<Folder Include="wwwroot\font-awesome\" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<Compile Remove="wwwroot\font-awesome\**" />
+		<Content Remove="wwwroot\font-awesome\**" />
+		<EmbeddedResource Remove="wwwroot\font-awesome\**" />
 		<None Remove="Styles\**\*.css" />
 		<None Remove="Styles\**\*.map" />
+		<None Remove="wwwroot\font-awesome\**" />
 		<Content Include="Styles\**\*.scss" />
 		<None Include="Styles\**\*.scss" Link="%(RelativePath)">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
