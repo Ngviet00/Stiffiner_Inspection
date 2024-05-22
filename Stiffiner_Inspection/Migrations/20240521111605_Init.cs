@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Stiffiner_Inspection.Migrations
 {
     /// <inheritdoc />
-    public partial class refixdb : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -28,7 +28,8 @@ namespace Stiffiner_Inspection.Migrations
                     camera = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     result_area = table.Column<int>(type: "int", nullable: true),
                     result_line = table.Column<int>(type: "int", nullable: true),
-                    target_id = table.Column<int>(type: "int", nullable: true)
+                    target_id = table.Column<int>(type: "int", nullable: true),
+                    timeline = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -91,7 +92,8 @@ namespace Stiffiner_Inspection.Migrations
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     data_id = table.Column<long>(type: "bigint", nullable: false),
-                    path = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
+                    path = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    client_id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
