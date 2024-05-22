@@ -193,6 +193,7 @@ $(function () {
             $('.btn-reload-model').prop('disabled', false);
             $('.btn-clear-data').prop('disabled', false);
             $('.mode-run').prop('disabled', false);
+            $('#form-setting .button-delete-all-data').prop('disabled', false)
 
             if (statusPLC != status) {
                 appendTimeLog(getCurrentDateTime(), "PLC", `PLC Disconnected!`);
@@ -226,10 +227,13 @@ $(function () {
             $('.btn-reload-model').prop('disabled', true);
             $('.btn-clear-data').prop('disabled', true);
             $('.mode-run').prop('disabled', true);
+            $('#form-setting .button-delete-all-data').prop('disabled', true)
+
             if (statusPLC != status) {
                 appendTimeLog(getCurrentDateTime(), "PLC", `PLC Start!`);
                 statusPLC = status;
             }
+
             return;
         }
 
@@ -239,10 +243,13 @@ $(function () {
             $('.btn-reload-model').prop('disabled', false);
             $('.btn-clear-data').prop('disabled', false);
             $('.mode-run').prop('disabled', false);
+            $('#form-setting .button-delete-all-data').prop('disabled', false)
+
             if (statusPLC != status) {
                 appendTimeLog(getCurrentDateTime(), "PLC", `PLC Stop!`);
                 statusPLC = status;
             }
+
             return;
         }
     });

@@ -51,11 +51,11 @@ namespace Stiffiner_Inspection
         public static int Client3IsPostModel = 0;
         public static int Client4IsPostModel = 0;
 
-        // client status
-        //public static int ClientStatus1 = 2; //1 running, 2 pause
-        //public static int ClientStatus2 = 2; //1 running, 2 pause
-        //public static int ClientStatus3 = 2; //1 running, 2 pause
-        //public static int ClientStatus4 = 2; //1 running, 2 pause
+        // client clear data, 1 - clear
+        public static int ClearClient1 = 0;
+        public static int ClearClient2 = 0;
+        public static int ClearClient3 = 0;
+        public static int ClearClient4 = 0;
 
         public static string PathFileCurrentModel = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\CurrentModel.txt";
         public static string PathFileListModel = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\ListModels.txt";

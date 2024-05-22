@@ -34,31 +34,6 @@ namespace Stiffiner_Inspection.Controllers
             _hubContext = hubContext;
         }
 
-        [Route("change-mode")]
-        [HttpPost]
-        public async Task<IActionResult> ChangeModel(int mode)
-        {
-            try
-            {
-                Global.Mode = mode;
-                await _dataService.WriteOneLine(Global.PathFileMode, mode.ToString());
-
-                return Ok(new
-                {
-                    status = 200,
-                    message = $"Change to mode {mode} successfully!"
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ErrorResponse
-                {
-                    Status = 500,
-                    Message = ex.Message
-                });
-            }
-        }
-
         [Route("save-data")]
         [HttpPost]
         public async Task<IActionResult> SaveData(DataDTO dataDTO)
@@ -247,24 +222,28 @@ namespace Stiffiner_Inspection.Controllers
                 {
                     resultPLC = Global.resetPLC1;
                     data.is_send_model = Global.Client1IsPostModel;
+                    data.client_clear_data = Global.ClearClient1;
                 }
 
                 if (clientId == CLIENT_2)
                 {
                     resultPLC = Global.resetPLC2;
                     data.is_send_model = Global.Client2IsPostModel;
+                    data.client_clear_data = Global.ClearClient2;
                 }
 
                 if (clientId == CLIENT_3)
                 {
                     resultPLC = Global.resetPLC3;
                     data.is_send_model = Global.Client3IsPostModel;
+                    data.client_clear_data = Global.ClearClient3;
                 }
 
                 if (clientId == CLIENT_4)
                 {
                     resultPLC = Global.resetPLC4;
                     data.is_send_model = Global.Client4IsPostModel;
+                    data.client_clear_data = Global.ClearClient4;
                 }
 
                 data.result_plc = resultPLC;
@@ -348,6 +327,48 @@ namespace Stiffiner_Inspection.Controllers
                 {
                     await _dataService.WriteManyLine(Global.PathFileListModel, Global.ListModels);
                     await _hubContext.Clients.All.SendAsync("ListModels", Global.ListModels);
+                }
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "success",
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ErrorResponse
+                {
+                    Status = 500,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [Route("client-clear-data")]
+        [HttpPost]
+        public IActionResult UpdateStatusClientClearData(int clientId)
+        {
+            try
+            {
+                if (clientId == CLIENT_1)
+                {
+                    Global.ClearClient1 = 0;
+                }
+
+                if (clientId == CLIENT_2)
+                {
+                    Global.ClearClient2 = 0;
+                }
+
+                if (clientId == CLIENT_3)
+                {
+                    Global.ClearClient3 = 0;
+                }
+
+                if (clientId == CLIENT_4)
+                {
+                    Global.ClearClient4 = 0;
                 }
 
                 return Ok(new

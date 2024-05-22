@@ -174,8 +174,15 @@ namespace Stiffiner_Inspection.Controllers
         {
             string currentTimeLine = DateTime.Now.ToString("yyyyMMddHHmmss");
             Global.TimeLine = currentTimeLine;
+            
             await _dataService.WriteOneLine(Global.PathFileTimeLine, currentTimeLine);
             await _dataService.SaveToFileLog(DateTime.Now.ToString("yyyy_MM_dd_HH:mm:ss:fff") + "-Program-" + "Clear data!");
+            
+            Global.ClearClient1 = 1;
+            Global.ClearClient2 = 1;
+            Global.ClearClient3 = 1;
+            Global.ClearClient4 = 1;
+            
             return RedirectToAction("Index");
         }
 
@@ -184,8 +191,14 @@ namespace Stiffiner_Inspection.Controllers
         {
             string currentTimeLine = DateTime.Now.ToString("yyyyMMddHHmmss");
             Global.TimeLine = currentTimeLine;
+           
             await _dataService.WriteOneLine(Global.PathFileTimeLine, currentTimeLine);
             await _dataService.DeleteAllData();
+            
+            Global.ClearClient1 = 1;
+            Global.ClearClient2 = 1;
+            Global.ClearClient3 = 1;
+            Global.ClearClient4 = 1;
 
             return RedirectToAction("Index");
         }

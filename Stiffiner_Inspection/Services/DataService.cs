@@ -95,8 +95,8 @@ namespace Stiffiner_Inspection.Services
             {
                 List<Error> listErrs = new List<Error>();
 
-                string[] errorsArea = dataArea?.error.Split(',');
-                string[] errorsLine = dataLine?.error.Split(',');
+                string[] errorsArea = dataArea?.error?.Trim(',')?.Split(',');
+                string[] errorsLine = dataLine?.error?.Trim(',')?.Split(',');
 
                 foreach (string item in errorsArea)
                 {
@@ -382,6 +382,7 @@ namespace Stiffiner_Inspection.Services
                     .OrderBy(e => e.Index)
                     .Include(p => p.Errors)
                     .Include(p => p.Images)
+                    .AsSplitQuery()
                     .ToListAsync();
             }
             catch (Exception ex)
