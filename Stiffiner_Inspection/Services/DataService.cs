@@ -568,36 +568,52 @@ namespace Stiffiner_Inspection.Services
             }
         }
 
-        public async Task<SearchDataResponse> SearchData(string fromDate, string toDate, int page)
+        public async Task<SearchDataResponse> SearchData(string fromDate, string toDate, int page, string model)
         {
             try
             {
-                int pageSize = 20;
+                int pageSize = 40;
 
                 SearchDataResponse response = new SearchDataResponse();
 
                 StringBuilder baseSql = new StringBuilder();
 
-                baseSql.Append(@"SELECT * FROM data WHERE 1 = 1 AND CONVERT(VARCHAR(16), time, 120) >= {0} and CONVERT(VARCHAR(16), time, 120) <= {1} and result_area is not null and result_line is not null ");
+                baseSql.Append(@"SELECT * FROM data WHERE 1 = 1");
+
+                if (!string.IsNullOrWhiteSpace(model))
+                {
+                    baseSql.Append($" AND model = '{model}' ");
+                }
+
+                baseSql.Append(" AND CONVERT(VARCHAR(16), time, 120) >= {0} and CONVERT(VARCHAR(16), time, 120) <= {1} and result_area is not null and result_line is not null ");
 
                 var total = await _dbContext.Data
                     .FromSqlRaw(baseSql.ToString(), fromDate, toDate)
                     .CountAsync();
 
                 var countOK = await _dbContext.Data
-                    .FromSqlRaw(baseSql.ToString() + "AND ((result_area = 1 and result_line = 1) or (result_area = 1 and result_line = 3) or (result_area = 3 and result_line = 1)) ", fromDate, toDate)
+                    .FromSqlRaw(baseSql.ToString() + "AND result_area = 1 and result_line = 1 ", fromDate, toDate)
                     .CountAsync();
 
                 var countNG = await _dbContext.Data
-                    .FromSqlRaw(@baseSql.ToString() + "AND ((result_area = 2 or result_line = 2) or (result_area = 2 and result_line = 3) or (result_area = 3 and result_line = 2)) ", fromDate, toDate)
+                    .FromSqlRaw(@baseSql.ToString() + "AND ((result_area = 2 or result_line = 2) or (result_area = 1 and result_line = 3) or (result_area = 3 and result_line = 1)) ", fromDate, toDate)
                     .CountAsync();
 
                 var countEmpty = await _dbContext.Data
-                    .FromSqlRaw(baseSql.ToString() + "AND (result_area = 3 and result_line = 3) ", fromDate, toDate)
+                    .FromSqlRaw(baseSql.ToString() + "AND result_area = 3 and result_line = 3 ", fromDate, toDate)
                     .CountAsync();
 
+                string sqlTotalTray = "SELECT DISTINCT tray FROM data WHERE 1 = 1";
+
+                if (!string.IsNullOrWhiteSpace(model))
+                {
+                    sqlTotalTray += $" AND model = '{model}'";
+                }
+
+                sqlTotalTray += " AND CONVERT(VARCHAR(16), time, 120) >= {0} and CONVERT(VARCHAR(16), time, 120) <= {1}";
+
                 var totalTray = await _dbContext.Data
-                    .FromSqlRaw(@"SELECT DISTINCT tray FROM data WHERE 1 = 1 AND CONVERT(VARCHAR(16), time, 120) >= {0} and CONVERT(VARCHAR(16), time, 120) <= {1}", fromDate, toDate)
+                    .FromSqlRaw(sqlTotalTray, fromDate, toDate)
                     .CountAsync();
 
                 var data = await _dbContext.Data

@@ -62,7 +62,7 @@
                 </button>
 
                 <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-xl" role="document">
+                    <div class="modal-dialog modal-xl" role="document" style="min-width: 95rem">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h4 class="modal-title fw-bold" style="font-size: 18px;" id="exampleModalLabel">Search</h4>
@@ -73,13 +73,23 @@
 
                             <div class="modal-body">
                                 <div class="d-flex justify-content-center align-items-center">
+                                    <div style="margin-right: 10px;">
+                                        <label class="label-input-time" for="form-search-model">Model</label>
+                                        <select id="form-search-model">
+                                            <option value="" selected>Choose Model</option>
+                                            @foreach (var item in listModels)
+                                            {
+                                                <option value="@item">@item</option>
+                                            }
+                                        </select>
+                                    </div>
                                     <div>
                                         <label for="start" class="label-input-time" id="label-start">From:</label>
                                         <input type="date" class="input-date-time" id="start-date" value="@(DateTime.Now.ToString("yyyy-MM-dd"))" />
                                         <input type="time" class="input-date-time" id="start-time" value="00:00" min="00:00" max="23:59" required />
                                     </div>
 
-                                    <div style="margin-left: 3em">
+                                    <div style="margin-left: 2em">
                                         <label for="end" class="label-input-time">To:</label>
                                         <input type="date" class="input-date-time" id="end-date" value="@(DateTime.Now.ToString("yyyy-MM-dd"))" />
                                         <input type="time" class="input-date-time" id="end-time" value="23:59" min="00:00" max="23:59" required />
@@ -92,7 +102,7 @@
                                     <h4 id="content-title" class="fw-bold text-dark mt-1 mb-3">Result</h4>
 
                                     <div class="d-flex">
-                                        <div id="overview-result" >
+                                        <div id="overview-result">
                                             <div class="counting bg-white">
                                                 <div class="first-row d-flex align-items-center justify-content-between">
                                                     <div class="lbl-counting">Counting</div>

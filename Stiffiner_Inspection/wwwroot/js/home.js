@@ -617,14 +617,16 @@ $(function () {
         $('.form-search-btn-search').prop('disabled', true).html('Loading...');
         let fromDate = $('#start-date').val() + ' ' + $('#start-time').val();
         let toDate = $('#end-date').val() + ' ' + $('#end-time').val();
+        let model = $('#form-search-model').val();
+        pageListResult = 1;
 
-        connection.invoke("SearchData", fromDate, toDate, pageListResult)
+        connection.invoke("SearchData", fromDate, toDate, pageListResult, model)
             .then(function (res) {
-                $('#form-search-total-tray-ea').html(res.totalTray);
-                $('#form-search-total-ea').html(`${res.total}<span class="">EA</span>`);
-                $('#form-search-total-ok-ea').html(`${res.totalOK}<span class="">EA</span>`);
-                $('#form-search-total-ng-ea').html(`${res.totalNG}<span class="">EA</span>`);
-                $('#form-search-total-empty-ea').html(`${res.totalEmpty}<span class="">EA</span>`);
+                $('#form-search-total-tray-ea').html(formatNumberWithDot(res.totalTray));
+                $('#form-search-total-ea').html(`${formatNumberWithDot(res.total)}<span class="">&nbspEA</span>`);
+                $('#form-search-total-ok-ea').html(`${formatNumberWithDot(res.totalOK)}<span class= ""> EA</span>`);
+                $('#form-search-total-ng-ea').html(`${formatNumberWithDot(res.totalNG)}<span class="">EA</span>`);
+                $('#form-search-total-empty-ea').html(`${formatNumberWithDot(res.totalEmpty)}<span class= "" > EA</span >`);
                 $('#form-search-percent-ok').html(`${res.percentOK} %`);
                 $('#form-search-percent-ng').html(`${res.percentNG} %`);
                 $('#form-search-percent-empty').html(`${res.percentEmpty} %`);
@@ -649,12 +651,12 @@ $(function () {
                         data += `
                         <tr style="font-size: 14px; font-weight: 500;">
                             <td>${item.id}</td>
-                            <td>${item.time}</td>
-                            <td>${item.model}</td>
+                            <td style="width: 200px">${item.time}</td>
+                            <td style="width: 200px">${item.model}</td>
                             <td>${item.tray}</td>
                             <td>${item.index}</td>
                             <td class="${GetResult(item) == 'NG' ? 'text-danger' : 'text-success'}">${GetResult(item)}</td>
-                            <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,|,$/g, '')}</td>
+                            <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,+|,+$/g, '') }</td>
                         </tr>
                     `;
                     });
@@ -667,8 +669,6 @@ $(function () {
                         </tr>`
                     );
                 }
-
-                console.log(res);
             })
             .catch(function (err) {
                 console.error("Error calling API:", err.toString());
@@ -689,8 +689,9 @@ $(function () {
 
         let fromDate = $('#start-date').val() + ' ' + $('#start-time').val();
         let toDate = $('#end-date').val() + ' ' + $('#end-time').val();
+        let model = $('#form-search-model').val();
 
-        connection.invoke("SearchData", fromDate, toDate, pageListResult)
+        connection.invoke("SearchData", fromDate, toDate, pageListResult, model)
             .then(function (res) {
 
                 let data = '';
@@ -703,12 +704,12 @@ $(function () {
                         data += `
                             <tr style="font-size: 14px; font-weight: 500;">
                                 <td>${item.id}</td>
-                                <td>${item.time}</td>
-                                <td>${item.model}</td>
+                                <td style="width: 200px">${item.time}</td>
+                                <td style="width: 200px">${item.model}</td>
                                 <td>${item.tray}</td>
                                 <td>${item.index}</td>
-                                <td>${GetResult(item)}</td>
-                                <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,|,$/g, '')}</td>
+                                <td class="${GetResult(item) == 'NG' ? 'text-danger' : 'text-success'}">${GetResult(item)}</td>
+                                <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,+|,+$/g, '') }</td>
                             </tr>
                         `;
                     });
@@ -744,6 +745,7 @@ $(function () {
         $('#end-date').val(new Date().toISOString().split('T')[0]);
         $('#start-time').val('00:00');
         $('#end-time').val('23:59');
+        $('#form-search-model').val('');
 
         pageListResult = 1;
         totalListResult = 0;
@@ -782,9 +784,5 @@ $(function () {
                 alert("Error can not change mode!");
                 console.error("Error calling API:", err.toString());
             });
-    });
-
-    $("#form-setting").on('hide.bs.modal', function () {
-        //alert(1);
     });
 });

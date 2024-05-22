@@ -105,11 +105,11 @@ namespace Stiffiner_Inspection.Hubs
             }
         }
 
-        public async Task<SearchDataResponse> SearchData(string fromDate, string toDate, int page)
+        public async Task<SearchDataResponse> SearchData(string fromDate, string toDate, int page, string model)
         {
             try
             {
-                return await _dataService.SearchData(fromDate, toDate, page);
+                return await _dataService.SearchData(fromDate, toDate, page, model);
             }
             catch (Exception ex)
             {

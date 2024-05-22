@@ -114,6 +114,17 @@ $color_FFFFFF: #ffffff;
         }
 
         #action-form-search {
+
+            #form-search-model, #form-search-result {
+                padding: 5px 10px;
+                font-size: 20px;
+                border-radius: 3px;
+                outline: none;
+                border: 1px solid #cfcfcf;
+                font-size: 18px;
+                color: #5f5f5f;
+            }
+
             .input-date-time {
                 padding: 5px 10px;
                 font-size: 20px;
@@ -139,7 +150,7 @@ $color_FFFFFF: #ffffff;
                 }
 
                 #overview-result {
-                    flex-basis: 30%;
+                    flex-basis: 25%;
 
                     .counting {
                         flex-basis: 38%;
