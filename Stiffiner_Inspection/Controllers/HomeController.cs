@@ -14,6 +14,7 @@ namespace Stiffiner_Inspection.Controllers
     public class HomeController : Controller
     {
         private readonly IHubContext<HomeHub> _hubContext;
+        private readonly IHubContext<HistoryHub> _historyContext;
         private readonly DataService _dataService;
         private readonly ILog _logger = LogManager.GetLogger(typeof(HomeController));
         private readonly ApplicationDbContext _context;
@@ -23,11 +24,13 @@ namespace Stiffiner_Inspection.Controllers
 
         public HomeController(
             IHubContext<HomeHub> hubContext,
+            IHubContext<HistoryHub> historyContext,
             DataService dataService,
             ApplicationDbContext context
         )
         {
             _hubContext = hubContext;
+            _historyContext = historyContext;
             _dataService = dataService;
             _context = context;
         }
@@ -177,7 +180,9 @@ namespace Stiffiner_Inspection.Controllers
             
             await _dataService.WriteOneLine(Global.PathFileTimeLine, currentTimeLine);
             await _dataService.SaveToFileLog(DateTime.Now.ToString("yyyy_MM_dd_HH:mm:ss:fff") + "-Program-" + "Clear data!");
-            
+
+            await _historyContext.Clients.All.SendAsync("RefreshData");
+
             Global.ClearClient1 = 1;
             Global.ClearClient2 = 1;
             Global.ClearClient3 = 1;
@@ -194,7 +199,9 @@ namespace Stiffiner_Inspection.Controllers
            
             await _dataService.WriteOneLine(Global.PathFileTimeLine, currentTimeLine);
             await _dataService.DeleteAllData();
-            
+
+            await _historyContext.Clients.All.SendAsync("RefreshData");
+
             Global.ClearClient1 = 1;
             Global.ClearClient2 = 1;
             Global.ClearClient3 = 1;
