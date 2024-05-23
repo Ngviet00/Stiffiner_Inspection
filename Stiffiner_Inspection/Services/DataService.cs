@@ -50,12 +50,12 @@ namespace Stiffiner_Inspection.Services
             {
                 List<Image> listImages = new List<Image>();
 
-                string[]? imgArea = dataArea?.image.Split(',');
+                string[]? imgArea = dataArea?.image?.Split(',');
                 string[]? imgLine = dataLine?.image?.Split(',');
 
                 foreach (string item in imgArea)
                 {
-                    if (item != "" || item is null)
+                    if (!string.IsNullOrWhiteSpace(item))
                     {
                         listImages.Add(new Image
                         {
@@ -68,7 +68,7 @@ namespace Stiffiner_Inspection.Services
 
                 foreach (string item in imgLine)
                 {
-                    if (item != "" || item is null)
+                    if (!string.IsNullOrWhiteSpace(item))
                     {
                         listImages.Add(new Image
                         {
@@ -95,27 +95,34 @@ namespace Stiffiner_Inspection.Services
             {
                 List<Error> listErrs = new List<Error>();
 
-                string[] errorsArea = dataArea?.error?.Trim(',')?.Split(',');
-                string[] errorsLine = dataLine?.error?.Trim(',')?.Split(',');
+                string[]? errorsArea = dataArea?.error?.Trim(',')?.Split(',');
+                string[]? errorsLine = dataLine?.error?.Trim(',')?.Split(',');
 
                 foreach (string item in errorsArea)
                 {
-                    listErrs.Add(new Error
+                    if (!string.IsNullOrWhiteSpace(item))
                     {
-                        DataId = data.Id,
-                        Description = item,
-                        Type = (int)dataArea.client_id, //(1,3 type area, 2,4 type line)
-                    });
+                        listErrs.Add(new Error
+                        {
+                            DataId = data.Id,
+                            Description = item,
+                            Type = (int)dataArea.client_id, //(1,3 type area, 2,4 type line)
+                        });
+                    }
+                    
                 }
 
                 foreach (string item in errorsLine)
                 {
-                    listErrs.Add(new Error
+                    if (!string.IsNullOrWhiteSpace(item))
                     {
-                        DataId = data.Id,
-                        Description = item,
-                        Type = (int)dataLine.client_id, //(1,3 type area, 2,4 type line)
-                    });
+                        listErrs.Add(new Error
+                        {
+                            DataId = data.Id,
+                            Description = item,
+                            Type = (int)dataLine.client_id, //(1,3 type area, 2,4 type line)
+                        });
+                    }
                 }
 
                 await _dbContext.Errors.AddRangeAsync(listErrs);
@@ -572,7 +579,7 @@ namespace Stiffiner_Inspection.Services
         {
             try
             {
-                int pageSize = 40;
+                int pageSize = 200;
 
                 SearchDataResponse response = new SearchDataResponse();
 
