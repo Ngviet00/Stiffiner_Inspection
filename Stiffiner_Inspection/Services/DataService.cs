@@ -54,7 +54,7 @@ namespace Stiffiner_Inspection.Services
 
                 foreach (string item in imgArea)
                 {
-                    if (!string.IsNullOrWhiteSpace(item))
+                    if (!string.IsNullOrWhiteSpace(item) && item.Trim() != "No_save")
                     {
                         listImages.Add(new Image
                         {
@@ -67,7 +67,7 @@ namespace Stiffiner_Inspection.Services
 
                 foreach (string item in imgLine)
                 {
-                    if (!string.IsNullOrWhiteSpace(item))
+                    if (!string.IsNullOrWhiteSpace(item) && item.Trim() != "No_save")
                     {
                         listImages.Add(new Image
                         {
@@ -625,6 +625,7 @@ namespace Stiffiner_Inspection.Services
                 var data = await _dbContext.Data
                     .FromSqlRaw(baseSql.ToString(), fromDate, toDate)
                     .Include(p => p.Errors)
+                    .Include(p => p.Images)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync();

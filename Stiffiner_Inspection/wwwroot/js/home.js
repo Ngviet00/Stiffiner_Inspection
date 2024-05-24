@@ -640,22 +640,34 @@ $(function () {
                 let data = '';
                 if (res.results.length > 0) {
                     res.results.forEach(item => {
+                        let result = GetResult(item);
+
                         let err = '';
                         item.errors.forEach(itemErr => {
-                            err += itemErr.description;
+                            err += ',' + itemErr.description;
+                        });
+
+                        let img = '';
+                        item.images.forEach(itemImg => {
+                            if (itemImg.path.trim() != 'No_save' && itemImg.path.trim() != '') {
+                                img += `, <a target="_blank" href="${convertPathToUrl(itemImg.path, getUrlBase(itemImg.clientId))}">Image</a>`;
+                            }
                         });
 
                         data += `
-                        <tr style="font-size: 14px; font-weight: 500;">
-                            <td>${item.id}</td>
-                            <td style="width: 200px">${item.time}</td>
-                            <td style="width: 200px">${item.model}</td>
-                            <td>${item.tray}</td>
-                            <td>${item.index}</td>
-                            <td class="${GetResult(item) == 'NG' ? 'text-danger' : 'text-success'}">${GetResult(item)}</td>
-                            <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,+|,+$/g, '')}</td>
-                        </tr>
-                    `;
+                            <tr style="font-size: 14px; font-weight: 500;">
+                                <td>${item.id}</td>
+                                <td style="width: 200px">${item.time}</td>
+                                <td style="width: 200px">${item.model}</td>
+                                <td>${item.tray}</td>
+                                <td>${item.index}</td>
+                                <td class="${result == 'NG' ? 'text-danger' : 'text-success'}">${result}</td>
+                                <td>${result != 'NG' ? '-' : err.replace(/^,+|,+$/g, '')}</td>
+                                <td>
+                                    ${result != 'NG' ? '-' : img.replace(/^, +|,+$/g, '')}
+                                </td>
+                            </tr>
+                        `;
                     });
 
                     $('#action-form-search #list-result tbody').html('').append(data);
@@ -694,10 +706,20 @@ $(function () {
                 let data = '';
                 if (res.results.length > 0) {
                     res.results.forEach(item => {
+                        let result = GetResult(item);
+
                         let err = '';
                         item.errors.forEach(itemErr => {
                             err += ',' + itemErr.description;
                         });
+
+                        let img = '';
+                        item.images.forEach(itemImg => {
+                            if (itemImg.path.trim() != 'No_save' && itemImg.path.trim() != '') {
+                                img += `, <a target="_blank" href="${convertPathToUrl(itemImg.path, getUrlBase(itemImg.clientId))}">Image</a>`;
+                            }
+                        });
+
                         data += `
                             <tr style="font-size: 14px; font-weight: 500;">
                                 <td>${item.id}</td>
@@ -705,8 +727,11 @@ $(function () {
                                 <td style="width: 200px">${item.model}</td>
                                 <td>${item.tray}</td>
                                 <td>${item.index}</td>
-                                <td class="${GetResult(item) == 'NG' ? 'text-danger' : 'text-success'}">${GetResult(item)}</td>
-                                <td>${GetResult(item) != 'NG' ? '-' : err.replace(/^,+|,+$/g, '')}</td>
+                                <td class="${result == 'NG' ? 'text-danger' : 'text-success'}">${result}</td>
+                                <td>${result != 'NG' ? '-' : err.replace(/^,+|,+$/g, '')}</td>
+                                <td>
+                                    ${result != 'NG' ? '-' : img.replace(/^, +|,+$/g, '') }
+                                </td>
                             </tr>
                         `;
                     });
@@ -816,4 +841,38 @@ $(function () {
         const $button = $(this);
         startCountdown($button);
     });
+
+    function convertPathToUrl(filePath, urlBase) {
+        try {
+            const localBasePath = "D:\\SaveResults";
+            let relativePath = filePath.replace(localBasePath, "").replace(/\\/g, "/");
+            urlBase = urlBase.replace(/\/$/, "");
+            return `${urlBase}${relativePath}`;
+        }
+        catch (err) {
+            console.log('Error cant convert path to URL' + err.message);
+            return '';
+        }
+    }
+
+    function getUrlBase(clientId) {
+        switch (clientId) {
+            case 1:
+                return "http://192.168.1.11:8881";
+                break;
+            case 2:
+                return "http://192.168.1.22:8881";
+                break;
+            case 3:
+                return "http://192.168.1.33:8881";
+                break;
+            case 4:
+                return "http://192.168.1.44:8881";
+                break;
+            default:
+                return "http://192.168.1.11:8881";
+                break;
+        }
+    }
+
 });
