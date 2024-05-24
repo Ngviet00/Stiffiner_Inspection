@@ -10,7 +10,6 @@ using log4net;
 using System.Net;
 using Stiffiner_Inspection.Models.Response;
 using System.Text;
-using System.IO;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -751,42 +750,6 @@ namespace Stiffiner_Inspection.Services
             catch (Exception ex)
             {
                 _logger.Error("Error can not delete all data: " + ex.Message);
-                throw;
-            }
-        }
-
-        public async Task SaveToFileLog(string msg)
-        {
-            try
-            {
-                string directory = Path.GetDirectoryName(Global.PathFileLogProgram);
-
-                if (!Directory.Exists(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
-
-                // Check if the file exists
-                if (!File.Exists(Global.PathFileLogProgram))
-                {
-                    // If the file does not exist, create it and write the lines
-                    using (StreamWriter writer = File.CreateText(Global.PathFileLogProgram))
-                    {
-                        await writer.WriteLineAsync(msg);
-                    }
-                }
-                else
-                {
-                    // If the file already exists, append the lines
-                    using (StreamWriter writer = File.AppendText(Global.PathFileLogProgram))
-                    {
-                        await writer.WriteLineAsync(msg);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("Error can not save to file log: " + ex.Message);
                 throw;
             }
         }

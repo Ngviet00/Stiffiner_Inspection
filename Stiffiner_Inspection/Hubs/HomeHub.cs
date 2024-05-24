@@ -155,18 +155,6 @@ namespace Stiffiner_Inspection.Hubs
             }
         }
 
-        public async Task SaveToFileLog(string msg)
-        {
-            try
-            {
-                await _dataService.SaveToFileLog(msg);
-            }
-            catch (Exception ex) {
-                _logger.Error("Error can not save file log: " + ex.Message);
-                throw;
-            }
-        }
-
         public void ResetCamClient(int client)
         {
             try

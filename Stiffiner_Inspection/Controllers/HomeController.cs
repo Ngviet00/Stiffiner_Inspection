@@ -1,13 +1,9 @@
 using log4net;
-using Microsoft.Ajax.Utilities;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Contexts;
 using Stiffiner_Inspection.Hubs;
-using Stiffiner_Inspection.Models.Entity;
 using Stiffiner_Inspection.Services;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Stiffiner_Inspection.Controllers
 {
@@ -179,8 +175,6 @@ namespace Stiffiner_Inspection.Controllers
             Global.TimeLine = currentTimeLine;
             
             await _dataService.WriteOneLine(Global.PathFileTimeLine, currentTimeLine);
-            await _dataService.SaveToFileLog(DateTime.Now.ToString("yyyy_MM_dd_HH:mm:ss:fff") + "-Program-" + "Clear data!");
-
             await _historyContext.Clients.All.SendAsync("RefreshData");
 
             Global.ClearClient1 = 1;
@@ -199,7 +193,6 @@ namespace Stiffiner_Inspection.Controllers
            
             await _dataService.WriteOneLine(Global.PathFileTimeLine, currentTimeLine);
             await _dataService.DeleteAllData();
-
             await _historyContext.Clients.All.SendAsync("RefreshData");
 
             Global.ClearClient1 = 1;
