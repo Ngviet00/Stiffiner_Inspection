@@ -650,7 +650,7 @@ $(function () {
                         let img = '';
                         item.images.forEach(itemImg => {
                             if (itemImg.path.trim() != 'No_save' && itemImg.path.trim() != '') {
-                                img += `, <a target="_blank" href="${convertPathToUrl(itemImg.path, getUrlBase(itemImg.clientId))}">Image</a>`;
+                                img += `<a target="_blank" href="${convertPathToUrl(itemImg.path, getUrlBase(itemImg.clientId))}">Image</a>,`;
                             }
                         });
 
@@ -664,7 +664,7 @@ $(function () {
                                 <td class="${result == 'NG' ? 'text-danger' : 'text-success'}">${result}</td>
                                 <td>${result != 'NG' ? '-' : err.replace(/^,+|,+$/g, '')}</td>
                                 <td>
-                                    ${result != 'NG' ? '-' : img.replace(/^, +|,+$/g, '')}
+                                    ${result != 'NG' ? '-' : img.replace(/,+$/, '') }
                                 </td>
                             </tr>
                         `;
@@ -716,7 +716,7 @@ $(function () {
                         let img = '';
                         item.images.forEach(itemImg => {
                             if (itemImg.path.trim() != 'No_save' && itemImg.path.trim() != '') {
-                                img += `, <a target="_blank" href="${convertPathToUrl(itemImg.path, getUrlBase(itemImg.clientId))}">Image</a>`;
+                                img += `<a target="_blank" href="${convertPathToUrl(itemImg.path, getUrlBase(itemImg.clientId))}">Image</a>,`;
                             }
                         });
 
@@ -730,7 +730,7 @@ $(function () {
                                 <td class="${result == 'NG' ? 'text-danger' : 'text-success'}">${result}</td>
                                 <td>${result != 'NG' ? '-' : err.replace(/^,+|,+$/g, '')}</td>
                                 <td>
-                                    ${result != 'NG' ? '-' : img.replace(/^, +|,+$/g, '') }
+                                    ${result != 'NG' ? '-' : img.replace(/,+$/, '') }
                                 </td>
                             </tr>
                         `;
@@ -847,7 +847,7 @@ $(function () {
             const localBasePath = "D:\\SaveResults";
             let relativePath = filePath.replace(localBasePath, "").replace(/\\/g, "/");
             urlBase = urlBase.replace(/\/$/, "");
-            return `${urlBase}${relativePath}`;
+            return `${urlBase}${relativePath}`.replace(/ /g, '');
         }
         catch (err) {
             console.log('Error cant convert path to URL' + err.message);
