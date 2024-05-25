@@ -194,7 +194,6 @@ $(function () {
             $('.btn-clear-data').prop('disabled', false);
             $('.mode-run').prop('disabled', false);
             $('#form-setting .button-delete-all-data').prop('disabled', false)
-            $('.btn-reset-cam').prop('disabled', false)
 
             if (statusPLC != status) {
                 appendTimeLog(getCurrentDateTime(), "PLC", `PLC Disconnected!`);
@@ -206,7 +205,6 @@ $(function () {
 
         if (status == STATUS_PLC.ALARM) {
             _status.css("color", "#3C3C3C").css("background", "#FFCA08").text("Alarm");
-            $('.btn-reset-cam').prop('disabled', false)
             if (statusPLC != status) {
                 appendTimeLog(getCurrentDateTime(), "PLC", `PLC Alarm!`);
                 statusPLC = status;
@@ -216,7 +214,6 @@ $(function () {
 
         if (status == STATUS_PLC.EMG) {
             _status.css("color", "#E34440").css("background", "#FD53083D").text("EMG");
-            $('.btn-reset-cam').prop('disabled', false)
             if (statusPLC != status) {
                 appendTimeLog(getCurrentDateTime(), "PLC", `PLC EMG!`);
                 statusPLC = status;
@@ -231,7 +228,6 @@ $(function () {
             $('.btn-clear-data').prop('disabled', true);
             $('.mode-run').prop('disabled', true);
             $('#form-setting .button-delete-all-data').prop('disabled', true)
-            $('.btn-reset-cam').prop('disabled', true)
 
             if (statusPLC != status) {
                 appendTimeLog(getCurrentDateTime(), "PLC", `PLC Start!`);
@@ -248,7 +244,6 @@ $(function () {
             $('.btn-clear-data').prop('disabled', false);
             $('.mode-run').prop('disabled', false);
             $('#form-setting .button-delete-all-data').prop('disabled', false)
-            $('.btn-reset-cam').prop('disabled', false)
 
             if (statusPLC != status) {
                 appendTimeLog(getCurrentDateTime(), "PLC", `PLC Stop!`);
