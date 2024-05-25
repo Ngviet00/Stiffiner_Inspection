@@ -302,12 +302,15 @@ $(function () {
 
     connection.on("ListModels", (results) => {
         let options = '<option value="" selected disabled>Choose Model</option>';
+        let optionsFormSearch = '<option value="" selected>Choose Model</option>';
 
         results.forEach(item => {
             options += `<option value="${item}">${item}</option>`;
+            optionsFormSearch += `<option value="${item}">${item}</option>`;
         });
 
         $('#select-model').html(options);
+        $('#form-search-model').html(optionsFormSearch);
 
         alert('Please choose model!');
     });
