@@ -378,33 +378,6 @@ namespace Stiffiner_Inspection.Services
             return currTray;
         }
 
-        public async Task<List<Data>?> GetHistory()
-        {
-            try
-            {
-                return await _dbContext.Data
-                    .FromSqlRaw(@"
-                        SELECT * 
-                        FROM data
-                        WHERE
-                            timeline = {0}
-                            and ((result_area = 2 or result_line = 2) or (result_area = 1 and result_line = 3) or (result_area = 3 and result_line = 1))
-                            ORDER BY id desc OFFSET 0 ROWS FETCH NEXT 400 ROWS ONLY
-                    ", Global.TimeLine)
-                    .Include(p => p.Errors)
-                    .Include(p => p.Images)
-                    .OrderByDescending(x => x.Id)
-                    .OrderByDescending(x => x.Tray)
-                    .AsNoTracking()
-                    .AsSplitQuery()
-                    .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("Error Get List History: " + ex.Message);
-                return null;
-            }
-        }
 
         public double CalculateChartOK(int totalOK, double total, int totalEmpty)
         {
@@ -769,6 +742,31 @@ namespace Stiffiner_Inspection.Services
             {
                 _logger.Error("Error can not delete all data: " + ex.Message);
                 throw;
+            }
+        }
+
+        public async Task<List<Data>?> GetHistoryBySide(string side)
+        {
+            try
+            {
+                return await _dbContext.Data
+                    .AsNoTracking()
+                    .AsSplitQuery()
+                    .Where(e => e.TimeLine == Global.TimeLine && e.Side == side && ((e.ResultLine == 2 || e.ResultArea == 2) || (e.ResultArea == 1 && e.ResultLine == 3) || (e.ResultArea == 3 && e.ResultLine == 1)))
+                    .OrderByDescending(x => x.Id)
+                    .OrderByDescending(x => x.Tray)
+                    .Include(p => p.Errors)
+                    .Include(p => p.Images)
+                    .Take(200)
+                    .AsNoTracking()
+                    .AsSplitQuery()
+                    .ToListAsync();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error Get List History: " + ex.Message);
+                return null;
             }
         }
     }

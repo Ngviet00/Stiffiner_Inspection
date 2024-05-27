@@ -130,9 +130,16 @@
             location.reload();
         });
 
-        const data = @Html.Raw(Json.Serialize(ViewBag.GroupedData));
-        
-        const lengthArr = data.length;
+        const dataLeft = @Html.Raw(Json.Serialize(ViewBag.GroupedDataLeft));
+        const dataRight = @Html.Raw(Json.Serialize(ViewBag.GroupedDataRight));
+
+        let lengthArr = 0;
+  
+        if (dataLeft.length >= dataRight.length)  {
+            lengthArr = dataLeft.length
+        } else {
+            lengthArr = dataRight.length
+        }
         
         var currentTray = lengthArr;
 
@@ -144,22 +151,20 @@
         var currentTraySelect = null;
         var currentIndexSelect = null;
 
-        if (lengthArr > 0) {
-            renderTray(data[0]);
+        if (dataLeft.length > 0) {
+            renderTrayLeft(dataLeft[0]);
+        }
+
+        if (dataRight.length > 0) {
+            renderTrayRight(dataRight[0]);
         }
 
         $('#number-current-tray').html(lengthArr);
 
         function showItem(item, key) {
-            let data = JSON.parse(decodeURIComponent(item))
+            let data = JSON.parse(decodeURIComponent(item))            
             if (GetResult(data) == 'NG' && isLoading == false) {
-                if (key == currentIndexSelect && data.tray == currentTraySelect) {
-                    return;
-                } else {
-                    currentIndexSelect = key;
-                    currentTraySelect = data.tray;
-                }
-
+                
                 //set info
                 $('#position-item').html('Position: ' + data.index);
 
@@ -252,33 +257,35 @@
             }
         }
 
-        function renderTray(data) {
-            let rsLeft = '';
-            let rsRight = '';
+        function renderTrayLeft(data) {
+            let rs = '';
             data.forEach(function (item, key) {
-                if (key < 20) {
-                    rsLeft += `
-                        <div class="result-left-tray" onclick="showItem('${encodeURIComponent(JSON.stringify(item))}', ${key})" style="background: #E4491D">
-                            <span class="position">${key + 1}</span>
-                            <span class="result">
-                                NG
-                            </span>
-                        </div>
-                        `
-                } else {
-                    rsRight += `
-                        <div class="result-left-tray" onclick="showItem('${encodeURIComponent(JSON.stringify(item))}', ${key})" style="background: #E4491D">
-                            <span class="position">${key + 1}</span>
-                            <span class="result">
-                                NG
-                            </span>
-                        </div>
+                rs += `
+                    <div class="result-left-tray" onclick="showItem('${encodeURIComponent(JSON.stringify(item))}', ${key})" style="background: #E4491D">
+                        <span class="position">${key + 1}</span>
+                        <span class="result">
+                            NG
+                        </span>
+                    </div>
                     `
-                }
+            });
+            $('#rs-left').html(rs);
+        }
+
+        function renderTrayRight(data) {
+            let rs = '';
+            data.forEach(function (item, key) {
+                rs += `
+                    <div class="result-left-tray" onclick="showItem('${encodeURIComponent(JSON.stringify(item))}', ${key})" style="background: #E4491D">
+                        <span class="position">${key + 21}</span>
+                        <span class="result">
+                            NG
+                        </span>
+                    </div>
+                    `
             });
 
-            $('#rs-left').html(rsLeft);
-            $('#rs-right').html(rsRight);
+            $('#rs-right').html(rs);
         }
 
         function GetResult(item) {
@@ -300,7 +307,20 @@
 
             currentTray++;
             $('#number-current-tray').html(currentTray);
-            renderTray(data[lengthArr - currentTray]);
+
+
+
+            if (dataLeft[lengthArr - currentTray] === undefined) {
+                $('#rs-left').html('');
+            } else {
+                renderTrayLeft(dataLeft[lengthArr - currentTray]);
+            }
+
+            if (dataRight[lengthArr - currentTray] === undefined) {
+                $('#rs-right').html('');
+            } else {
+                renderTrayRight(dataRight[lengthArr - currentTray]);
+            }
         });
 
         $('.btn-previous-tray').click(function () {
@@ -310,7 +330,18 @@
 
             currentTray--;
             $('#number-current-tray').html(currentTray);
-            renderTray(data[lengthArr - currentTray]);
+
+            if (dataLeft[lengthArr - currentTray] === undefined) {
+                $('#rs-left').html('');
+            } else {
+                renderTrayLeft(dataLeft[lengthArr - currentTray]);
+            }
+
+            if (dataRight[lengthArr - currentTray] === undefined) {
+                $('#rs-right').html('');
+            } else {
+                renderTrayRight(dataRight[lengthArr - currentTray]);
+            }
         });
 
     </script>

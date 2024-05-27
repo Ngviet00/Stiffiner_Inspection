@@ -16,13 +16,21 @@ namespace Stiffiner_Inspection.Controllers
         {
             Global.TimeLine = await _dataService.ReadOneLine(Global.PathFileTimeLine);
 
-            var data = await _dataService.GetHistory();
+            var dataLeft = await _dataService.GetHistoryBySide("left");
 
-            ViewBag.GroupedData = data?
-                .Select((value, index) => new { CountIndex = index, Value = value })
-                .GroupBy(x => x.CountIndex / 40)
-                .Select(g => g.Select(x => x.Value).ToList())
-                .ToList();
+            var dataRight = await _dataService.GetHistoryBySide("right");
+
+            ViewBag.GroupedDataLeft = dataLeft?
+               .Select((value, index) => new { CountIndex = index, Value = value })
+               .GroupBy(x => x.CountIndex / 20)
+               .Select(g => g.Select(x => x.Value).ToList())
+               .ToList();
+
+            ViewBag.GroupedDataRight = dataRight?
+               .Select((value, index) => new { CountIndex = index, Value = value })
+               .GroupBy(x => x.CountIndex / 20)
+               .Select(g => g.Select(x => x.Value).ToList())
+               .ToList();
 
             return View();
         }
