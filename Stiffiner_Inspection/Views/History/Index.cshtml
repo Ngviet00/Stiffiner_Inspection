@@ -6,7 +6,7 @@
                     <div class="d-flex align-items-center" style="margin-bottom: 20px">
                         <span class="btn-previous-tray"> < </span>
                         <div id="title-current-tray">
-                            TRAY <span id="number-current-tray">10</span>
+                            Page <span id="number-current-tray">10</span>
                         </div>
                         <span class="btn-next-tray"> > </span>
                     </div>
@@ -131,7 +131,7 @@
         });
 
         const data = @Html.Raw(Json.Serialize(ViewBag.GroupedData));
-
+        
         const lengthArr = data.length;
         
         var currentTray = lengthArr;
@@ -153,15 +153,15 @@
         function showItem(item, key) {
             let data = JSON.parse(decodeURIComponent(item))
             if (GetResult(data) == 'NG' && isLoading == false) {
-                if (key == currentIndexSelect && item.tray == currentTraySelect) {
+                if (key == currentIndexSelect && data.tray == currentTraySelect) {
                     return;
                 } else {
                     currentIndexSelect = key;
-                    currentTraySelect = item.tray;
+                    currentTraySelect = data.tray;
                 }
 
                 //set info
-                $('#position-item').html('Position: ' + (key + 1));
+                $('#position-item').html('Position: ' + data.index);
 
                 $('.b-side').html(key >= 20 ? 'Left' : 'Right');
                 $('.b-result-item').html('NG');
@@ -256,26 +256,24 @@
             let rsLeft = '';
             let rsRight = '';
             data.forEach(function (item, key) {
-                let rs = GetResult(item);
-
                 if (key < 20) {
                     rsLeft += `
-                                <div class="result-left-tray" onclick="showItem('${encodeURIComponent(JSON.stringify(item))}', ${key})" style="background: ${rs == 'OK' ? '#66B032' : (rs == 'Empty' ? '#B5B5B5' : '#E4491D')};cursor: ${rs != 'NG' ? 'not-allowed' : ''}">
-                                    <span class="position">${key + 1}</span>
-                                    <span class="result">
-                                       ${rs}
-                                    </span>
-                                </div>
-                            `
+                        <div class="result-left-tray" onclick="showItem('${encodeURIComponent(JSON.stringify(item))}', ${key})" style="background: #E4491D">
+                            <span class="position">${key + 1}</span>
+                            <span class="result">
+                                NG
+                            </span>
+                        </div>
+                        `
                 } else {
                     rsRight += `
-                                <div class="result-left-tray" onclick="showItem('${encodeURIComponent(JSON.stringify(item))}', ${key})" style="background: ${rs == 'OK' ? '#66B032' : (rs == 'Empty' ? '#B5B5B5' : '#E4491D')};cursor: ${rs != 'NG' ? 'not-allowed' : ''}">
-                                    <span class="position">${key + 1}</span>
-                                    <span class="result">
-                                        ${rs}
-                                    </span>
-                                </div>
-                            `
+                        <div class="result-left-tray" onclick="showItem('${encodeURIComponent(JSON.stringify(item))}', ${key})" style="background: #E4491D">
+                            <span class="position">${key + 1}</span>
+                            <span class="result">
+                                NG
+                            </span>
+                        </div>
+                    `
                 }
             });
 

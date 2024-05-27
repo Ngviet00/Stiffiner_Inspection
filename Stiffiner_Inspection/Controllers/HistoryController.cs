@@ -14,8 +14,15 @@ namespace Stiffiner_Inspection.Controllers
 
         public async Task<IActionResult> Index()
         {
+            Global.TimeLine = await _dataService.ReadOneLine(Global.PathFileTimeLine);
+
             var data = await _dataService.GetHistory();
-            ViewBag.GroupedData = data?.GroupBy(x => x.Tray).OrderByDescending(g => g.Key).Where(g => g.Count() >= 40).Take(10).ToList();
+
+            ViewBag.GroupedData = data?
+                .Select((value, index) => new { CountIndex = index, Value = value })
+                .GroupBy(x => x.CountIndex / 40)
+                .Select(g => g.Select(x => x.Value).ToList())
+                .ToList();
 
             return View();
         }

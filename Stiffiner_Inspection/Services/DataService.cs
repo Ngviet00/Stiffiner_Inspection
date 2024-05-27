@@ -383,11 +383,19 @@ namespace Stiffiner_Inspection.Services
             try
             {
                 return await _dbContext.Data
-                    .AsNoTracking()
-                    .Where(e => e.TimeLine == Global.TimeLine)
-                    .OrderBy(e => e.Index)
+                    .FromSqlRaw(@"
+                        SELECT * 
+                        FROM data
+                        WHERE
+                            timeline = {0}
+                            and ((result_area = 2 or result_line = 2) or (result_area = 1 and result_line = 3) or (result_area = 3 and result_line = 1))
+                            ORDER BY id desc OFFSET 0 ROWS FETCH NEXT 400 ROWS ONLY
+                    ", Global.TimeLine)
                     .Include(p => p.Errors)
                     .Include(p => p.Images)
+                    .OrderByDescending(x => x.Id)
+                    .OrderByDescending(x => x.Tray)
+                    .AsNoTracking()
                     .AsSplitQuery()
                     .ToListAsync();
             }
@@ -415,10 +423,10 @@ namespace Stiffiner_Inspection.Services
 
         public List<ImageResponse>? DownloadFile(List<Image> images)
         {
+            List<ImageResponse> imgsResponse = new List<ImageResponse>();
+
             try
             {
-                List<ImageResponse> imgsResponse = new List<ImageResponse>();
-
                 string rootPath = @"D:\publish_image\images\";
 
                 using (WebClient client = new WebClient())
@@ -431,13 +439,20 @@ namespace Stiffiner_Inspection.Services
 
                             string fileName = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_fff") + ".bmp";
 
-                            client.DownloadFile(imageUrl, rootPath + fileName);
-
-                            imgsResponse.Add(new ImageResponse
+                            try
                             {
-                                client_id = item.ClientId,
-                                path = "https://localhost:8089/images/" + fileName
-                            });
+                                client.DownloadFile(imageUrl, rootPath + fileName);
+
+                                imgsResponse.Add(new ImageResponse
+                                {
+                                    client_id = item.ClientId,
+                                    path = "https://localhost:8089/images/" + fileName
+                                });
+                            }
+                            catch (WebException webException)
+                            {
+                                throw;
+                            }
                         }
                     }
                 }
@@ -447,8 +462,10 @@ namespace Stiffiner_Inspection.Services
             catch (Exception ex)
             {
                 _logger.Error("Error cannot download file: " + ex.ToString());
-                return null;
             }
+
+            return imgsResponse;
+           
         }
 
         public string GetImageRemote(Image? img)
