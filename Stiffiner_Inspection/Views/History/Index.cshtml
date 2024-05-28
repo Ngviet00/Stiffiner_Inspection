@@ -68,7 +68,7 @@
                         <span class="information">Information</span> <br />
 
                         <span class="side">
-                            Side: <b class="b-side">-</b>
+                            Side: <b class="b-side text-capitalize">-</b>
                         </span>
                         <br />
                         <span class="tray-number">
@@ -162,13 +162,13 @@
         $('#number-current-tray').html(lengthArr);
 
         function showItem(item, key) {
-            let data = JSON.parse(decodeURIComponent(item))            
+            let data = JSON.parse(decodeURIComponent(item))
             if (GetResult(data) == 'NG' && isLoading == false) {
                 
                 //set info
                 $('#position-item').html('Position: ' + data.index);
 
-                $('.b-side').html(key >= 20 ? 'Left' : 'Right');
+                $('.b-side').html(data.side);
                 $('.b-result-item').html('NG');
                 $('.b-tray-number').html(data.tray);
 
