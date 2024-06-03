@@ -404,6 +404,11 @@ namespace Stiffiner_Inspection.Services
 
                 using (WebClient client = new WebClient())
                 {
+                    if (!Directory.Exists(rootPath))
+                    {
+                        Directory.CreateDirectory(rootPath);
+                    }
+
                     foreach (var item in images)
                     {
                         if (item?.Path?.Trim() != "No_save")
