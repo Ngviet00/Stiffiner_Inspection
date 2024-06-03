@@ -25,8 +25,8 @@ namespace Stiffiner_Inspection.Hubs
                 int totalTray = await _dataService.GetTotalTray();
                 double total = await _dataService.GetTotal();
                 int totalOK = await _dataService.GettotalOK();
-                int totalNG = await _dataService.GettotalNG();
                 int totalEmpty = await _dataService.GetTotalEmpty();
+                int totalNG = (int)(total - totalOK - totalEmpty);
 
                 double percentChartOk = _dataService.CalculateChartOK(totalOK, total, totalEmpty);
                 double percentChartNG = _dataService.CalculateChartNG(totalNG, total, totalEmpty);

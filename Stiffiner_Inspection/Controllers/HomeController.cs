@@ -89,8 +89,8 @@ namespace Stiffiner_Inspection.Controllers
             double total = await _dataService.GetTotal();
 
             int allOK = await _dataService.GettotalOK();
-            int allNG = await _dataService.GettotalNG();
             int allEMPTY = await _dataService.GetTotalEmpty();
+            int allNG = (int)(total - allOK - allEMPTY);
 
             ViewBag.TotalTray = await _dataService.GetTotalTray();
             ViewBag.Total = total;

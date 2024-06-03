@@ -432,5 +432,27 @@ namespace Stiffiner_Inspection.Controllers
                 });
             }
         }
+
+        [Route("change-mode")]
+        [HttpPost]
+        public async Task<IActionResult> ChangeMode(string mode)
+        {
+            try
+            {
+                Global.Mode = int.Parse(mode);
+                await _dataService.WriteOneLine(Global.PathFileMode, mode);
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "Change mode success",
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error can not change model:" + ex.Message);
+                throw;
+            }
+        }
     }
 }
