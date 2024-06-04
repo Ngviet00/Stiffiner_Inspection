@@ -315,6 +315,18 @@ $(function () {
         alert('Please choose model!');
     });
 
+    connection.on("HiddenSetting", (results) => {
+        if (results == 1) {
+            $('.icon-form-setting').css('display', 'none');
+            return;
+        }
+
+        if (results == 0) {
+            $('.icon-form-setting').css('display', 'block');
+            return;
+        }
+    });
+
     connection.on("RefreshData", function () {
         UpdateStatisticalCalculations();
     });

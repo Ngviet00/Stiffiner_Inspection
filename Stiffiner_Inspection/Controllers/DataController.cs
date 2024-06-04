@@ -454,5 +454,27 @@ namespace Stiffiner_Inspection.Controllers
                 throw;
             }
         }
+
+        [Route("check-hidden-setting")]
+        [HttpPost]
+        public async Task<IActionResult> HiddenSetting(int hidden) //1 hidden, 0 not hidden
+        {
+            try
+            {
+                Global.HiddenSetting = hidden;
+                await _hubContext.Clients.All.SendAsync("HiddenSetting", hidden);
+
+                return Ok(new
+                {
+                    status = 200,
+                    message = "Change hidden setting success",
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error can not change model:" + ex.Message);
+                throw;
+            }
+        }
     }
 }

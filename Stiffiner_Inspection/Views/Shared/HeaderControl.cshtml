@@ -6,6 +6,7 @@
     var currentModel = Global._currentSelectedModel;
     var listModels = Global.ListModels;
     var currentMode = Global.Mode;
+    var hiddenSetting = Global.HiddenSetting;
 }
 
 <div id="header-control" class="@(action == "History" ? "mt-3" : "") d-flex justify-content-between">
@@ -178,7 +179,7 @@
             </div>
 
             <div id="form-setting">
-                <i class="fa fa-cog icon-form-setting" style="margin-left: 10px;cursor: pointer" aria-hidden="true" data-toggle="modal" data-target="#modalSetting"></i>
+                <i class="fa fa-cog icon-form-setting" style="margin-left: 10px;cursor: pointer;display:@(hiddenSetting == 1 ? "none" : "block")" aria-hidden="true" data-toggle="modal" data-target="#modalSetting"></i>
 
                 <div class="modal fade" id="modalSetting" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-xl" role="document">

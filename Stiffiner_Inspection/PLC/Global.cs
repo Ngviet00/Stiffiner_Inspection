@@ -69,5 +69,7 @@ namespace Stiffiner_Inspection
         public static int ResetCamClient2 = 0;
         public static int ResetCamClient3 = 0;
         public static int ResetCamClient4 = 0;
+
+        public static int HiddenSetting = 0; //1 hidden, 0 not hidden
     }
 }
