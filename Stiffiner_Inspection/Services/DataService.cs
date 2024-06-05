@@ -604,18 +604,7 @@ namespace Stiffiner_Inspection.Services
                     .FromSqlRaw(baseSql.ToString() + "AND result_area = 3 and result_line = 3 ", fromDate, toDate)
                     .CountAsync();
 
-                string sqlTotalTray = "SELECT DISTINCT tray FROM data WHERE 1 = 1";
-
-                if (!string.IsNullOrWhiteSpace(model))
-                {
-                    sqlTotalTray += $" AND model = '{model}'";
-                }
-
-                sqlTotalTray += " AND CONVERT(VARCHAR(16), time, 120) >= {0} and CONVERT(VARCHAR(16), time, 120) <= {1}";
-
-                var totalTray = await _dbContext.Data
-                    .FromSqlRaw(sqlTotalTray, fromDate, toDate)
-                    .CountAsync();
+                var totalTray = (int)Math.Floor((double)total / 40);
 
                 var data = await _dbContext.Data
                     .FromSqlRaw(baseSql.ToString(), fromDate, toDate)

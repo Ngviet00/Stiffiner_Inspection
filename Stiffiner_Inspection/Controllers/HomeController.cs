@@ -65,6 +65,18 @@ namespace Stiffiner_Inspection.Controllers
                 Global.Mode = int.Parse(mode);
             }
 
+            string hiddenSetting = await _dataService.ReadOneLine(Global.PathFileHiddenSetting);
+
+            if (string.IsNullOrWhiteSpace(hiddenSetting))
+            {
+                Global.HiddenSetting = 1;
+                await _dataService.WriteOneLine(Global.PathFileHiddenSetting, "1");
+            }
+            else
+            {
+                Global.HiddenSetting = int.Parse(hiddenSetting);
+            }
+
             Global.controlPLC.Connect();
 
             //Thread read value PLC

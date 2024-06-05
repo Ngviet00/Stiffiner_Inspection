@@ -60,6 +60,7 @@ namespace Stiffiner_Inspection
         public static string PathFileMode = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\Mode.txt";
         public static string PathFileLogProgram = @"D:\LogProgram\LogProgram.txt";
         public static string PathFileTimeLine = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\TimeLine.txt";
+        public static string PathFileHiddenSetting = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\HiddenSetting.txt";
 
         public static int Mode = 1; //1 master, 2 normal
 

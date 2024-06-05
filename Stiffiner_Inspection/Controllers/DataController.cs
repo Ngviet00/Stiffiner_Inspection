@@ -463,6 +463,7 @@ namespace Stiffiner_Inspection.Controllers
             {
                 Global.HiddenSetting = hidden;
                 await _hubContext.Clients.All.SendAsync("HiddenSetting", hidden);
+                await _dataService.WriteOneLine(Global.PathFileHiddenSetting, hidden.ToString());
 
                 return Ok(new
                 {
