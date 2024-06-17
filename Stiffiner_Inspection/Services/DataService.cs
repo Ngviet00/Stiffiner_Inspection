@@ -353,22 +353,14 @@ namespace Stiffiner_Inspection.Services
 
         public async Task<int> GetcurrTray()
         {
-            int currTray = 0;
-            int maxTray = await _dbContext.Data.AsNoTracking().Where(e => e.TimeLine == Global.TimeLine).OrderByDescending(x => x.Tray).Select(x => x.Tray).FirstOrDefaultAsync();
+            var maxTray = await _dbContext.Data.Where(d => d.TimeLine == Global.TimeLine).MaxAsync(d => (int?)d.Tray);
 
-            var total = await _dbContext.Data
-            .Where(d => d.ResultArea != null && d.ResultLine != null && d.Tray == maxTray && d.TimeLine == Global.TimeLine)
-            .CountAsync();
+            if (maxTray != null)
+            {
+                return (int)maxTray;
+            }
 
-            if (total >= 40)
-            {
-                currTray = maxTray++;
-            }
-            else
-            {
-                currTray = maxTray;
-            }
-            return currTray;
+            return 0;
         }
 
 
