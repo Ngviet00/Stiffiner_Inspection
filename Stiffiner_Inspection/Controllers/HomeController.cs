@@ -104,7 +104,7 @@ namespace Stiffiner_Inspection.Controllers
             int allEMPTY = await _dataService.GetTotalEmpty();
             int allNG = (int)(total - allOK - allEMPTY);
 
-            ViewBag.TotalTray = await _dataService.GetTotalTray();
+            ViewBag.TotalTray = total > 0 ? total / 40 : 0;
             ViewBag.Total = total;
             ViewBag.TotalOK = allOK;
             ViewBag.TotalNG = allNG;

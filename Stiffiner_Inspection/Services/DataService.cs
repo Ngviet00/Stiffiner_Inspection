@@ -283,7 +283,7 @@ namespace Stiffiner_Inspection.Services
         {
             try
             {
-                return await _dbContext.Data.AsNoTracking().Where(d => d.ResultArea != null && d.ResultLine != null && d.TimeLine == Global.TimeLine).GroupBy(d => d.TargetId).Select(g => g.Count()).FirstOrDefaultAsync();
+                return await _dbContext.Data.AsNoTracking().Where(d => d.ResultArea != null && d.ResultLine != null && d.TimeLine == Global.TimeLine).CountAsync();
             }
             catch (Exception ex)
             {
@@ -309,7 +309,7 @@ namespace Stiffiner_Inspection.Services
         {
             try
             {
-                return await _dbContext.Data.AsNoTracking().Where(d => d.ResultArea == EMPTY && d.ResultLine == EMPTY && d.TimeLine == Global.TimeLine).GroupBy(d => d.TargetId).Select(g => g.Count()).FirstOrDefaultAsync();
+                return await _dbContext.Data.AsNoTracking().Where(d => d.ResultArea == EMPTY && d.ResultLine == EMPTY && d.TimeLine == Global.TimeLine).CountAsync();
             }
             catch (Exception ex)
             {
@@ -322,11 +322,7 @@ namespace Stiffiner_Inspection.Services
         {
             try
             {
-                return await _dbContext.Data.AsNoTracking()
-                  .Where(d => d.ResultArea == OK && d.ResultLine == OK && d.TimeLine == Global.TimeLine)
-                  .GroupBy(d => d.TargetId)
-                  .Select(g => g.Count())
-                  .FirstOrDefaultAsync();
+                return await _dbContext.Data.AsNoTracking().Where(d => d.ResultArea == OK && d.ResultLine == OK && d.TimeLine == Global.TimeLine).CountAsync();
             }
             catch (Exception ex)
             {
@@ -341,15 +337,12 @@ namespace Stiffiner_Inspection.Services
             {
                 return await _dbContext.Data.AsNoTracking()
                 .Where(d => d.TimeLine == Global.TimeLine && (
-                    (d.ResultArea == NG && d.ResultLine == NG) || 
-                    (d.ResultArea == NG && d.ResultLine == EMPTY) || 
+                    (d.ResultArea == NG && d.ResultLine == NG) ||
+                    (d.ResultArea == NG && d.ResultLine == EMPTY) ||
                     (d.ResultArea == EMPTY && d.ResultLine == NG) ||
                     (d.ResultArea == OK && d.ResultLine == EMPTY) ||
                     (d.ResultArea == EMPTY && d.ResultLine == OK) ||
-                    d.ResultLine == NG || d.ResultArea == NG))
-                .GroupBy(d => d.TargetId)
-                .Select(g => g.Count())
-                .FirstOrDefaultAsync();
+                    d.ResultLine == NG || d.ResultArea == NG)).CountAsync();
             }
             catch (Exception ex)
             {

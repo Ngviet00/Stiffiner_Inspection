@@ -22,7 +22,6 @@ namespace Stiffiner_Inspection.Hubs
             {
                 StatisticalCalculationsResponse result = new StatisticalCalculationsResponse();
 
-                int totalTray = await _dataService.GetTotalTray();
                 double total = await _dataService.GetTotal();
                 int totalOK = await _dataService.GettotalOK();
                 int totalEmpty = await _dataService.GetTotalEmpty();
@@ -32,7 +31,7 @@ namespace Stiffiner_Inspection.Hubs
                 double percentChartNG = _dataService.CalculateChartNG(totalNG, total, totalEmpty);
                 double percentChartEmpty = total == 0 ? 0 : Math.Round(PERCENT - percentChartNG - percentChartOk, 2);
 
-                result.TotalTray = totalTray;
+                result.TotalTray = (int)(total > 0 ? total/40 : 0);
                 result.Total = total;
                 result.TotalOK = totalOK;
                 result.TotalNG = totalNG;
