@@ -1,7 +1,7 @@
-﻿using log4net;
-using Microsoft.Ajax.Utilities;
+﻿using Microsoft.Ajax.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Stiffiner_Inspection.Commons;
 using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Models.DTO.Data;
 using Stiffiner_Inspection.Models.Response;
@@ -16,17 +16,6 @@ namespace Stiffiner_Inspection.Controllers
     {
         private readonly DataService _dataService;
         private readonly IHubContext<HomeHub> _hubContext;
-        private readonly ILog _logger = LogManager.GetLogger(typeof(DataController));
-
-        const int CLIENT_1 = 1;
-        const int CLIENT_2 = 2;
-        const int CLIENT_3 = 3;
-        const int CLIENT_4 = 4;
-
-        const int INACTIVE = 0;
-
-        const int CLIENT_RUNNING = 1;
-        const int CLIENT_PAUSE = 2;
 
         public DataController(DataService dataService, IHubContext<HomeHub> hubContext)
         {
@@ -101,22 +90,22 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
-                if (clientId == CLIENT_1)
+                if (clientId == Constants.CLIENT_1)
                 {
                     Global.DeepLearningCam1 = status;
                 }
 
-                if (clientId == CLIENT_2)
+                if (clientId == Constants.CLIENT_2)
                 {
                     Global.DeepLearningCam2 = status;
                 }
 
-                if (clientId == CLIENT_3)
+                if (clientId == Constants.CLIENT_3)
                 {
                     Global.DeepLearningCam3 = status;
                 }
 
-                if (clientId == CLIENT_4)
+                if (clientId == Constants.CLIENT_4)
                 {
                     Global.DeepLearningCam4 = status;
                 }
@@ -124,7 +113,7 @@ namespace Stiffiner_Inspection.Controllers
                 return Ok(new
                 {
                     status = 200,
-                    message = "Change system status successfully"
+                    message = "Change system status successfully!"
                 });
             }
             catch (Exception ex)
@@ -143,24 +132,24 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
-                if (clientId == CLIENT_1)
+                if (clientId == Constants.CLIENT_1)
                 {
-                    Global.resetPLC1 = 0;
+                    Global.resetPLC1 = Constants.INACTIVE;
                 }
 
-                if (clientId == CLIENT_2)
+                if (clientId == Constants.CLIENT_2)
                 {
-                    Global.resetPLC2 = 0;
+                    Global.resetPLC2 = Constants.INACTIVE;
                 }
 
-                if (clientId == CLIENT_3)
+                if (clientId == Constants.CLIENT_3)
                 {
-                    Global.resetPLC3 = 0;
+                    Global.resetPLC3 = Constants.INACTIVE;
                 }
 
-                if (clientId == CLIENT_4)
+                if (clientId == Constants.CLIENT_4)
                 {
-                    Global.resetPLC4 = 0;
+                    Global.resetPLC4 = Constants.INACTIVE;
                 }
 
                 return Ok(new
@@ -185,7 +174,7 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
-                _dataService.ChangeDeepLearningVisionBusy(client_id, 1);
+                _dataService.ChangeDeepLearningVisionBusy(client_id, Constants.ACTIVE);
                 await _hubContext.Clients.All.SendAsync("deepcore", client_id, status);
 
                 return Ok(new
@@ -218,7 +207,7 @@ namespace Stiffiner_Inspection.Controllers
 
                 int resultPLC = 0;
 
-                if (clientId == CLIENT_1)
+                if (clientId == Constants.CLIENT_1)
                 {
                     resultPLC = Global.resetPLC1;
                     data.is_send_model = Global.Client1IsPostModel;
@@ -226,7 +215,7 @@ namespace Stiffiner_Inspection.Controllers
                     data.reset_cam = Global.ResetCamClient1;
                 }
 
-                if (clientId == CLIENT_2)
+                if (clientId == Constants.CLIENT_2)
                 {
                     resultPLC = Global.resetPLC2;
                     data.is_send_model = Global.Client2IsPostModel;
@@ -234,7 +223,7 @@ namespace Stiffiner_Inspection.Controllers
                     data.reset_cam = Global.ResetCamClient2;
                 }
 
-                if (clientId == CLIENT_3)
+                if (clientId == Constants.CLIENT_3)
                 {
                     resultPLC = Global.resetPLC3;
                     data.is_send_model = Global.Client3IsPostModel;
@@ -242,7 +231,7 @@ namespace Stiffiner_Inspection.Controllers
                     data.reset_cam = Global.ResetCamClient3;
                 }
 
-                if (clientId == CLIENT_4)
+                if (clientId == Constants.CLIENT_4)
                 {
                     resultPLC = Global.resetPLC4;
                     data.is_send_model = Global.Client4IsPostModel;
@@ -252,7 +241,7 @@ namespace Stiffiner_Inspection.Controllers
 
                 data.result_plc = resultPLC;
 
-                _dataService.ChangeConnectVisionBusy(clientId, 1);
+                _dataService.ChangeConnectVisionBusy(clientId, Constants.ACTIVE);
                 await _hubContext.Clients.All.SendAsync("ChangeClientConnect", clientId);
 
                 return Ok(data);
@@ -273,24 +262,24 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
-                if (clientId == CLIENT_1)
+                if (clientId == Constants.CLIENT_1)
                 {
-                    Global.Client1IsPostModel = 0;
+                    Global.Client1IsPostModel = Constants.INACTIVE;
                 }
 
-                if (clientId == CLIENT_2)
+                if (clientId == Constants.CLIENT_2)
                 {
-                    Global.Client2IsPostModel = 0;
+                    Global.Client2IsPostModel = Constants.INACTIVE;
                 }
 
-                if (clientId == CLIENT_3)
+                if (clientId == Constants.CLIENT_3)
                 {
-                    Global.Client3IsPostModel = 0;
+                    Global.Client3IsPostModel = Constants.INACTIVE;
                 }
 
-                if (clientId == CLIENT_4)
+                if (clientId == Constants.CLIENT_4)
                 {
-                    Global.Client4IsPostModel = 0;
+                    Global.Client4IsPostModel = Constants.INACTIVE;
                 }
 
                 return Ok(new
@@ -355,24 +344,24 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
-                if (clientId == CLIENT_1)
+                if (clientId == Constants.CLIENT_1)
                 {
-                    Global.ClearClient1 = 0;
+                    Global.ClearClient1 = Constants.INACTIVE;
                 }
 
-                if (clientId == CLIENT_2)
+                if (clientId == Constants.CLIENT_2)
                 {
-                    Global.ClearClient2 = 0;
+                    Global.ClearClient2 = Constants.INACTIVE;
                 }
 
-                if (clientId == CLIENT_3)
+                if (clientId == Constants.CLIENT_3)
                 {
-                    Global.ClearClient3 = 0;
+                    Global.ClearClient3 = Constants.INACTIVE;
                 }
 
-                if (clientId == CLIENT_4)
+                if (clientId == Constants.CLIENT_4)
                 {
-                    Global.ClearClient4 = 0;
+                    Global.ClearClient4 = Constants.INACTIVE;
                 }
 
                 return Ok(new
@@ -397,24 +386,24 @@ namespace Stiffiner_Inspection.Controllers
         {
             try
             {
-                if (clientId == CLIENT_1)
+                if (clientId == Constants.CLIENT_1)
                 {
-                    Global.ResetCamClient1 = 0;
+                    Global.ResetCamClient1 = Constants.INACTIVE;
                 }
 
-                if (clientId == CLIENT_2)
+                if (clientId == Constants.CLIENT_2)
                 {
-                    Global.ResetCamClient2 = 0;
+                    Global.ResetCamClient2 = Constants.INACTIVE;
                 }
 
-                if (clientId == CLIENT_3)
+                if (clientId == Constants.CLIENT_3)
                 {
-                    Global.ResetCamClient3 = 0;
+                    Global.ResetCamClient3 = Constants.INACTIVE;
                 }
 
-                if (clientId == CLIENT_4)
+                if (clientId == Constants.CLIENT_4)
                 {
-                    Global.ResetCamClient4 = 0;
+                    Global.ResetCamClient4 = Constants.INACTIVE;
                 }
 
                 return Ok(new
@@ -440,7 +429,12 @@ namespace Stiffiner_Inspection.Controllers
             try
             {
                 Global.Mode = int.Parse(mode);
-                await _dataService.WriteOneLine(Global.PathFileMode, mode);
+                Global.WriteFileToTxt(Global.PathFileSetting, new Dictionary<string, string>
+                {
+                    { "mode", mode }
+                });
+
+                await _hubContext.Clients.All.SendAsync("ChangeModeBySwagger", mode);
 
                 return Ok(new
                 {
@@ -450,7 +444,7 @@ namespace Stiffiner_Inspection.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error("Error can not change model:" + ex.Message);
+                Log.Error($"Error can not change model: {ex.Message}");
                 throw;
             }
         }
@@ -462,8 +456,11 @@ namespace Stiffiner_Inspection.Controllers
             try
             {
                 Global.HiddenSetting = hidden;
+
+                Global.WriteFileToTxt(Global.PathFileSetting, new Dictionary<string, string> {
+                    { "hidden_setting", hidden.ToString() },
+                });
                 await _hubContext.Clients.All.SendAsync("HiddenSetting", hidden);
-                await _dataService.WriteOneLine(Global.PathFileHiddenSetting, hidden.ToString());
 
                 return Ok(new
                 {
@@ -473,7 +470,7 @@ namespace Stiffiner_Inspection.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error("Error can not change model:" + ex.Message);
+                Log.Error($"Error can not change model: {ex.Message}");
                 throw;
             }
         }

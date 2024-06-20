@@ -1,4 +1,5 @@
-﻿using Stiffiner_Inspection.Models.DTO.Data;
+﻿using Stiffiner_Inspection.Commons;
+using Stiffiner_Inspection.Models.DTO.Data;
 using System.Collections.Concurrent;
 
 namespace Stiffiner_Inspection
@@ -16,7 +17,12 @@ namespace Stiffiner_Inspection
         public static int resetPLC3 { get; set; } = 0;
         public static int resetPLC4 { get; set; } = 0;
 
+        public static int Total { get; set; } = 0;
+        public static int TotalOK{ get; set; } = 0;
+        public static int TotalNG { get; set; } = 0;
+        public static int TotalEmpty { get; set; } = 0;
         public static int currentTray { get; set; } = 0;
+        public static int HiddenSetting = 0;    //1 hidden, 0 not hidden
 
         public static ConcurrentQueue<DataDTO> CurrentTrayDataV2 = new ConcurrentQueue<DataDTO>();
 
@@ -55,12 +61,9 @@ namespace Stiffiner_Inspection
         public static int ClearClient3 = 0;
         public static int ClearClient4 = 0;
 
-        public static string PathFileCurrentModel = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\CurrentModel.txt";
         public static string PathFileListModel = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\ListModels.txt";
-        public static string PathFileMode = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\Mode.txt";
-        public static string PathFileLogProgram = @"D:\LogProgram\LogProgram.txt";
-        public static string PathFileTimeLine = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\TimeLine.txt";
-        public static string PathFileHiddenSetting = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\HiddenSetting.txt";
+
+        public static string PathFileSetting = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\Setting.txt";
 
         public static int Mode = 1; //1 master, 2 normal
 
@@ -71,6 +74,77 @@ namespace Stiffiner_Inspection
         public static int ResetCamClient3 = 0;
         public static int ResetCamClient4 = 0;
 
-        public static int HiddenSetting = 0; //1 hidden, 0 not hidden
+        public static void WriteFileToTxt(string filePath, Dictionary<string, string> values)
+        {
+            try
+            {
+                var lines = File.ReadAllLines(filePath).ToList();
+                var keysToUpdate = values.Keys.ToList();
+
+                // Track which keys have been updated
+                var updatedKeys = new HashSet<string>();
+
+                // Iterate through lines to find and update the specific keys
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    var parts = lines[i].Split(new[] { ':' }, 2);
+                    if (parts.Length == 2)
+                    {
+                        string key = parts[0].Trim();
+                        if (values.ContainsKey(key))
+                        {
+                            lines[i] = $"{key}: {values[key]}";
+                            updatedKeys.Add(key);
+                        }
+                    }
+                }
+
+                // If some keys were not found, add them as new lines
+                foreach (var key in keysToUpdate)
+                {
+                    if (!updatedKeys.Contains(key))
+                    {
+                        lines.Add($"{key}: {values[key]}");
+                    }
+                }
+
+                // Write all lines back to the file
+                File.WriteAllLines(filePath, lines);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error can not write value to file txt: {ex.Message}");
+            }
+        }
+
+        public static Dictionary<string, string> ReadValueFileTxt(string filePath, List<string> keys)
+        {
+            Dictionary<string, string> values = new Dictionary<string, string>();
+
+            try
+            {
+                string[] lines = File.ReadAllLines(filePath);
+                foreach (string line in lines)
+                {
+                    string[] parts = line.Split(':');
+
+                    if (parts.Length == 2)
+                    {
+                        string key = parts[0].Trim();
+
+                        if (keys.Contains(key))
+                        {
+                            values[key] = parts[1].Trim();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error can not read value from file txt: {ex.Message}");
+            }
+
+            return values;
+        }
     }
 }

@@ -1,5 +1,5 @@
-﻿using log4net;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
+using Stiffiner_Inspection.Commons;
 using Stiffiner_Inspection.Models.Entity;
 using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
@@ -23,7 +23,7 @@ namespace Stiffiner_Inspection.Hubs
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error cannot download file: " + ex.ToString());
+                Log.Error($"Error cannot download file: {ex.Message}");
                 throw;
             }
         }

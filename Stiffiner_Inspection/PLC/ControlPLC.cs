@@ -1,5 +1,5 @@
 ﻿using ActUtlType64Lib;
-using log4net;
+using Stiffiner_Inspection.Commons;
 using System.IO.Ports;
 using System.Timers;
 
@@ -11,7 +11,6 @@ namespace Stiffiner_Inspection
         private const int _plcStation = 1;
         private bool isExist = false;
         private const int timeSleep = 100;
-        private readonly ILog _logger = LogManager.GetLogger(typeof(ControlPLC));
 
         public static System.Timers.Timer? timer = null;
 
@@ -61,7 +60,7 @@ namespace Stiffiner_Inspection
             }
             else
             {
-                _logger.Error("Can not connect to PLC");
+                Log.Error("Can not connect to PLC");
             }
         }
 
@@ -88,12 +87,17 @@ namespace Stiffiner_Inspection
                 //kiem tra neu start nhan thi gui cho clent tin hieu star de clear tray
                 if (!isStartHistory && valueReaded == 1)
                 {
-                    Global.resetPLC1 = 1;
-                    Global.resetPLC2 = 1;
-                    Global.resetPLC3 = 1;
-                    Global.resetPLC4 = 1;
-                    Global.resetClient = 1;
+                    Global.resetPLC1 = Constants.ACTIVE;
+                    Global.resetPLC2 = Constants.ACTIVE;
+                    Global.resetPLC3 = Constants.ACTIVE;
+                    Global.resetPLC4 = Constants.ACTIVE;
+                    Global.resetClient = Constants.ACTIVE;
+                    
                     Global.currentTray++;
+                    Global.WriteFileToTxt(Global.PathFileSetting, new Dictionary<string, string>
+                    {
+                        { "current_tray", Global.currentTray.ToString() },
+                    });
 
                     Global.CurrentTrayDataV2.Clear();
 
@@ -150,6 +154,10 @@ namespace Stiffiner_Inspection
                 if (Global.currentTray > 0)
                 {
                     Global.currentTray -= 1;
+                    Global.WriteFileToTxt(Global.PathFileSetting, new Dictionary<string, string>
+                    {
+                        { "current_tray", Global.currentTray.ToString() },
+                    });
                 }
 
                 VisionNotEnoughTray();
@@ -193,8 +201,8 @@ namespace Stiffiner_Inspection
         {
             try
             {
-                SerialPort lightControl1 = new SerialPort("COM4", 115200);
-                SerialPort lightControl2 = new SerialPort("COM5", 115200);
+                SerialPort lightControl1 = new SerialPort("COM4", Constants.PORT_COM_4);
+                SerialPort lightControl2 = new SerialPort("COM5", Constants.PORT_COM_5);
 
                 lightControl1.Open();
                 lightControl2.Open();
@@ -207,7 +215,7 @@ namespace Stiffiner_Inspection
             }
             catch (Exception ex)
             {
-                _logger.Error("Cannot turn on light control: " + ex.Message);
+                Log.Error($"Cannot turn on light control: {ex.Message}");
             }
         }
 
@@ -215,8 +223,8 @@ namespace Stiffiner_Inspection
         {
             try
             {
-                SerialPort lightControl1 = new SerialPort("COM4", 115200);
-                SerialPort lightControl2 = new SerialPort("COM5", 115200);
+                SerialPort lightControl1 = new SerialPort("COM4", Constants.PORT_COM_4);
+                SerialPort lightControl2 = new SerialPort("COM5", Constants.PORT_COM_5);
 
                 lightControl1.Open();
                 lightControl2.Open();
@@ -229,25 +237,24 @@ namespace Stiffiner_Inspection
             }
             catch (Exception ex)
             {
-                _logger.Error("Cannot turn off the light: " + ex.Message);
+                Log.Error($"Cannot turn off the light: {ex.Message}");
             }
-
         }
 
         //busy = 1, ready 0
         public void VisionBusy(bool status)
         {
-            _plc.SetDevice(REG_Vision_Busy, status ? 1 : 0);
+            _plc.SetDevice(REG_Vision_Busy, status ? Constants.BIT_ON : Constants.BIT_OFF);
         }
 
         public void VisionDoneIns()
         {
-            _plc.SetDevice(REG_PLC_VisionDoneInspection, 1);
+            _plc.SetDevice(REG_PLC_VisionDoneInspection, Constants.BIT_ON);
         }
 
         public void VisionNotEnoughTray()
         {
-            _plc.SetDevice(REG_PLC_NOT_ENOUGHT_TRAY, 1);
+            _plc.SetDevice(REG_PLC_NOT_ENOUGHT_TRAY, Constants.BIT_ON);
         }
     }
 }

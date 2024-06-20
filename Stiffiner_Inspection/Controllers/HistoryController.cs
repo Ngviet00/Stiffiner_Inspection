@@ -7,6 +7,8 @@ namespace Stiffiner_Inspection.Controllers
     {
         private readonly DataService _dataService;
 
+        readonly int numberItemOneTray = 20;
+
         public HistoryController(DataService dataService)
         {
             _dataService = dataService;
@@ -14,7 +16,8 @@ namespace Stiffiner_Inspection.Controllers
 
         public async Task<IActionResult> Index()
         {
-            Global.TimeLine = await _dataService.ReadOneLine(Global.PathFileTimeLine);
+            Dictionary<string, string> data = Global.ReadValueFileTxt(Global.PathFileSetting, ["timeline"]);
+            Global.TimeLine = data["timeline"];
 
             var dataLeft = await _dataService.GetHistoryBySide("left");
 
@@ -22,13 +25,13 @@ namespace Stiffiner_Inspection.Controllers
 
             ViewBag.GroupedDataLeft = dataLeft?
                .Select((value, index) => new { CountIndex = index, Value = value })
-               .GroupBy(x => x.CountIndex / 20)
+               .GroupBy(x => x.CountIndex / numberItemOneTray)
                .Select(g => g.Select(x => x.Value).ToList())
                .ToList();
 
             ViewBag.GroupedDataRight = dataRight?
                .Select((value, index) => new { CountIndex = index, Value = value })
-               .GroupBy(x => x.CountIndex / 20)
+               .GroupBy(x => x.CountIndex / numberItemOneTray)
                .Select(g => g.Select(x => x.Value).ToList())
                .ToList();
 

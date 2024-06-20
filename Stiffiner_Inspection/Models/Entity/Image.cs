@@ -21,6 +21,9 @@ namespace Stiffiner_Inspection.Models.Entity
         [Column("client_id", TypeName = "int")]
         public int ClientId { get; set; }
 
+        [Column("created_at")]
+        public DateTime? CreatedAt { get; set; } = DateTime.Now;
+
         [JsonIgnore]
         public Data? Data { get; set; }
     }

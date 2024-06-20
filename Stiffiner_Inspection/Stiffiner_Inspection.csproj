@@ -29,6 +29,7 @@
 
 	<ItemGroup>
 		<Folder Include="Migrations\" />
+		<Folder Include="Jobs\" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -54,6 +55,9 @@
 
 	<ItemGroup>
 	  <None Include="compilerconfig.json" />
+	  <None Include="wwwroot\js\Chart\chart.js" />
+	  <None Include="wwwroot\js\Chart\chartjs-plugin-datalabels.min.js" />
+	  <None Include="wwwroot\js\ZoomImage\okzoom-1.0.min.js" />
 	</ItemGroup>
 
 	<ItemGroup>

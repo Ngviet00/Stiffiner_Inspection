@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.SignalR;
 using Stiffiner_Inspection.Hubs;
 using System.Globalization;
 using CsvHelper;
-using log4net;
 using System.Net;
 using Stiffiner_Inspection.Models.Response;
 using System.Text;
+using Stiffiner_Inspection.Commons;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -17,19 +17,7 @@ namespace Stiffiner_Inspection.Services
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IHubContext<HistoryHub> _historyContext;
-        private readonly ILog _logger = LogManager.GetLogger(typeof(DataService));
         private readonly IHubContext<HomeHub> _hubContext;
-
-        const int CLIENT_1 = 1;
-        const int CLIENT_2 = 2;
-        const int CLIENT_3 = 3;
-        const int CLIENT_4 = 4;
-
-        const int OK = 1;
-        const int NG = 2;
-        const int EMPTY = 3;
-
-        const int PERCENT = 100;
 
         public DataService(ApplicationDbContext dbContext, IHubContext<HomeHub> hubContext, IHubContext<HistoryHub> historyContext)
         {
@@ -40,7 +28,7 @@ namespace Stiffiner_Inspection.Services
 
         public int GetIndex(DataDTO dataDTO)
         {
-            return dataDTO.client_id == CLIENT_1 || dataDTO.client_id == CLIENT_2 ? dataDTO.index : dataDTO.index + 20;
+            return dataDTO.client_id == Constants.CLIENT_1 || dataDTO.client_id == Constants.CLIENT_2 ? dataDTO.index : dataDTO.index + 20;
         }
 
         private async Task SaveImageV2(Data data, DataDTO dataArea, DataDTO dataLine)
@@ -83,7 +71,7 @@ namespace Stiffiner_Inspection.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("Can not save images: " + ex.Message);
+                Log.Error($"Can not save images: {ex.Message}");
                 throw;
             }
         }
@@ -129,14 +117,14 @@ namespace Stiffiner_Inspection.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("Can not save errors: " + ex.Message);
+                Log.Error($"Can not save errors: {ex.Message}");
                 throw;
             }
         }
 
         public int GetPosition(int index, int? clientId)
         {
-            if (clientId == CLIENT_3 || clientId == CLIENT_4)
+            if (clientId == Constants.CLIENT_3 || clientId == Constants.CLIENT_4)
             {
                 return index - 1;
             }
@@ -146,17 +134,17 @@ namespace Stiffiner_Inspection.Services
 
         public int GetResult(int? result1, int? result2)
         {
-            if (result1 == OK && result2 == OK)
+            if (result1 == Constants.OK && result2 == Constants.OK)
             {
-                return OK;
+                return Constants.OK;
             }
 
-            if (result1 == EMPTY && result2 == EMPTY)
+            if (result1 == Constants.EMPTY && result2 == Constants.EMPTY)
             {
                 return 0;
             }
 
-            return NG;
+            return Constants.NG;
         }
 
         public async Task SendToPLCV2(DataDTO dataDTO)
@@ -167,45 +155,83 @@ namespace Stiffiner_Inspection.Services
             {
                 List<DataCSV> dataCSV = [];
 
+                int ok = 0;
+                int ng = 0;
+                int empty = 0;
+
                 for (int i = 1; i <= 20; i++)
                 {
                     //pair left
-                    var leftArea = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == CLIENT_1 && e.tray == Global.currentTray);
-                    var leftLine = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == CLIENT_2 && e.tray == Global.currentTray);
+                    var leftArea = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == Constants.CLIENT_1 && e.tray == Global.currentTray);
+                    var leftLine = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == Constants.CLIENT_2 && e.tray == Global.currentTray);
+
+                    var rsLeft = GetResult(leftArea?.result, leftLine?.result);
+
+                    switch (rsLeft)
+                    {
+                        case 1:
+                            ok += 1;
+                            break;
+                        case 2:
+                            ng += 1;
+                            break;
+                        case 0:
+                            empty += 1;
+                            break;
+                    }
 
                     //add to list to save excel
                     AddListPrepareSaveExcel(dataCSV, leftArea, leftLine);
 
                     //write register PLC
-                    Global.controlPLC.WriteDataToRegister(GetResult(leftArea?.result, leftLine?.result), i - 1);
+                    Global.controlPLC.WriteDataToRegister(rsLeft, i - 1);
 
                     //save to db
                     await SaveToDB(leftArea, leftLine);
 
                     //pair right 
-                    var rightArea = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == CLIENT_3 && e.tray == Global.currentTray);
-                    var rightLine = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == CLIENT_4 && e.tray == Global.currentTray);
+                    var rightArea = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == Constants.CLIENT_3 && e.tray == Global.currentTray);
+                    var rightLine = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == Constants.CLIENT_4 && e.tray == Global.currentTray);
+
+                    var rsRight = GetResult(rightArea?.result, rightLine?.result);
+
+                    switch (rsRight)
+                    {
+                        case 1:
+                            ok += 1;
+                            break;
+                        case 2:
+                            ng += 1;
+                            break;
+                        case 0:
+                            empty += 1;
+                            break;
+                    }
 
                     //add to list to save excel
                     AddListPrepareSaveExcel(dataCSV, rightArea, rightLine);
 
                     //write register PLC
-                    Global.controlPLC.WriteDataToRegister(GetResult(rightArea?.result, rightLine?.result), i + 19);
+                    Global.controlPLC.WriteDataToRegister(rsRight, i + 19);
 
                     //save to db
                     await SaveToDB(rightArea, rightLine);
-
-                    //if enough 40 item => save to excel
-                    if (dataCSV.Count == 40)
-                    {
-                        await SaveToExcel(dataCSV);
-                    }
                 }
-
-                await _hubContext.Clients.All.SendAsync("RefreshData");
 
                 //ater vision done, send signal
                 Global.controlPLC.VisionDoneIns();
+
+                Global.Total += 40;
+                Global.TotalOK += ok;
+                Global.TotalNG += ng;
+                Global.TotalEmpty += empty;
+
+                await _hubContext.Clients.All.SendAsync("RefreshData", Global.Total, Global.TotalOK, Global.TotalNG, Global.TotalEmpty);
+
+                if (dataCSV.Count == 40)
+                {
+                    await SaveToExcel(dataCSV);
+                }
 
                 //after vision done, call method refresh data in history page
                 await _historyContext.Clients.All.SendAsync("RefreshData");
@@ -218,9 +244,9 @@ namespace Stiffiner_Inspection.Services
             {
                 model = Global._currentSelectedModel,
                 time = dataArea?.time,
-                index = dataArea?.client_id == CLIENT_1 || dataArea?.client_id == CLIENT_2 ? dataArea.index : dataArea.index + 20,
-                result_area = dataArea?.result == 1 ? "OK" : (dataArea?.result == 2 ? "NG" : "Empty"),
-                result_line = dataLine?.result == 1 ? "OK" : (dataLine?.result == 2 ? "NG" : "Empty"),
+                index = dataArea?.client_id == Constants.CLIENT_1 || dataArea?.client_id == Constants.CLIENT_2 ? dataArea.index : dataArea.index + 20,
+                result_area = dataArea?.result == Constants.OK ? "OK" : (dataArea?.result == Constants.NG ? "NG" : "Empty"),
+                result_line = dataLine?.result == Constants.OK ? "OK" : (dataLine?.result == Constants.NG ? "NG" : "Empty"),
                 image = dataArea?.image + "," + dataLine?.image,
                 errors = dataArea?.error + "," + dataLine?.error
             });
@@ -248,7 +274,7 @@ namespace Stiffiner_Inspection.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("Can not save to file CSV: " + ex.Message);
+                Log.Error($"Can not save to file CSV: {ex.Message}");
             }
         }
 
@@ -272,7 +298,7 @@ namespace Stiffiner_Inspection.Services
             await _dbContext.Data.AddAsync(data);
             await _dbContext.SaveChangesAsync();
 
-            if (dataArea.result == NG || dataLine?.result == NG || (dataArea.result == OK && dataLine?.result == EMPTY) || (dataArea.result == EMPTY && dataLine?.result == OK))
+            if (dataArea.result == Constants.NG || dataLine?.result == Constants.NG || (dataArea.result == Constants.OK && dataLine?.result == Constants.EMPTY) || (dataArea.result == Constants.EMPTY && dataLine?.result == Constants.OK))
             {
                 await SaveImageV2(data, dataArea, dataLine);
                 await SaveErrorV2(data, dataArea, dataLine);
@@ -287,7 +313,7 @@ namespace Stiffiner_Inspection.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("Error Get Total: " + ex.Message);
+                Log.Error($"Error Get Total: {ex.Message}");
                 return 0;
             }
         }
@@ -300,7 +326,7 @@ namespace Stiffiner_Inspection.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("Error Get Total Tray: " + ex.Message);
+                Log.Error($"Error Get Total Tray: {ex.Message}");
                 return 0;
             }
         }
@@ -309,11 +335,11 @@ namespace Stiffiner_Inspection.Services
         {
             try
             {
-                return await _dbContext.Data.AsNoTracking().Where(d => d.ResultArea == EMPTY && d.ResultLine == EMPTY && d.TimeLine == Global.TimeLine).CountAsync();
+                return await _dbContext.Data.AsNoTracking().Where(d => d.ResultArea == Constants.EMPTY && d.ResultLine == Constants.EMPTY && d.TimeLine == Global.TimeLine).CountAsync();
             }
             catch (Exception ex)
             {
-                _logger.Error("Error Get Total Empty: " + ex.Message);
+                Log.Error($"Error Get Total Empty: {ex.Message}");
                 return 0;
             }
         }
@@ -322,11 +348,11 @@ namespace Stiffiner_Inspection.Services
         {
             try
             {
-                return await _dbContext.Data.AsNoTracking().Where(d => d.ResultArea == OK && d.ResultLine == OK && d.TimeLine == Global.TimeLine).CountAsync();
+                return await _dbContext.Data.AsNoTracking().Where(d => d.ResultArea == Constants.OK && d.ResultLine == Constants.OK && d.TimeLine == Global.TimeLine).CountAsync();
             }
             catch (Exception ex)
             {
-                _logger.Error("Error Get Total OK: " + ex.Message);
+                Log.Error($"Error Get Total OK: {ex.Message}");
                 return 0;
             }
         }
@@ -337,16 +363,16 @@ namespace Stiffiner_Inspection.Services
             {
                 return await _dbContext.Data.AsNoTracking()
                 .Where(d => d.TimeLine == Global.TimeLine && (
-                    (d.ResultArea == NG && d.ResultLine == NG) ||
-                    (d.ResultArea == NG && d.ResultLine == EMPTY) ||
-                    (d.ResultArea == EMPTY && d.ResultLine == NG) ||
-                    (d.ResultArea == OK && d.ResultLine == EMPTY) ||
-                    (d.ResultArea == EMPTY && d.ResultLine == OK) ||
-                    d.ResultLine == NG || d.ResultArea == NG)).CountAsync();
+                    (d.ResultArea == Constants.NG && d.ResultLine == Constants.NG) ||
+                    (d.ResultArea == Constants.NG && d.ResultLine == Constants.EMPTY) ||
+                    (d.ResultArea == Constants.EMPTY && d.ResultLine == Constants.NG) ||
+                    (d.ResultArea == Constants.OK && d.ResultLine == Constants.EMPTY) ||
+                    (d.ResultArea == Constants.EMPTY && d.ResultLine == Constants.OK) ||
+                    d.ResultLine == Constants.NG || d.ResultArea == Constants.NG)).CountAsync();
             }
             catch (Exception ex)
             {
-                _logger.Error("Error Get Total NG: " + ex.Message);
+                Log.Error($"Error Get Total NG: {ex.Message}");
                 return 0;
             }
         }
@@ -366,17 +392,17 @@ namespace Stiffiner_Inspection.Services
 
         public double CalculateChartOK(int totalOK, double total, int totalEmpty)
         {
-            return total == 0 ? 0 : Math.Round(totalOK / (total + totalEmpty) * PERCENT, 2);
+            return total == 0 ? 0 : Math.Round(totalOK / (total + totalEmpty) * Constants.PERCENT, 2);
         }
 
         public double CalculateChartNG(int totalNG, double total, int totalEmpty)
         {
-            return total == 0 ? 0 : Math.Round(totalNG / (total + totalEmpty) * PERCENT, 2);
+            return total == 0 ? 0 : Math.Round(totalNG / (total + totalEmpty) * Constants.PERCENT, 2);
         }
 
         public double CalculateChartEmpty(double total, double percentNG, double percentOK)
         {
-            return total == 0 ? 0 : Math.Round(100 - percentNG - percentOK, 2);
+            return total == 0 ? 0 : Math.Round(Constants.PERCENT - percentNG - percentOK, 2);
         }
 
         public List<ImageResponse>? DownloadFile(List<Image> images)
@@ -424,7 +450,7 @@ namespace Stiffiner_Inspection.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("Error cannot download file: " + ex.ToString());
+                Log.Error($"Error cannot download file: {ex.Message}");
             }
 
             return imgsResponse;
@@ -475,25 +501,25 @@ namespace Stiffiner_Inspection.Services
 
         public void ChangeStatusCamVisionBusy(int clientId, int status)
         {
-            if (clientId == CLIENT_1)
+            if (clientId == Constants.CLIENT_1)
             {
                 Global.StatusCam1 = status;
                 return;
             }
 
-            if (clientId == CLIENT_2)
+            if (clientId == Constants.CLIENT_2)
             {
                 Global.StatusCam2 = status;
                 return;
             }
 
-            if (clientId == CLIENT_3)
+            if (clientId == Constants.CLIENT_3)
             {
                 Global.StatusCam3 = status;
                 return;
             }
 
-            if (clientId == CLIENT_4)
+            if (clientId == Constants.CLIENT_4)
             {
                 Global.StatusCam4 = status;
                 return;
@@ -502,25 +528,25 @@ namespace Stiffiner_Inspection.Services
 
         public void ChangeConnectVisionBusy(int clientId, int status)
         {
-            if (clientId == CLIENT_1)
+            if (clientId == Constants.CLIENT_1)
             {
                 Global.ConnectCam1 = status;
                 return;
             }
 
-            if (clientId == CLIENT_2)
+            if (clientId == Constants.CLIENT_2)
             {
                 Global.ConnectCam2 = status;
                 return;
             }
 
-            if (clientId == CLIENT_3)
+            if (clientId == Constants.CLIENT_3)
             {
                 Global.ConnectCam3 = status;
                 return;
             }
 
-            if (clientId == CLIENT_4)
+            if (clientId == Constants.CLIENT_4)
             {
                 Global.ConnectCam4 = status;
                 return;
@@ -529,25 +555,25 @@ namespace Stiffiner_Inspection.Services
 
         public void ChangeDeepLearningVisionBusy(int clientId, int status)
         {
-            if (clientId == CLIENT_1)
+            if (clientId == Constants.CLIENT_1)
             {
                 Global.DeepLearningCam1 = status;
                 return;
             }
 
-            if (clientId == CLIENT_2)
+            if (clientId == Constants.CLIENT_2)
             {
                 Global.DeepLearningCam2 = status;
                 return;
             }
 
-            if (clientId == CLIENT_3)
+            if (clientId == Constants.CLIENT_3)
             {
                 Global.DeepLearningCam3 = status;
                 return;
             }
 
-            if (clientId == CLIENT_4)
+            if (clientId == Constants.CLIENT_4)
             {
                 Global.DeepLearningCam4 = status;
                 return;
@@ -558,7 +584,7 @@ namespace Stiffiner_Inspection.Services
         {
             try
             {
-                int pageSize = 200;
+                int pageSize = 20;
 
                 SearchDataResponse response = new SearchDataResponse();
 
@@ -615,9 +641,9 @@ namespace Stiffiner_Inspection.Services
 
                 return response;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.Error("Error cannot get data: " + e.Message);
+                Log.Error($"Error cannot get data: {ex.Message}");
                 throw;
             }
         }
@@ -630,7 +656,7 @@ namespace Stiffiner_Inspection.Services
             return elements.GroupBy(x => x).Where(g => g.Count() == 4).Select(g => g.Key).ToList();
         }
 
-        public async Task WriteOneLine(string path, string content)
+        public async Task WriteOneLine(string path, string? content)
         {
             try
             {
@@ -638,7 +664,7 @@ namespace Stiffiner_Inspection.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("Can not write line: " + ex.Message);
+                Log.Error($"Can not write line: {ex.Message}");
                 throw;
             }
         }
@@ -651,7 +677,7 @@ namespace Stiffiner_Inspection.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("Can not write line: " + ex.Message);
+                Log.Error($"Can not write line: {ex.Message}");
                 throw;
             }
         }
@@ -664,7 +690,7 @@ namespace Stiffiner_Inspection.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("Can not read line: " + ex.Message);
+                Log.Error($"Can not read line: {ex.Message}");
                 throw;
             }
         }
@@ -688,7 +714,7 @@ namespace Stiffiner_Inspection.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("Can not read many line: " + ex.Message);
+                Log.Error($"Can not read many line: {ex.Message}");
                 throw;
             }
         }
@@ -719,7 +745,7 @@ namespace Stiffiner_Inspection.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("Error can not delete all data: " + ex.Message);
+                Log.Error($"Error can not delete all data: {ex.Message}");
                 throw;
             }
         }
@@ -744,7 +770,7 @@ namespace Stiffiner_Inspection.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("Error Get List History: " + ex.Message);
+                Log.Error($"Error Get List History: {ex.Message}");
                 return null;
             }
         }

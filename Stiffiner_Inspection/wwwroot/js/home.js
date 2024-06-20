@@ -1,5 +1,9 @@
 ﻿"use strict";
 
+import { STATUS_PLC, SYSTEM_STATUS_CLIENT, STATUS_RESULT, CLIENT } from "./const.js";
+
+import { getCurrentDateTime, formatNumberWithDot, convertDate } from "./common.js";
+
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/homeHub")
     .configureLogging(signalR.LogLevel.Information)
@@ -26,34 +30,6 @@ $(function () {
         clearTimeout(deepcores[i]);
         clearTimeout(clientConnects[i]);
     }
-
-
-    const STATUS_PLC = Object.freeze({
-        'EMG': 0,
-        'START': 1,
-        'STOP': 2,
-        'ALARM': 3,
-        'DISCONNECTED': 4
-    });
-
-    const STATUS_RESULT = Object.freeze({
-        'OK': 1,
-        'NG': 2,
-        'EMPTY': 3,
-    });
-
-    const SYSTEM_STATUS_CLIENT = Object.freeze({
-        'RUNNING': 1,
-        'PAUSE': 2,
-        'ERROR': 3,
-    });
-
-    const CLIENT = Object.freeze({
-        'CLIENT_1': 1,
-        'CLIENT_2': 2,
-        'CLIENT_3': 3,
-        'CLIENT_4': 4,
-    });
 
     //====================================================== EVENT REALTIME ======================================================
 
@@ -327,8 +303,30 @@ $(function () {
         }
     });
 
-    connection.on("RefreshData", function () {
-        UpdateStatisticalCalculations();
+    connection.on("ChangeModeBySwagger", (rs) => {
+        $(`input[name="mode_run"][value="${rs}"]`).prop('checked', true);
+    })
+
+    connection.on("RefreshData", function (total, ok, ng, empty) {
+        let percentOK = 0;
+        let percentNG = 0;
+        let percentEmpty = 0;
+
+        $('#total-tray-ea').html(formatNumberWithDot(total/40));
+        $('#total-ea').html(`${formatNumberWithDot(total)}<span class="">&nbspEA</span>`);
+        $('#total-ok-ea').html(`${formatNumberWithDot(ok)}<span class="">&nbspEA</span>`);
+        $('#total-ng-ea').html(`${formatNumberWithDot(ng)}<span class="">&nbspEA</span>`);
+        $('#total-empty-ea').html(`${formatNumberWithDot(empty)}<span class="">&nbspEA</span>`);
+        
+        if (percentOK == 0 && percentNG == 0 && percentEmpty == 0) {
+            percentOK = 100;
+        }
+
+        myPieChart.data.datasets[0].data = [percentOK, percentNG, percentEmpty];
+        myPieChart.data.labels = ["OK", "NG", "Empty"];
+        myPieChart.update('none');
+
+        //UpdateStatisticalCalculations();
     });
 
     //====================================================== CONFIG CHART ======================================================
@@ -574,15 +572,6 @@ $(function () {
         }
     }
 
-    function convertDate(date) {
-        let hours = date.substr(11, 2);
-        let minutes = date.substr(14, 2);
-        let seconds = date.substr(17, 2);
-        let milliseconds = date.substr(20, 3);
-
-        return hours + ":" + minutes + ":" + seconds + ":" + milliseconds;
-    }
-
     function GetResult(item) {
         if (item.resultArea == 1 && item.resultLine == 1) {
             return 'OK';
@@ -593,14 +582,6 @@ $(function () {
         }
 
         return 'NG';
-    }
-
-    function getCurrentDateTime() {
-        return new Date(new Date().getTime() + (7 * 60 * 60 * 1000)).toISOString().slice(0, 23) + 'Z';
-    }
-
-    function formatNumberWithDot(number) {
-        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
     $(document).on('change', '#select-model', function () {

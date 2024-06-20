@@ -1,5 +1,5 @@
-﻿using log4net;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
+using Stiffiner_Inspection.Commons;
 using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
 
@@ -8,8 +8,6 @@ namespace Stiffiner_Inspection.Hubs
     public class HomeHub : Hub
     {
         private readonly DataService _dataService;
-        private readonly ILog _logger = LogManager.GetLogger(typeof(HomeHub));
-        const int PERCENT = 100;
 
         public HomeHub(DataService dataService)
         {
@@ -29,7 +27,7 @@ namespace Stiffiner_Inspection.Hubs
 
                 double percentChartOk = _dataService.CalculateChartOK(totalOK, total, totalEmpty);
                 double percentChartNG = _dataService.CalculateChartNG(totalNG, total, totalEmpty);
-                double percentChartEmpty = total == 0 ? 0 : Math.Round(PERCENT - percentChartNG - percentChartOk, 2);
+                double percentChartEmpty = total == 0 ? 0 : Math.Round(Constants.PERCENT - percentChartNG - percentChartOk, 2);
 
                 result.TotalTray = (int)(total > 0 ? total/40 : 0);
                 result.Total = total;
@@ -46,7 +44,7 @@ namespace Stiffiner_Inspection.Hubs
             }
             catch (Exception ex)
             {
-                _logger.Error("Update statistical calculations failed: " + ex.Message);
+                Log.Error($"Update statistical calculations failed: {ex.Message}");
                 return null;
             }
         }
@@ -59,7 +57,7 @@ namespace Stiffiner_Inspection.Hubs
             }
             catch (Exception ex)
             {
-                _logger.Error("Error can not change status vision busy:" + ex.Message);
+                Log.Error($"Error can not change status vision busy: {ex.Message}");
                 throw;
             }
         }
@@ -72,7 +70,7 @@ namespace Stiffiner_Inspection.Hubs
             }
             catch (Exception ex)
             {
-                _logger.Error("Error can not change status vision busy:" + ex.Message);
+                Log.Error($"Error can not change status vision busy: {ex.Message}");
                 throw;
             }
         }
@@ -85,21 +83,21 @@ namespace Stiffiner_Inspection.Hubs
             }
             catch (Exception ex)
             {
-                _logger.Error("Error can not change status vision busy:" + ex.Message);
+                Log.Error($"Error can not change status vision busy: {ex.Message}");
                 throw;
             }
         }
 
-        public async Task ChangeModel(string model)
+        public void ChangeModel(string model)
         {
             try
             {
                 Global._currentSelectedModel = model;
-                await _dataService.WriteOneLine(Global.PathFileCurrentModel, model);
+                Global.WriteFileToTxt(Global.PathFileSetting, new Dictionary<string, string> { { "current_model", model } });
             }
             catch (Exception ex)
             {
-                _logger.Error("Error can not change model:" + ex.Message);
+                Log.Error($"Error can not change model: {ex.Message}");
                 throw;
             }
         }
@@ -112,7 +110,7 @@ namespace Stiffiner_Inspection.Hubs
             }
             catch (Exception ex)
             {
-                _logger.Error("Error can not get list data:" + ex.Message);
+                Log.Error($"Error can not get list data: {ex.Message}");
                 throw;
             }
         }
@@ -121,35 +119,38 @@ namespace Stiffiner_Inspection.Hubs
         {
             try
             {
-                Global.Client1IsPostModel = 1;
-                Global.Client2IsPostModel = 1;
-                Global.Client3IsPostModel = 1;
-                Global.Client4IsPostModel = 1;
+                Global.Client1IsPostModel = Constants.ACTIVE;
+                Global.Client2IsPostModel = Constants.ACTIVE;
+                Global.Client3IsPostModel = Constants.ACTIVE;
+                Global.Client4IsPostModel = Constants.ACTIVE;
 
                 Global.strModels = string.Empty;
                 Global._currentSelectedModel = string.Empty;
                 Global.ListModels.Clear();
 
-                await _dataService.WriteOneLine(Global.PathFileCurrentModel, string.Empty);
+                Global.WriteFileToTxt(Global.PathFileSetting, new Dictionary<string, string> { { "current_model", string.Empty} });
                 await _dataService.WriteOneLine(Global.PathFileListModel, string.Empty);
             }
             catch (Exception ex)
             {
-                _logger.Error("Error can not change model:" + ex.Message);
+                Log.Error($"Error can not change model: {ex.Message}");
                 throw;
             }
         }
 
-        public async Task ChangeModeRun(string mode)
+        public void ChangeModeRun(string mode)
         {
             try
             {
                 Global.Mode = int.Parse(mode);
-                await _dataService.WriteOneLine(Global.PathFileMode, mode);
+                Global.WriteFileToTxt(Global.PathFileSetting, new Dictionary<string, string>
+                {
+                    { "mode", mode }
+                });
             }
             catch (Exception ex)
             {
-                _logger.Error("Error can not change model:" + ex.Message);
+                Log.Error($"Error can not change model: {ex.Message}");
                 throw;
             }
         }
@@ -158,29 +159,29 @@ namespace Stiffiner_Inspection.Hubs
         {
             try
             {
-                if (client == 1)
+                if (client == Constants.CLIENT_1)
                 {
-                    Global.ResetCamClient1 = 1;
+                    Global.ResetCamClient1 = Constants.ACTIVE;
                 }
 
-                if (client == 2)
+                if (client == Constants.CLIENT_2)
                 {
-                    Global.ResetCamClient2 = 1;
+                    Global.ResetCamClient2 = Constants.ACTIVE;
                 }
 
-                if (client == 3)
+                if (client == Constants.CLIENT_3)
                 {
-                    Global.ResetCamClient3 = 1;
+                    Global.ResetCamClient3 = Constants.ACTIVE;
                 }
 
-                if (client == 4)
+                if (client == Constants.CLIENT_4)
                 {
-                    Global.ResetCamClient4 = 1;
+                    Global.ResetCamClient4 = Constants.ACTIVE;
                 }
             }
             catch (Exception ex)
             {
-                _logger.Error("Error can not save file log: " + ex.Message);
+                Log.Error($"Error can not save file log: {ex.Message}");
                 throw;
             }
         }

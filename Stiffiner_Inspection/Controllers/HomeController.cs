@@ -1,7 +1,6 @@
-using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Stiffiner_Inspection.Contexts;
+using Stiffiner_Inspection.Commons;
 using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Services;
 
@@ -12,72 +11,45 @@ namespace Stiffiner_Inspection.Controllers
         private readonly IHubContext<HomeHub> _hubContext;
         private readonly IHubContext<HistoryHub> _historyContext;
         private readonly DataService _dataService;
-        private readonly ILog _logger = LogManager.GetLogger(typeof(HomeController));
-        private readonly ApplicationDbContext _context;
         const int timeSleep = 100;
-        const int PERCENT = 100;
-        const int ACTIVE = 1;
 
         public HomeController(
             IHubContext<HomeHub> hubContext,
             IHubContext<HistoryHub> historyContext,
-            DataService dataService,
-            ApplicationDbContext context
+            DataService dataService
         )
         {
             _hubContext = hubContext;
             _historyContext = historyContext;
             _dataService = dataService;
-            _context = context;
         }
 
         public async Task<IActionResult> Index()
         {
-            int currentTrayId = await _dataService.GetcurrTray();
-            ViewBag.currentTray = currentTrayId;
-            Global.currentTray = currentTrayId;
+            Dictionary<string, string> currentData = Global.ReadValueFileTxt(Global.PathFileSetting, ["total", "ok", "ng", "empty", "current_tray", "hidden_setting", "mode", "timeline", "current_model"]);
 
-            Global._currentSelectedModel = await _dataService.ReadOneLine(Global.PathFileCurrentModel);
+            Global.Total = int.Parse(currentData["total"]);
+            Global.TotalOK = int.Parse(currentData["ok"]);
+            Global.TotalNG = int.Parse(currentData["ng"]);
+            Global.TotalEmpty = int.Parse(currentData["empty"]);
+            Global.currentTray = int.Parse(currentData["current_tray"]);
+            Global.HiddenSetting = int.Parse(currentData["hidden_setting"]);
+            Global.Mode = int.Parse(currentData["mode"]);
+            Global.TimeLine = currentData["timeline"];
+            Global._currentSelectedModel = currentData["current_model"] ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(Global.TimeLine))
+            {
+                Global.TimeLine = DateTime.Now.ToString("yyyyMMddHHmmss");
+                Global.WriteFileToTxt(Global.PathFileSetting, new Dictionary<string, string> 
+                {
+                    { "timeline", Global.TimeLine }
+                });
+            }
+
             Global.ListModels = await _dataService.ReadManyLine(Global.PathFileListModel);
 
-            string timeLine = await _dataService.ReadOneLine(Global.PathFileTimeLine);
-
-            if (string.IsNullOrWhiteSpace(timeLine))
-            {
-                string currentTimeLine = DateTime.Now.ToString("yyyyMMddHHmmss");
-                Global.TimeLine = currentTimeLine;
-                await _dataService.WriteOneLine(Global.TimeLine, currentTimeLine);
-            }
-            else
-            {
-                Global.TimeLine = timeLine;
-            }
-
-            string mode = await _dataService.ReadOneLine(Global.PathFileMode);
-
-            if (string.IsNullOrWhiteSpace(mode))
-            {
-                Global.Mode = 1;
-                await _dataService.WriteOneLine(Global.PathFileMode, "1");
-            }
-            else
-            {
-                Global.Mode = int.Parse(mode);
-            }
-
-            string hiddenSetting = await _dataService.ReadOneLine(Global.PathFileHiddenSetting);
-
-            if (string.IsNullOrWhiteSpace(hiddenSetting))
-            {
-                Global.HiddenSetting = 1;
-                await _dataService.WriteOneLine(Global.PathFileHiddenSetting, "1");
-            }
-            else
-            {
-                Global.HiddenSetting = int.Parse(hiddenSetting);
-            }
-
-            Global.controlPLC.Connect();
+            //Global.controlPLC.Connect();
 
             //Thread read value PLC
             Thread threadValuePLC = new Thread(GetValuePLC);
@@ -97,22 +69,15 @@ namespace Stiffiner_Inspection.Controllers
             visionBusy.Name = "VISION_BUSY";
             visionBusy.Start();
 
-            //Get info ok, ng, percent chart
-            double total = await _dataService.GetTotal();
+            ViewBag.TotalTray = Global.Total > 0 ? Global.Total / 40 : 0;
+            ViewBag.Total = Global.Total;
+            ViewBag.TotalOK = Global.TotalOK;
+            ViewBag.TotalNG = Global.TotalNG;
+            ViewBag.TotalEmpty = Global.TotalEmpty;
 
-            int allOK = await _dataService.GettotalOK();
-            int allEMPTY = await _dataService.GetTotalEmpty();
-            int allNG = (int)(total - allOK - allEMPTY);
-
-            ViewBag.TotalTray = total > 0 ? total / 40 : 0;
-            ViewBag.Total = total;
-            ViewBag.TotalOK = allOK;
-            ViewBag.TotalNG = allNG;
-            ViewBag.TotalEmpty = allEMPTY;
-
-            ViewBag.PercentChartOK = _dataService.CalculateChartOK(allOK, total, allEMPTY);
-            ViewBag.PercentChartNG = _dataService.CalculateChartNG(allNG, total, allEMPTY);
-            ViewBag.PercentChartEmpty = total == 0 ? 0 : Math.Round(PERCENT - ViewBag.PercentChartNG - ViewBag.PercentChartOK, 2);
+            ViewBag.PercentChartOK = _dataService.CalculateChartOK(Global.TotalOK, Global.Total, Global.TotalEmpty);
+            ViewBag.PercentChartNG = _dataService.CalculateChartNG(Global.TotalNG, Global.Total, Global.TotalEmpty);
+            ViewBag.PercentChartEmpty = Global.Total == 0 ? 0 : Math.Round(Constants.PERCENT - ViewBag.PercentChartNG - ViewBag.PercentChartOK, 2);
 
             return View();
         }
@@ -142,12 +107,12 @@ namespace Stiffiner_Inspection.Controllers
                 if (CheckConditionVisionBusy() == false)
                 {
                     Global.controlPLC.VisionBusy(true);
-                    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 2, "");
+                    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", Constants.PAUSE, "");
                 } 
                 else
                 {
                     Global.controlPLC.VisionBusy(false);
-                    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", 1, "");
+                    await _hubContext.Clients.All.SendAsync("ChangeStatusSystemClient", Constants.RUNNING, "");
                 }
 
                 Thread.Sleep(2000);
@@ -157,17 +122,17 @@ namespace Stiffiner_Inspection.Controllers
         //true is not busy, false is busy
         public bool CheckConditionVisionBusy()
         {
-            if (Global.StatusCam1 != ACTIVE || Global.StatusCam2 != ACTIVE || Global.StatusCam3 != ACTIVE || Global.StatusCam4 != ACTIVE)
+            if (Global.StatusCam1 != Constants.ACTIVE || Global.StatusCam2 != Constants.ACTIVE || Global.StatusCam3 != Constants.ACTIVE || Global.StatusCam4 != Constants.ACTIVE)
             {
                 return false;
             }
 
-            if (Global.ConnectCam1 != ACTIVE || Global.ConnectCam2 != ACTIVE || Global.ConnectCam3 != ACTIVE || Global.ConnectCam4 != ACTIVE)
+            if (Global.ConnectCam1 != Constants.ACTIVE || Global.ConnectCam2 != Constants.ACTIVE || Global.ConnectCam3 != Constants.ACTIVE || Global.ConnectCam4 != Constants.ACTIVE)
             {
                 return false;
             }
 
-            if (Global.DeepLearningCam1 != ACTIVE || Global.DeepLearningCam2 != ACTIVE || Global.DeepLearningCam3 != ACTIVE || Global.DeepLearningCam4 != ACTIVE)
+            if (Global.DeepLearningCam1 != Constants.ACTIVE || Global.DeepLearningCam2 != Constants.ACTIVE || Global.DeepLearningCam3 != Constants.ACTIVE || Global.DeepLearningCam4 != Constants.ACTIVE)
             {
                 return false;
             }
@@ -183,34 +148,46 @@ namespace Stiffiner_Inspection.Controllers
         [HttpPost]
         public async Task<IActionResult> ClearData()
         {
-            string currentTimeLine = DateTime.Now.ToString("yyyyMMddHHmmss");
-            Global.TimeLine = currentTimeLine;
-            
-            await _dataService.WriteOneLine(Global.PathFileTimeLine, currentTimeLine);
+            Global.TimeLine = DateTime.Now.ToString("yyyyMMddHHmmss");
+            Global.WriteFileToTxt(Global.PathFileSetting, new Dictionary<string, string> {
+                { "total", "0" },
+                { "ok", "0"},
+                { "ng", "0" },
+                { "empty", "0" },
+                { "current_tray", "0" },
+                { "timeline", Global.TimeLine }
+            });
+
             await _historyContext.Clients.All.SendAsync("RefreshData");
 
-            Global.ClearClient1 = 1;
-            Global.ClearClient2 = 1;
-            Global.ClearClient3 = 1;
-            Global.ClearClient4 = 1;
-            
+            Global.ClearClient1 = Constants.ACTIVE;
+            Global.ClearClient2 = Constants.ACTIVE;
+            Global.ClearClient3 = Constants.ACTIVE;
+            Global.ClearClient4 = Constants.ACTIVE;
+
             return RedirectToAction("Index");
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteAllData()
         {
-            string currentTimeLine = DateTime.Now.ToString("yyyyMMddHHmmss");
-            Global.TimeLine = currentTimeLine;
-           
-            await _dataService.WriteOneLine(Global.PathFileTimeLine, currentTimeLine);
+            Global.TimeLine = DateTime.Now.ToString("yyyyMMddHHmmss");
+            Global.WriteFileToTxt(Global.PathFileSetting, new Dictionary<string, string> {
+                { "total", "0" },
+                { "ok", "0"},
+                { "ng", "0" },
+                { "empty", "0" },
+                { "current_tray", "0" },
+                { "timeline", Global.TimeLine }
+            });
+
             await _dataService.DeleteAllData();
             await _historyContext.Clients.All.SendAsync("RefreshData");
 
-            Global.ClearClient1 = 1;
-            Global.ClearClient2 = 1;
-            Global.ClearClient3 = 1;
-            Global.ClearClient4 = 1;
+            Global.ClearClient1 = Constants.ACTIVE;
+            Global.ClearClient2 = Constants.ACTIVE;
+            Global.ClearClient3 = Constants.ACTIVE;
+            Global.ClearClient4 = Constants.ACTIVE;
 
             return RedirectToAction("Index");
         }
