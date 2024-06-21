@@ -37,7 +37,6 @@ $(function () {
     connection.start()
         .then(() => {
             console.log('Connection established!');
-            //UpdateStatisticalCalculations();
 
             for (let i = 1; i <= 4; i++) {
                 connection.invoke("ChangeStatusCamVisionBusy", i, 0)
@@ -308,25 +307,13 @@ $(function () {
     })
 
     connection.on("RefreshData", function (total, ok, ng, empty) {
-        let percentOK = 0;
-        let percentNG = 0;
-        let percentEmpty = 0;
+        UpdateStatisticalCalculations(total, ok, ng, empty);
 
-        $('#total-tray-ea').html(formatNumberWithDot(total/40));
-        $('#total-ea').html(`${formatNumberWithDot(total)}<span class="">&nbspEA</span>`);
-        $('#total-ok-ea').html(`${formatNumberWithDot(ok)}<span class="">&nbspEA</span>`);
-        $('#total-ng-ea').html(`${formatNumberWithDot(ng)}<span class="">&nbspEA</span>`);
-        $('#total-empty-ea').html(`${formatNumberWithDot(empty)}<span class="">&nbspEA</span>`);
-        
-        if (percentOK == 0 && percentNG == 0 && percentEmpty == 0) {
-            percentOK = 100;
-        }
-
-        myPieChart.data.datasets[0].data = [percentOK, percentNG, percentEmpty];
-        myPieChart.data.labels = ["OK", "NG", "Empty"];
-        myPieChart.update('none');
-
-        //UpdateStatisticalCalculations();
+        $('#fake-tray').val(total / 40);
+        $('#fake-total').val(total);
+        $('#fake-ok').val(ok);
+        $('#fake-ng').val(ng);
+        $('#fake-empty').val(empty);
     });
 
     //====================================================== CONFIG CHART ======================================================
@@ -396,33 +383,28 @@ $(function () {
     });
 
     //====================================================== FUNCTION ======================================================
-    function UpdateStatisticalCalculations() {
-        connection.invoke("UpdateStatistical", "UpdateStatictical")
-            .then(function (res) {
-                $('#total-tray-ea').html(formatNumberWithDot(res.totalTray));
-                $('#total-ea').html(`${formatNumberWithDot(res.total)}<span class="">&nbspEA</span>`);
-                $('#total-ok-ea').html(`${formatNumberWithDot(res.totalOK)}<span class="">&nbspEA</span>`);
-                $('#total-ng-ea').html(`${formatNumberWithDot(res.totalNG)}<span class="">&nbspEA</span>`);
-                $('#total-empty-ea').html(`${formatNumberWithDot(res.totalEmpty)}<span class="">&nbspEA</span>`);
+    function UpdateStatisticalCalculations(total, ok, ng, empty) {
+        let percentOK = total == 0 ? 0 : parseFloat((ok / total * 100).toFixed(2))
+        let percentNG = total == 0 ? 0 : parseFloat((ng / total * 100).toFixed(2))
+        let percentEmpty = parseFloat((100 - percentOK - percentNG).toFixed(2))
 
-                $('#percent-ok').html(`${res.percentChartOk} %`);
-                $('#percent-ng').html(`${res.percentChartNG} %`);
-                $('#percent-empty').html(`${res.percentChartEmpty} %`);
+        $('#total-tray-ea').html(formatNumberWithDot(total / 40));
+        $('#total-ea').html(`${formatNumberWithDot(total)}<span class="">&nbspEA</span>`);
+        $('#total-ok-ea').html(`${formatNumberWithDot(ok)}<span class="">&nbspEA</span>`);
+        $('#total-ng-ea').html(`${formatNumberWithDot(ng)}<span class="">&nbspEA</span>`);
+        $('#total-empty-ea').html(`${formatNumberWithDot(empty)}<span class="">&nbspEA</span>`);
 
-                if (res.percentChartOk == 0 && res.percentChartNG == 0 && res.percentChartEmpty == 0) {
-                    res.percentChartOk = 100;
-                }
+        $('#percent-ok').html(`${percentOK} %`);
+        $('#percent-ng').html(`${percentNG} %`);
+        $('#percent-empty').html(`${percentEmpty} %`);
 
-                myPieChart.data.datasets[0].data = [res.percentChartOk, res.percentChartNG, res.percentChartEmpty];
-                myPieChart.data.labels = ["OK", "NG", "Empty"];
-                myPieChart.update('none');
-            })
-            .catch(function (err) {
-                console.error("Error calling API:", err.toString());
-            })
-            .finally(function () {
-                //setTimeout(UpdateStatisticalCalculations, 2500)
-            });
+        if (percentOK == 0 && percentNG == 0 && percentEmpty == 0) {
+            percentOK = 100;
+        }
+
+        myPieChart.data.datasets[0].data = [percentOK, percentNG, percentEmpty];
+        myPieChart.data.labels = ["OK", "NG", "Empty"];
+        myPieChart.update('none');
     }
 
     function appendPreviousTray() {
@@ -603,8 +585,8 @@ $(function () {
 
     $('.form-search-btn-search').click(function () {
         $('.form-search-btn-search').prop('disabled', true).html('Loading...');
-        let fromDate = $('#start-date').val() + ' ' + $('#start-time').val();
-        let toDate = $('#end-date').val() + ' ' + $('#end-time').val();
+        let fromDate = $('#start-date').val()
+        let toDate = $('#end-date').val()
         let model = $('#form-search-model').val();
         pageListResult = 1;
 
@@ -655,7 +637,7 @@ $(function () {
                                 <td class="${result == 'NG' ? 'text-danger' : 'text-success'}">${result}</td>
                                 <td>${result != 'NG' ? '-' : err.replace(/^,+|,+$/g, '')}</td>
                                 <td>
-                                    ${result != 'NG' ? '-' : img.replace(/,+$/, '') }
+                                    ${result != 'NG' ? '-' : img.replace(/,+$/, '')}
                                 </td>
                             </tr>
                         `;
@@ -721,7 +703,7 @@ $(function () {
                                 <td class="${result == 'NG' ? 'text-danger' : 'text-success'}">${result}</td>
                                 <td>${result != 'NG' ? '-' : err.replace(/^,+|,+$/g, '')}</td>
                                 <td>
-                                    ${result != 'NG' ? '-' : img.replace(/,+$/, '') }
+                                    ${result != 'NG' ? '-' : img.replace(/,+$/, '')}
                                 </td>
                             </tr>
                         `;
@@ -798,6 +780,161 @@ $(function () {
                 console.error("Error calling API:", err.toString());
             });
     });
+
+    function setFakeTotal(numberTray) {
+        let tempFakeTotal = $('#temp-fake-total');
+        let fakeTotal = $('#fake-total');
+        
+        if (numberTray != '') {
+            tempFakeTotal.val(formatNumberWithDot(numberTray * 40));
+            fakeTotal.val(numberTray * 40);
+
+            return;
+        }
+
+        tempFakeTotal.val('');
+        fakeTotal.val(0);
+    }
+
+    function setItemLeft(value) {
+        if (value != '') {
+            $('#left-item-fake-data').html(formatNumberWithDot(value));
+            $('#value-left-item-fake-data').val(value)
+            if (value == 0) {
+                $('#wrap-item-left').css('display', 'none')
+            } else {
+                $('#wrap-item-left').css('display', 'block')
+            }
+
+            return;
+        }
+
+        $('#left-item-fake-data').html(0);
+        $('#value-left-item-fake-data').val(0)
+    }
+
+    $('.form-input-fake-data input').on('input', function () {
+        let currentValue = $(this).val().replace(/[^0-9]/g, '').replace(/^0+/, '');
+
+        $(this).val(currentValue);
+
+        if (this.id == 'temp-fake-tray') {
+            
+            if (currentValue == '') {
+                setFakeTotal('');
+                setItemLeft(0)
+                return;
+            }
+
+            if (currentValue > 30000) {
+                alert("Quantity tray must smaller than 30.000!")
+                currentValue = 30000
+            }
+
+            $(this).val(formatNumberWithDot(currentValue));
+            $('#fake-tray').val(currentValue)
+
+            setFakeTotal(currentValue);
+
+            let totalOK = parseInt($('#fake-ok').val());
+            let totalNG = parseInt($('#fake-ng').val());
+            let totalEmpty = parseInt($('#fake-empty').val());
+            let total = parseInt($('#fake-total').val());
+            
+            setItemLeft((currentValue * 40) - totalOK - totalNG - totalEmpty)
+
+            let percentOK = total == 0 ? 0 : ((totalOK / total) * 100).toFixed(2);
+            let percentNG = total == 0 ? 0 : ((totalNG / total) * 100).toFixed(2);
+            let percentEmpty = total == 0 ? 0 : ((totalEmpty / total) * 100).toFixed(2);
+
+            $('#percent-fake-ok').html(`${percentOK}%`);
+            $('#percent-fake-ng').html(`${percentNG}%`);
+            $('#percent-fake-empty').html(`${percentEmpty}%`);
+        }
+
+        if (this.id == 'temp-fake-ok') {
+            let elmPercentOk = $('#percent-fake-ok');
+            let total = parseInt($('#fake-total').val());
+            let totalNG = parseInt($('#fake-ng').val());
+            let totalEmpty = parseInt($('#fake-empty').val());
+
+            if (currentValue == '') {
+                $('#fake-ok').val(0);
+                setItemLeft(total - 0 - totalNG - totalEmpty);
+                elmPercentOk.html(`0%`);
+                return
+            }
+
+            $(this).val(formatNumberWithDot(currentValue));
+            $('#fake-ok').val(currentValue);
+            setItemLeft(total - parseInt(currentValue) - totalNG - totalEmpty);
+
+            let percentOk = ((parseInt(currentValue) / total) * 100).toFixed(2);
+            elmPercentOk.html(`${percentOk}%`);
+        }
+
+        if (this.id == 'temp-fake-ng') {
+            let elmPercentNg = $('#percent-fake-ng');
+            let total = parseInt($('#fake-total').val());
+            let totalOK = parseInt($('#fake-ok').val());
+            let totalEmpty = parseInt($('#fake-empty').val());
+
+            if (currentValue == '') {
+                $('#fake-ng').val(0);
+                setItemLeft(total - 0 - totalOK - totalEmpty);
+                elmPercentNg.html(`0%`);
+                return
+            }
+
+            $(this).val(formatNumberWithDot(currentValue));
+            $('#fake-ng').val(currentValue);
+            setItemLeft(total - parseInt(currentValue) - totalOK - totalEmpty);
+
+            let percentNG = ((parseInt(currentValue) / total) * 100).toFixed(2);
+            elmPercentNg.html(`${percentNG}%`);
+        }
+
+        if (this.id == 'temp-fake-empty') {
+            let elmPercentEmpty = $('#percent-fake-empty');
+            let total = parseInt($('#fake-total').val());
+            let totalOK = parseInt($('#fake-ok').val());
+            let totalNG = parseInt($('#fake-ng').val());
+
+            if (currentValue == '') {
+                $('#fake-empty').val(0);
+                setItemLeft(total - 0 - totalOK - totalNG);
+                elmPercentEmpty.html(`0%`);
+                return
+            }
+
+            $(this).val(formatNumberWithDot(currentValue));
+            $('#fake-empty').val(currentValue);
+            setItemLeft(total - parseInt(currentValue) - totalOK - totalNG);
+
+            let percentEmpty = ((parseInt(currentValue) / total) * 100).toFixed(2);
+            elmPercentEmpty.html(`${percentEmpty}%`);
+        }
+    });
+
+    $('.form-input-fake-data input[readonly]').on('keydown paste', function (e) {
+        e.preventDefault();
+    });
+
+    $('.btn-save-fake-data').click(function () {
+        let total = parseInt($('#fake-total').val());
+        let ok = parseInt($('#fake-ok').val());
+        let ng = parseInt($('#fake-ng').val());
+        let empty = parseInt($('#fake-empty').val());
+
+        connection.invoke('SetFakeData', total, ok, ng, empty)
+            .then((res) => {
+                alert("Change data successfully!")
+                UpdateStatisticalCalculations(total, ok, ng, empty)
+            }).catch((err) => {
+                alert("Error can not save fake data!");
+                console.error("Error can not save fake data: ", err.toString());
+            });
+    })
 
     const countdownTime = 20;
 

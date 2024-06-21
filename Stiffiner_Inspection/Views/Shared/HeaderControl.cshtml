@@ -87,13 +87,11 @@
                                     <div>
                                         <label for="start" class="label-input-time" id="label-start">From:</label>
                                         <input type="date" class="input-date-time" id="start-date" value="@(DateTime.Now.ToString("yyyy-MM-dd"))" />
-                                        <input type="time" class="input-date-time" id="start-time" value="00:00" min="00:00" max="23:59" required />
                                     </div>
 
                                     <div style="margin-left: 2em">
                                         <label for="end" class="label-input-time">To:</label>
                                         <input type="date" class="input-date-time" id="end-date" value="@(DateTime.Now.ToString("yyyy-MM-dd"))" />
-                                        <input type="time" class="input-date-time" id="end-time" value="23:59" min="00:00" max="23:59" required />
                                     </div>
 
                                     <button class="btn btn-primary px-5 form-search-btn-search" style="margin-left: 2em">Search</button>
@@ -220,42 +218,47 @@
                                 <div class="mt-3">
                                     <div>
                                         <form>
-                                            <div class="row">
-                                                @*<div class="col-md-2 mb-3">
-                                                    <label for="validationServer01">First name</label>
-                                                    <input type="text" class="form-control is-valid" id="validationServer01" placeholder="First name" value="" required>
-                                                    <div class="valid-feedback">
-                                                        Looks good!
-                                                    </div>
-                                                </div>*@
-
+                                            <div class="row form-input-fake-data">
                                                 <div class="col-md-2 mb-3">
                                                     <label for="fake-tray" class="fw-bold">Tray</label>
-                                                    <input type="text" class="form-control mt-1" id="fake-tray" placeholder="Tray" value="" required>
-                                                    <div class="valid-feedback"></div>
+                                                    <input type="text" class="form-control mt-1" id="temp-fake-tray" placeholder="0" value="@(ViewBag.TotalTray.ToString("#,##0").Replace(",", "."))" required>
+                                                    <input type="hidden" id="fake-tray" value="@ViewBag.TotalTray" />
                                                 </div>
+                                                
                                                 <div class="col-md-2 mb-3">
                                                     <label for="fake-total" class="fw-bold">Total</label>
-                                                    <input type="text" class="form-control mt-1" id="fake-total" placeholder="Total" value="" required>
-                                                    <div class="valid-feedback"></div>
+                                                    <input type="text" class="form-control mt-1" id="temp-fake-total" readonly placeholder="0" value="@(ViewBag.Total.ToString("#,##0").Replace(",", "."))" required>
+                                                    <input type="hidden" value="@ViewBag.Total" id="fake-total" />
+
+                                                    <span id="wrap-item-left">
+                                                        <b class="d-inline-block mt-1 text-danger fw-bold" id="wr-left-item-fake-data">Left:&nbsp;</b><span class="text-danger fw-bold" id="left-item-fake-data">0</span>
+                                                    </span>
+                                                    <input type="hidden" id="value-left-item-fake-data" value="0" />
                                                 </div>
+                                                
                                                 <div class="col-md-2 mb-3 fw-bold">
                                                     <label for="fake-ok">OK</label>
-                                                    <input type="text" class="form-control mt-1" id="fake-ok" placeholder="OK" value="" required>
-                                                    <div class="valid-feedback"></div>
+                                                    <input type="text" class="form-control mt-1" id="temp-fake-ok" placeholder="0" value="@ViewBag.TotalOK.ToString("#,##0").Replace(",", ".")" required>
+                                                    <input type="hidden" value="@ViewBag.TotalOK" id="fake-ok" />
+                                                    <b class="d-inline-block mt-1 fw-bold text-danger" id="percent-fake-ok">@ViewBag.PercentChartOK%</b>
                                                 </div>
+                                                
                                                 <div class="col-md-2 mb-3 fw-bold">
                                                     <label for="fake-ng">NG</label>
-                                                    <input type="text" class="form-control mt-1" id="fake-ng" placeholder="NG" value="" required>
-                                                    <div class="valid-feedback"></div>
+                                                    <input type="text" class="form-control mt-1" id="temp-fake-ng" placeholder="0" value="@ViewBag.TotalNG.ToString("#,##0").Replace(",", ".")" required>
+                                                    <input type="hidden" value="@ViewBag.TotalNG" id="fake-ng" />
+                                                    <b class="d-inline-block mt-1 fw-bold text-danger" id="percent-fake-ng">@ViewBag.PercentChartNG%</b>
                                                 </div>
+                                                
                                                 <div class="col-md-2 mb-3 fw-bold">
                                                     <label for="fake-empty">Empty</label>
-                                                    <input type="text" class="form-control mt-1" id="fake-empty" placeholder="Empty" value="" required>
-                                                    <div class="valid-feedback"></div>
+                                                    <input type="text" class="form-control mt-1" id="temp-fake-empty" placeholder="0" value="@ViewBag.TotalEmpty.ToString("#,##0").Replace(",", ".")" required>
+                                                    <input type="hidden" value="@ViewBag.TotalEmpty" id="fake-empty" />
+                                                    <b class="d-inline-block mt-1 fw-bold text-danger" id="percent-fake-empty">@ViewBag.PercentChartEmpty%</b>
                                                 </div>
-                                                <div class="col-md-2 mb-3 fw-bold" style="display: flex; align-items: center; padding-top: 15px;">
-                                                    <button type="button" class="btn btn-primary">Save</button>
+                                                
+                                                <div class="col-md-2 mb-3 fw-bold" style="display: flex; align-items: center">
+                                                    <button type="button" class="btn btn-primary btn-save-fake-data">Save</button>
                                                 </div>
                                             </div>
                                         </form>

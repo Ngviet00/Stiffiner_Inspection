@@ -185,5 +185,28 @@ namespace Stiffiner_Inspection.Hubs
                 throw;
             }
         }
+
+        public void SetFakeData(int total, int ok, int ng, int empty)
+        {
+            try
+            {
+                Global.WriteFileToTxt(Global.PathFileSetting, new Dictionary<string, string>
+                {
+                    { "total", total.ToString() },
+                    { "ok", ok.ToString() },
+                    { "ng", ng.ToString() },
+                    { "empty", empty.ToString() }
+                });
+
+                Global.Total = total;
+                Global.TotalOK= ok;
+                Global.TotalNG = ng;
+                Global.TotalEmpty = empty;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error can not set fake data: {ex.Message}");
+            }
+        }
     }
 }

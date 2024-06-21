@@ -226,12 +226,17 @@ namespace Stiffiner_Inspection.Services
                 Global.TotalNG += ng;
                 Global.TotalEmpty += empty;
 
+                Global.WriteFileToTxt(Global.PathFileSetting, new Dictionary<string, string>
+                {
+                    { "total", Global.Total.ToString() },
+                    { "ok", Global.TotalOK.ToString() },
+                    { "ng", Global.TotalNG.ToString() },
+                    { "empty", Global.TotalEmpty.ToString() },
+                });
+
                 await _hubContext.Clients.All.SendAsync("RefreshData", Global.Total, Global.TotalOK, Global.TotalNG, Global.TotalEmpty);
 
-                if (dataCSV.Count == 40)
-                {
-                    await SaveToExcel(dataCSV);
-                }
+                await SaveToExcel(dataCSV);
 
                 //after vision done, call method refresh data in history page
                 await _historyContext.Clients.All.SendAsync("RefreshData");
@@ -392,12 +397,12 @@ namespace Stiffiner_Inspection.Services
 
         public double CalculateChartOK(int totalOK, double total, int totalEmpty)
         {
-            return total == 0 ? 0 : Math.Round(totalOK / (total + totalEmpty) * Constants.PERCENT, 2);
+            return total == 0 ? 0 : Math.Round(totalOK / total * Constants.PERCENT, 2);
         }
 
         public double CalculateChartNG(int totalNG, double total, int totalEmpty)
         {
-            return total == 0 ? 0 : Math.Round(totalNG / (total + totalEmpty) * Constants.PERCENT, 2);
+            return total == 0 ? 0 : Math.Round(totalNG / total * Constants.PERCENT, 2);
         }
 
         public double CalculateChartEmpty(double total, double percentNG, double percentOK)

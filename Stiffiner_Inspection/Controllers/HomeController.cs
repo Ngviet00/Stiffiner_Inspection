@@ -49,7 +49,7 @@ namespace Stiffiner_Inspection.Controllers
 
             Global.ListModels = await _dataService.ReadManyLine(Global.PathFileListModel);
 
-            //Global.controlPLC.Connect();
+            Global.controlPLC.Connect();
 
             //Thread read value PLC
             Thread threadValuePLC = new Thread(GetValuePLC);

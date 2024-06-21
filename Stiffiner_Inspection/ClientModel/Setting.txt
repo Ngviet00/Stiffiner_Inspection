@@ -1,9 +1,9 @@
 total: 0
 ok: 0
-ng: 0 
+ng: 0
 empty: 0
 current_tray: 0
 hidden_setting: 0
 mode: 2
-current_model:
-timeline: 20240620181918
+current_model: 
+timeline: 20240621190534
