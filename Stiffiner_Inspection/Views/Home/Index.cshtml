@@ -1,7 +1,7 @@
 ﻿<div class="wrap-content">
     <div id="inspection-statistical" class="d-flex justify-content-between">
         <div id="result">
-            <div id="data-chart-percent" data-percent-chart-ok="@ViewBag.PercentChartOK" data-percent-chart-ng="@ViewBag.PercentChartNG" data-percent-chart-empty="@ViewBag.PercentChartEmpty"></div>
+            <div id="data-chart-percent"></div>
             <h3 class="genera-title">Result</h3>
             <div class="d-flex justify-content-between">
                 <div class="current-tray">
@@ -300,5 +300,11 @@
 </div>
 
 @section Scripts {
+    <script>
+        var percentOK = @Html.Raw(Json.Serialize(ViewBag.PercentChartOK));
+        var percentNG = @Html.Raw(Json.Serialize(ViewBag.PercentChartNG));
+        var percentEmpty = @Html.Raw(Json.Serialize(ViewBag.PercentChartEmpty));
+    </script>
+
     <script type="module" src="~/js/home.js"></script>
 }

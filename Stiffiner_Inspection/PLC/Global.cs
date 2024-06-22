@@ -74,6 +74,14 @@ namespace Stiffiner_Inspection
         public static int ResetCamClient3 = 0;
         public static int ResetCamClient4 = 0;
 
+        public static int AUTO_DELETE_IMAGE = 2; //day
+
+        public static int AUTO_DELETE_EXCEL = 120; //day
+
+        public static string PATH_SAVE_EXCEL = @"D:\Export_Result";
+
+        public static string PATH_SAVE_IMAGE = @"D:\publish_image\images\";
+
         public static void WriteFileToTxt(string filePath, Dictionary<string, string> values)
         {
             try

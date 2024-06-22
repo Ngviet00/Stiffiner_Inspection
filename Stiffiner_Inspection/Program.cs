@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Stiffiner_Inspection.Contexts;
 using Stiffiner_Inspection.Hubs;
+using Stiffiner_Inspection.Jobs;
 using Stiffiner_Inspection.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +29,8 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Data", Version = "v1" });
 });
+
+builder.Services.AddHostedService<AutoDeleteOldFile>();
 
 var log4netConfig = new FileInfo("log4net.config");
 XmlConfigurator.Configure(log4netConfig);

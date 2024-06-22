@@ -309,22 +309,14 @@ $(function () {
     connection.on("RefreshData", function (total, ok, ng, empty) {
         UpdateStatisticalCalculations(total, ok, ng, empty);
 
-        $('#fake-tray').val(total / 40);
-        $('#fake-total').val(total);
-        $('#fake-ok').val(ok);
-        $('#fake-ng').val(ng);
-        $('#fake-empty').val(empty);
+        $('.btn-save-fake-data').prop('disabled', false);
     });
 
     //====================================================== CONFIG CHART ======================================================
     var ctx = document.getElementById('pie-chart').getContext('2d');
 
-    var valueChart = document.getElementById('data-chart-percent');
-
     var values = [
-        parseFloat(valueChart.getAttribute('data-percent-chart-ok')),
-        parseFloat(valueChart.getAttribute('data-percent-chart-ng')),
-        parseFloat(valueChart.getAttribute('data-percent-chart-empty')),
+        percentOK, percentNG, percentEmpty
     ];
 
     if (values[0] == 0 && values[1] == 0 && values[2] == 0) {
@@ -388,6 +380,10 @@ $(function () {
         let percentNG = total == 0 ? 0 : parseFloat((ng / total * 100).toFixed(2))
         let percentEmpty = parseFloat((100 - percentOK - percentNG).toFixed(2))
 
+        if (percentEmpty < 0) {
+            percentEmpty = 0
+        }
+
         $('#total-tray-ea').html(formatNumberWithDot(total / 40));
         $('#total-ea').html(`${formatNumberWithDot(total)}<span class="">&nbspEA</span>`);
         $('#total-ok-ea').html(`${formatNumberWithDot(ok)}<span class="">&nbspEA</span>`);
@@ -405,6 +401,28 @@ $(function () {
         myPieChart.data.datasets[0].data = [percentOK, percentNG, percentEmpty];
         myPieChart.data.labels = ["OK", "NG", "Empty"];
         myPieChart.update('none');
+
+        $('#temp-fake-tray').val(formatNumberWithDot(total / 40));
+        $('#fake-tray').val(total / 40);
+
+        $('#temp-fake-total').val(formatNumberWithDot(total));
+        $('#fake-total').val(total);
+
+        $('#temp-fake-ok').val(formatNumberWithDot(ok));
+        $('#fake-ok').val(ok);
+
+        $('#temp-fake-ng').val(formatNumberWithDot(ng));
+        $('#fake-ng').val(ng);
+
+        $('#temp-fake-empty').val(formatNumberWithDot(empty));
+        $('#fake-empty').val(empty);
+
+        $('#percent-fake-ok').html(`${percentOK}%`);
+        $('#percent-fake-ng').html(`${percentNG}%`);
+        $('#percent-fake-empty').html(`${percentEmpty}%`);
+
+        $('#left-item-fake-data').html(0)
+        $('#value-left-item-fake-data').val(0)
     }
 
     function appendPreviousTray() {
@@ -796,17 +814,18 @@ $(function () {
         fakeTotal.val(0);
     }
 
+    if (parseInt($('#fake-tray').val()) == 0) {
+        $('.btn-save-fake-data').prop('disabled', true)
+    }
+
     function setItemLeft(value) {
+        $('.btn-save-fake-data').prop('disabled', value == 0 ? false : true)
+        
         if (value != '') {
             $('#left-item-fake-data').html(formatNumberWithDot(value));
             $('#value-left-item-fake-data').val(value)
-            if (value == 0) {
-                $('#wrap-item-left').css('display', 'none')
-            } else {
-                $('#wrap-item-left').css('display', 'block')
-            }
 
-            return;
+            return
         }
 
         $('#left-item-fake-data').html(0);
@@ -823,6 +842,7 @@ $(function () {
             if (currentValue == '') {
                 setFakeTotal('');
                 setItemLeft(0)
+                $('.btn-save-fake-data').prop('disabled', true)
                 return;
             }
 
@@ -921,10 +941,18 @@ $(function () {
     });
 
     $('.btn-save-fake-data').click(function () {
+
+        if (parseInt($('#value-left-item-fake-data').val()) != 0) {
+            alert("Set wrong data, please check again!")
+            return
+        }
+
         let total = parseInt($('#fake-total').val());
         let ok = parseInt($('#fake-ok').val());
         let ng = parseInt($('#fake-ng').val());
         let empty = parseInt($('#fake-empty').val());
+
+        $(this).prop('disabled', true).html('Loading...')
 
         connection.invoke('SetFakeData', total, ok, ng, empty)
             .then((res) => {
@@ -933,6 +961,8 @@ $(function () {
             }).catch((err) => {
                 alert("Error can not save fake data!");
                 console.error("Error can not save fake data: ", err.toString());
+            }).finally(() => {
+                $(this).prop('disabled', false).html('Save')
             });
     })
 

@@ -589,6 +589,9 @@ namespace Stiffiner_Inspection.Services
         {
             try
             {
+                fromDate += " 00:00:00"; 
+                toDate += " 23:59:59"; 
+
                 int pageSize = 20;
 
                 SearchDataResponse response = new SearchDataResponse();
@@ -602,7 +605,7 @@ namespace Stiffiner_Inspection.Services
                     baseSql.Append($" AND model = '{model}' ");
                 }
 
-                baseSql.Append(" AND CONVERT(VARCHAR(16), time, 120) >= {0} and CONVERT(VARCHAR(16), time, 120) <= {1} and result_area is not null and result_line is not null ");
+                baseSql.Append(" AND time >= {0} and time <= {1} and result_area is not null and result_line is not null ");
 
                 var total = await _dbContext.Data
                     .FromSqlRaw(baseSql.ToString(), fromDate, toDate)
