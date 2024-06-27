@@ -537,7 +537,7 @@
   text-align: left;
 }
 .history #inspection-statistical #result .info-error .label-error {
-  flex-basis: 25%;
+  flex-basis: 40%;
 }
 .history #inspection-statistical #result .info-error .title-table .label-error {
   color: #667085;
@@ -547,6 +547,14 @@
   border-right: 0.5px solid rgba(0, 0, 0, 0.5019607843);
 }
 .history #inspection-statistical #result .info-error .title-table .qty-error {
+  border-right: 0.5px solid rgba(0, 0, 0, 0.5019607843);
+  color: #667085;
+  font-weight: bold;
+  flex-basis: 15%;
+  padding: 10px 4px;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.5019607843);
+}
+.history #inspection-statistical #result .info-error .title-table .percent-error {
   color: #667085;
   font-weight: bold;
   flex-basis: 15%;
@@ -561,6 +569,14 @@
   border-right: 0.5px solid rgba(0, 0, 0, 0.5019607843);
 }
 .history #inspection-statistical #result .info-error .list-error .qty-error {
+  color: #667085;
+  font-weight: bold;
+  flex-basis: 20.9%;
+  padding: 10px 4px;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.5019607843);
+  border-right: 0.5px solid rgba(0, 0, 0, 0.5019607843);
+}
+.history #inspection-statistical #result .info-error .list-error .percent-error {
   color: #667085;
   font-weight: bold;
   flex-basis: 15%;

@@ -1,4 +1,8 @@
-﻿<div class="history">
+﻿@{
+    var qtyNG = Global.TotalNGAllError;
+}
+
+<div class="history">
     <div id="inspection-statistical" class="d-flex justify-content-between">
         <div id="result">
             <div class="d-flex">
@@ -35,7 +39,7 @@
                         <div class="skeleton d-none">
                             <div class="line"></div>
                         </div>
-                        
+
                         <div class="no-data text-center" id="no-data-area">
                             <span>No data</span><br />
                             <span>Please click to NG item to view error details</span>
@@ -90,12 +94,41 @@
                             <div class="qty-error">Quantity</div>
                         </div>
 
-                        <div class="list-error d-none">
-                            @for (int i = 0; i <= 3; i++)
+                        <div class="list-error">
+                            @foreach (var item in ViewBag.ListErrors)
                             {
                                 <div class="d-flex">
-                                    <div class="label-error">Black Dot</div>
-                                    <div class="qty-error">2</div>
+                                    <div class="label-error" id="label-error-@item.Id" data-key-error="@item.Id">@item.Name</div>
+                                    <div class="qty-error" id="qty-label-error-@item.Id" data-key-error="@item.Id">0</div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <h3 style="font-weight: bold; margin-top: 35px; color: #c90000">Total</h3>
+
+                    <div>
+                        <div class="title-table d-flex">
+                            <div class="label-error">Error Type</div>
+                            <div class="qty-error">Quantity</div>
+                            <div class="percent-error">Percent</div>
+                        </div>
+                        <div class="list-error">
+                            @foreach (var err in ViewBag.ListErrors)
+                            {
+                                <div class="d-flex">
+                                    <div class="label-error">@err.Name</div>
+                                    <div class="qty-error">@err.Qty</div>
+                                    <div class="percent-error">
+                                        @if (err.Qty == 0 || qtyNG <= 0)
+                                        {
+                                            <span>0%</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@(Math.Round(((double)err.Qty/(double)qtyNG) * 100 ,2))%</span>
+                                        }
+                                    </div>
                                 </div>
                             }
                         </div>
@@ -133,13 +166,13 @@
         const dataRight = @Html.Raw(Json.Serialize(ViewBag.GroupedDataRight));
 
         let lengthArr = 0;
-  
+
         if (dataLeft.length >= dataRight.length)  {
             lengthArr = dataLeft.length
         } else {
             lengthArr = dataRight.length
         }
-        
+
         var currentTray = lengthArr;
 
         const MAX_TRAY = lengthArr;
@@ -163,7 +196,7 @@
         function showItem(item, key) {
             let data = JSON.parse(decodeURIComponent(item))
             if (GetResult(data) == 'NG' && isLoading == false) {
-                
+
                 //set info
                 $('#position-item').html('Position: ' + data.index);
 
@@ -190,18 +223,17 @@
                     return acc;
                 }, {});
 
-                let listErrs = '';
+                //for (const [key, value] of Object.entries(groupedByDescription)) {
+                //    listErrs += `
+                //                <div class="d-flex">
+                //                    <div class="label-error">${key}</div>
+                //                    <div class="qty-error">${value.count}</div>
+                //                    <div class="percent-error">${value.count}%</div>
+                //                </div>
+                //            `;
+                //}
 
-                for (const [key, value] of Object.entries(groupedByDescription)) {
-                    listErrs += `
-                                <div class="d-flex">
-                                    <div class="label-error">${key}</div>
-                                    <div class="qty-error">${value.count}</div>
-                                </div>
-                            `;
-                }
-
-                $('.list-error').html(listErrs);
+                //$('.list-error').html(listErrs);
 
                 $('.skeleton').removeClass('d-none');
                 $('#err-image-area').html('')

@@ -1,0 +1,27 @@
+{
+  "1": {
+    "Id": 0,
+    "Name": "Particle",
+    "Qty": 0
+  },
+  "2": {
+    "Id": 0,
+    "Name": "NG Tape Position",
+    "Qty": 0
+  },
+  "3": {
+    "Id": 0,
+    "Name": "Deform",
+    "Qty": 0
+  },
+  "4": {
+    "Id": 0,
+    "Name": "Scratch",
+    "Qty": 0
+  },
+  "5": {
+    "Id": 0,
+    "Name": "Dirty",
+    "Qty": 0
+  }
+}

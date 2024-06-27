@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using Stiffiner_Inspection.Commons;
 using Stiffiner_Inspection.Hubs;
+using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
 
 namespace Stiffiner_Inspection.Controllers
@@ -26,7 +28,7 @@ namespace Stiffiner_Inspection.Controllers
 
         public async Task<IActionResult> Index()
         {
-            Dictionary<string, string> currentData = Global.ReadValueFileTxt(Global.PathFileSetting, ["total", "ok", "ng", "empty", "current_tray", "hidden_setting", "mode", "timeline", "current_model"]);
+            Dictionary<string, string> currentData = Global.ReadValueFileTxt(Global.PathFileSetting, ["total", "ok", "ng", "empty", "current_tray", "hidden_setting", "mode", "timeline", "current_model", "total_ng_all_error"]);
 
             Global.Total = int.Parse(currentData["total"]);
             Global.TotalOK = int.Parse(currentData["ok"]);
@@ -37,6 +39,7 @@ namespace Stiffiner_Inspection.Controllers
             Global.Mode = int.Parse(currentData["mode"]);
             Global.TimeLine = currentData["timeline"];
             Global._currentSelectedModel = currentData["current_model"] ?? string.Empty;
+            Global.TotalNGAllError = int.Parse(currentData["total_ng_all_error"]);
 
             if (string.IsNullOrWhiteSpace(Global.TimeLine))
             {
@@ -155,8 +158,21 @@ namespace Stiffiner_Inspection.Controllers
                 { "ng", "0" },
                 { "empty", "0" },
                 { "current_tray", "0" },
-                { "timeline", Global.TimeLine }
+                { "timeline", Global.TimeLine },
+                { "total_ng_all_error", "0" }
             });
+            Global.TotalNGAllError = 0;
+
+            string json = System.IO.File.ReadAllText(Global.PathValueErrors);
+
+            var errorItems = JsonConvert.DeserializeObject<Dictionary<string, ErrorTypeResponse>>(json);
+
+            foreach (var item in errorItems.Values)
+            {
+                item.Qty = 0;
+            }
+
+            System.IO.File.WriteAllText(Global.PathValueErrors, JsonConvert.SerializeObject(errorItems, Formatting.Indented));
 
             await _historyContext.Clients.All.SendAsync("RefreshData");
 
@@ -178,8 +194,21 @@ namespace Stiffiner_Inspection.Controllers
                 { "ng", "0" },
                 { "empty", "0" },
                 { "current_tray", "0" },
-                { "timeline", Global.TimeLine }
+                { "timeline", Global.TimeLine },
+                { "total_ng_all_error", "0" }
             });
+            Global.TotalNGAllError = 0;
+
+            string json = System.IO.File.ReadAllText(Global.PathValueErrors);
+
+            var errorItems = JsonConvert.DeserializeObject<Dictionary<string, ErrorTypeResponse>>(json);
+
+            foreach (var item in errorItems.Values)
+            {
+                item.Qty = 0;
+            }
+
+            System.IO.File.WriteAllText(Global.PathValueErrors, JsonConvert.SerializeObject(errorItems, Formatting.Indented));
 
             await _dataService.DeleteAllData();
             await _historyContext.Clients.All.SendAsync("RefreshData");

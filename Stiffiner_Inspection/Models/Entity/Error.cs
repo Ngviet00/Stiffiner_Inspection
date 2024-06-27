@@ -21,6 +21,9 @@ namespace Stiffiner_Inspection.Models.Entity
         [Column("type")]
         public int Type { get; set; }
 
+        [Column("error_code")]
+        public int? ErrorCode { get; set; } = null;
+
         [Column("created_at")]
         public DateTime? CreatedAt { get; set; } = DateTime.Now;
 

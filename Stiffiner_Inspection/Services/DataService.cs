@@ -94,9 +94,9 @@ namespace Stiffiner_Inspection.Services
                             DataId = data.Id,
                             Description = item,
                             Type = (int)dataArea.client_id, //(1,3 type area, 2,4 type line)
+                            ErrorCode = dataArea?.error_code
                         });
                     }
-                    
                 }
 
                 foreach (string item in errorsLine)
@@ -108,6 +108,7 @@ namespace Stiffiner_Inspection.Services
                             DataId = data.Id,
                             Description = item,
                             Type = (int)dataLine.client_id, //(1,3 type area, 2,4 type line)
+                            ErrorCode = dataLine?.error_code
                         });
                     }
                 }
@@ -165,6 +166,18 @@ namespace Stiffiner_Inspection.Services
                     var leftArea = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == Constants.CLIENT_1 && e.tray == Global.currentTray);
                     var leftLine = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == Constants.CLIENT_2 && e.tray == Global.currentTray);
 
+                    if (leftArea?.result == Constants.NG)
+                    {
+                        Global.TotalNGAllError += 1;
+                        Global.UpdateOneQuantityErrorByKey(leftArea?.error_code.ToString());
+                    }
+
+                    if (leftLine?.result == Constants.NG)
+                    {
+                        Global.TotalNGAllError += 1;
+                        Global.UpdateOneQuantityErrorByKey(leftLine?.error_code.ToString());
+                    }
+
                     var rsLeft = GetResult(leftArea?.result, leftLine?.result);
 
                     switch (rsLeft)
@@ -192,6 +205,18 @@ namespace Stiffiner_Inspection.Services
                     //pair right 
                     var rightArea = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == Constants.CLIENT_3 && e.tray == Global.currentTray);
                     var rightLine = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == Constants.CLIENT_4 && e.tray == Global.currentTray);
+
+                    if (rightArea?.result == Constants.NG)
+                    {
+                        Global.TotalNGAllError += 1;
+                        Global.UpdateOneQuantityErrorByKey(rightArea?.error_code.ToString());
+                    }
+
+                    if (rightLine?.result == Constants.NG)
+                    {
+                        Global.TotalNGAllError += 1;
+                        Global.UpdateOneQuantityErrorByKey(rightLine?.error_code.ToString());
+                    }
 
                     var rsRight = GetResult(rightArea?.result, rightLine?.result);
 
@@ -232,6 +257,7 @@ namespace Stiffiner_Inspection.Services
                     { "ok", Global.TotalOK.ToString() },
                     { "ng", Global.TotalNG.ToString() },
                     { "empty", Global.TotalEmpty.ToString() },
+                    { "total_ng_all_error", Global.TotalNGAllError.ToString()  }
                 });
 
                 await _hubContext.Clients.All.SendAsync("RefreshData", Global.Total, Global.TotalOK, Global.TotalNG, Global.TotalEmpty);
@@ -734,7 +760,7 @@ namespace Stiffiner_Inspection.Services
                 _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE errors");
                 _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE images");
                 _dbContext.Database.ExecuteSqlRaw("DELETE FROM data");
-                _dbContext.Database.ExecuteSqlRaw("DBCC CHECKIDENT ('stiffiner_inspection.dbo.data', RESEED, 0)");
+                _dbContext.Database.ExecuteSqlRaw("DBCC CHECKIDENT ('Stiffiner_inspection.dbo.data', RESEED, 0)");
 
                 string folderPath = @"D:\publish_image\images";
 

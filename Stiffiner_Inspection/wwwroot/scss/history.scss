@@ -674,7 +674,7 @@ $color_3C3C3C: #3C3C3C;
                 }
 
                 .label-error {
-                    flex-basis: 25%;
+                    flex-basis: 40%;
                 }
 
                 .title-table {
@@ -687,6 +687,15 @@ $color_3C3C3C: #3C3C3C;
                     }
 
                     .qty-error {
+                        border-right: 0.5px solid #00000080;
+                        color: #667085;
+                        font-weight: bold;
+                        flex-basis: 15%;
+                        padding: 10px 4px;
+                        border-bottom: 0.5px solid #00000080;
+                    }
+
+                    .percent-error {
                         color: #667085;
                         font-weight: bold;
                         flex-basis: 15%;
@@ -705,6 +714,15 @@ $color_3C3C3C: #3C3C3C;
                     }
 
                     .qty-error {
+                        color: #667085;
+                        font-weight: bold;
+                        flex-basis: 20.9%;
+                        padding: 10px 4px;
+                        border-bottom: 0.5px solid #00000080;
+                        border-right: 0.5px solid #00000080;
+                    }
+
+                    .percent-error {
                         color: #667085;
                         font-weight: bold;
                         flex-basis: 15%;

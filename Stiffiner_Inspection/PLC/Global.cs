@@ -1,5 +1,7 @@
-﻿using Stiffiner_Inspection.Commons;
+﻿using Newtonsoft.Json;
+using Stiffiner_Inspection.Commons;
 using Stiffiner_Inspection.Models.DTO.Data;
+using Stiffiner_Inspection.Models.Response;
 using System.Collections.Concurrent;
 
 namespace Stiffiner_Inspection
@@ -65,6 +67,8 @@ namespace Stiffiner_Inspection
 
         public static string PathFileSetting = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\Setting.txt";
 
+        public static string PathValueErrors = @"D:\Projects\Stiffiner_Inspection\Stiffiner_Inspection\ClientModel\ListErrors.json";
+
         public static int Mode = 1; //1 master, 2 normal
 
         public static string? TimeLine = DateTime.Now.ToString("yyyyMMddHHmmss");
@@ -81,6 +85,8 @@ namespace Stiffiner_Inspection
         public static string PATH_SAVE_EXCEL = @"D:\Export_Result";
 
         public static string PATH_SAVE_IMAGE = @"D:\publish_image\images\";
+
+        public static int TotalNGAllError = 0;
 
         public static void WriteFileToTxt(string filePath, Dictionary<string, string> values)
         {
@@ -153,6 +159,29 @@ namespace Stiffiner_Inspection
             }
 
             return values;
+        }
+
+        public static void UpdateOneQuantityErrorByKey(string? key)
+        {
+            try
+            {
+                string json = File.ReadAllText(PathValueErrors);
+
+                Dictionary<string, ErrorTypeResponse> errorItems = JsonConvert.DeserializeObject<Dictionary<string, ErrorTypeResponse>>(json);
+
+                if (errorItems.ContainsKey(key))
+                {
+                    errorItems[key].Qty += 1;
+                }
+
+                string updatedJson = JsonConvert.SerializeObject(errorItems, Formatting.Indented);
+
+                File.WriteAllText(PathValueErrors, updatedJson);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Cannot update quantity error by key: {ex.Message}");
+            }
         }
     }
 }

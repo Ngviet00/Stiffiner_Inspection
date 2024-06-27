@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
+using Stiffiner_Inspection.Models.Response;
 using Stiffiner_Inspection.Services;
 
 namespace Stiffiner_Inspection.Controllers
@@ -34,6 +36,13 @@ namespace Stiffiner_Inspection.Controllers
                .GroupBy(x => x.CountIndex / numberItemOneTray)
                .Select(g => g.Select(x => x.Value).ToList())
                .ToList();
+
+            ViewBag.ListErrors = JObject.Parse(System.IO.File.ReadAllText(Global.PathValueErrors)).Properties().Select(p => new ErrorTypeResponse
+            {
+                Id = int.Parse(p.Name),
+                Name = (string)p.Value["Name"],
+                Qty = (int)p.Value["Qty"]
+            }).ToList();
 
             return View();
         }
