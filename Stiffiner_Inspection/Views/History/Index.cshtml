@@ -99,7 +99,7 @@
                             {
                                 <div class="d-flex">
                                     <div class="label-error" id="label-error-@item.Id" data-key-error="@item.Id">@item.Name</div>
-                                    <div class="qty-error" id="qty-label-error-@item.Id" data-key-error="@item.Id">0</div>
+                                    <div class="qty-error qty-each-error" id="qty-label-error-@item.Id" data-key-error="@item.Id">0</div>
                                 </div>
                             }
                         </div>
@@ -210,30 +210,22 @@
 
                 isLoading = true;
 
+                //clear qty error = 0
+                $('.qty-each-error').each(function () {
+                    $(this).html('0');
+                });
 
                 //set errors
-                let arr = data.errors;
+                let arrErrs = data.errors;
 
-                let groupedByDescription = arr.reduce((acc, curr) => {
-                    if (!acc[curr.description]) {
-                        acc[curr.description] = { count: 1 };
-                    } else {
-                        acc[curr.description].count++;
+                arrErrs.forEach(item => {
+                    if (item != null) {
+                        let elm = $(`#qty-label-error-${item.errorCode}`);
+                        let value = parseInt(elm.html());
+                        value += 1;
+                        elm.text(value++)
                     }
-                    return acc;
-                }, {});
-
-                //for (const [key, value] of Object.entries(groupedByDescription)) {
-                //    listErrs += `
-                //                <div class="d-flex">
-                //                    <div class="label-error">${key}</div>
-                //                    <div class="qty-error">${value.count}</div>
-                //                    <div class="percent-error">${value.count}%</div>
-                //                </div>
-                //            `;
-                //}
-
-                //$('.list-error').html(listErrs);
+                });
 
                 $('.skeleton').removeClass('d-none');
                 $('#err-image-area').html('')
