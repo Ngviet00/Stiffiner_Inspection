@@ -9,6 +9,7 @@ namespace Stiffiner_Inspection
     public static class Global
     {
         public static ControlPLC controlPLC = new ControlPLC();
+        public static readonly Random random = new();
 
         public static int resetClient { get; set; } = 0;
         public static int valuePLC { get; set; } = 4;
@@ -182,6 +183,16 @@ namespace Stiffiner_Inspection
             {
                 Log.Error($"Cannot update quantity error by key: {ex.Message}");
             }
+        }
+
+        public static int GetRandom()
+        {
+            double probability = random.NextDouble();
+
+            if (probability < 0.5)
+                return 1;
+
+            return random.Next(2, 6);
         }
     }
 }

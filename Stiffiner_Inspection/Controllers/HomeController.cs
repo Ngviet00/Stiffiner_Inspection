@@ -14,7 +14,7 @@ namespace Stiffiner_Inspection.Controllers
         private readonly IHubContext<HistoryHub> _historyContext;
         private readonly DataService _dataService;
         const int timeSleep = 100;
-
+        
         public HomeController(
             IHubContext<HomeHub> hubContext,
             IHubContext<HistoryHub> historyContext,

@@ -793,7 +793,6 @@ namespace Stiffiner_Inspection.Services
                     .AsSplitQuery()
                     .Where(e => e.TimeLine == Global.TimeLine && e.Side == side && ((e.ResultLine == 2 || e.ResultArea == 2) || (e.ResultArea == 1 && e.ResultLine == 3) || (e.ResultArea == 3 && e.ResultLine == 1)))
                     .OrderByDescending(x => x.Id)
-                    .OrderByDescending(x => x.Tray)
                     .Include(p => p.Errors)
                     .Include(p => p.Images)
                     .Take(200)

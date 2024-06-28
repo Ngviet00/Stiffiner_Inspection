@@ -37,7 +37,7 @@ namespace Stiffiner_Inspection.Controllers
 
                 dataDTO.TimeLine = Global.TimeLine;
 
-                dataDTO.error_code ??= new Random().Next(1, 6);
+                dataDTO.error_code ??= Global.GetRandom();
 
                 //event realtime result log
                 await _hubContext.Clients.All.SendAsync("ReceiveData", dataDTO);
