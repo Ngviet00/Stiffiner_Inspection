@@ -750,7 +750,7 @@ namespace Stiffiner_Inspection.Services
                 _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE errors");
                 _dbContext.Database.ExecuteSqlRaw("TRUNCATE TABLE images");
                 _dbContext.Database.ExecuteSqlRaw("DELETE FROM data");
-                _dbContext.Database.ExecuteSqlRaw("DBCC CHECKIDENT ('stiffiner_inspection.dbo.data', RESEED, 0)");
+                _dbContext.Database.ExecuteSqlRaw("DBCC CHECKIDENT ('Stiffiner_inspection.dbo.data', RESEED, 0)");
 
                 string folderPath = @"D:\publish_image\images";
 
