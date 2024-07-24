@@ -8,6 +8,8 @@ namespace Stiffiner_Inspection
     {
         public static ControlPLC controlPLC = new ControlPLC();
 
+        public static readonly Random random = new();
+
         public static int resetClient { get; set; } = 0;
         public static int valuePLC { get; set; } = 4;
 
@@ -153,6 +155,42 @@ namespace Stiffiner_Inspection
             }
 
             return values;
+        }
+
+        public static int GetRandom()
+        {
+            double probability = random.NextDouble();
+
+            if (probability < 0.5)
+                return 1;
+
+            return random.Next(2, 6);
+        }
+
+        public static string GetNameErrorType(int? errorCode)
+        {
+            string value = string.Empty;
+
+            switch (errorCode)
+            {
+                case 1:
+                    value = "Particle";
+                    break;
+                case 2:
+                    value = "NG Tape Position";
+                    break;
+                case 3:
+                    value = "Deform";
+                    break;
+                case 4:
+                    value = "Scratch";
+                    break;
+                case 5:
+                    value = "Dirty";
+                    break;   
+            }
+
+            return value;
         }
     }
 }

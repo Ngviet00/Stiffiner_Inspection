@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Stiffiner_Inspection.Contexts;
 
@@ -11,9 +12,11 @@ using Stiffiner_Inspection.Contexts;
 namespace Stiffiner_Inspection.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240724131052_add_column_error_code_in_errors_table")]
+    partial class add_column_error_code_in_errors_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -109,7 +112,7 @@ namespace Stiffiner_Inspection.Migrations
                         .HasColumnType("int")
                         .HasColumnName("type");
 
-                    b.Property<int?>("TypeError")
+                    b.Property<int>("TypeError")
                         .HasColumnType("int")
                         .HasColumnName("type_error");
 

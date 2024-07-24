@@ -160,6 +160,32 @@
 
         $('#number-current-tray').html(lengthArr);
 
+        function GetErrorName(errorCode) {
+            let value = '';
+
+            switch (errorCode) {
+                case "1":
+                    value = "Particle";
+                    break;
+                case "2":
+                    value = "NG Tape Position";
+                    break;
+                case "3":
+                    value = "Deform";
+                    break;
+                case "4":
+                    value = "Scratch";
+                    break;
+                case "5":
+                    value = "Dirty";
+                    break;
+                default:
+                    break;
+            }
+
+            return value;
+        }
+
         function showItem(item, key) {
             let data = JSON.parse(decodeURIComponent(item))
             if (GetResult(data) == 'NG' && isLoading == false) {
@@ -180,27 +206,26 @@
 
                 //set errors
                 let arr = data.errors;
+                let listErrs = '';
 
-                let groupedByDescription = arr.reduce((acc, curr) => {
-                    if (!acc[curr.description]) {
-                        acc[curr.description] = { count: 1 };
+                let groupedByTypeError = arr.reduce((acc, curr) => {
+                    if (!acc[curr.typeError]) {
+                        acc[curr.typeError] = { count: 1 };
                     } else {
-                        acc[curr.description].count++;
+                        acc[curr.typeError].count++;
                     }
                     return acc;
                 }, {});
 
-                let listErrs = '';
-
-                for (const [key, value] of Object.entries(groupedByDescription)) {
+                for (const [key, value] of Object.entries(groupedByTypeError)) {
                     listErrs += `
-                                <div class="d-flex">
-                                    <div class="label-error">${key}</div>
-                                    <div class="qty-error">${value.count}</div>
-                                </div>
-                            `;
+                        <div class="d-flex">
+                            <div class="label-error">${GetErrorName(key)}</div>
+                            <div class="qty-error">${value.count}</div>
+                        </div>
+                    `;
                 }
-
+                
                 $('.list-error').html(listErrs);
 
                 $('.skeleton').removeClass('d-none');

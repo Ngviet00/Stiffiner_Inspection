@@ -14,5 +14,6 @@
         public string? TimeLine { get; set; }
         public string? error { get; set; }
         public string? image { get; set; } = string.Empty;
+        public int? errorCode { get; set; }
     }
 }

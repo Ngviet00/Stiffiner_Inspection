@@ -94,7 +94,8 @@ namespace Stiffiner_Inspection.Services
                             DataId = data.Id,
                             Description = item,
                             Type = (int)dataArea.client_id, //(1,3 type area, 2,4 type line)
-                        });
+                            TypeError = dataArea.errorCode
+                        }); ;
                     }
                     
                 }
@@ -108,6 +109,7 @@ namespace Stiffiner_Inspection.Services
                             DataId = data.Id,
                             Description = item,
                             Type = (int)dataLine.client_id, //(1,3 type area, 2,4 type line)
+                            TypeError = dataLine.errorCode
                         });
                     }
                 }
@@ -245,6 +247,20 @@ namespace Stiffiner_Inspection.Services
 
         public void AddListPrepareSaveExcel(List<DataCSV> dataCSV, DataDTO? dataArea, DataDTO? dataLine)
         {
+            string listErrs = string.Empty;
+
+            if (dataArea?.result == Constants.NG)
+            {
+                listErrs += Global.GetNameErrorType(dataArea.errorCode);
+            }
+
+            if (dataLine?.result == Constants.NG)
+            {
+                listErrs += "," + Global.GetNameErrorType(dataLine.errorCode);
+            }
+
+            listErrs = listErrs.Trim(',');
+
             dataCSV.Add(new DataCSV
             {
                 model = Global._currentSelectedModel,
@@ -253,7 +269,7 @@ namespace Stiffiner_Inspection.Services
                 result_area = dataArea?.result == Constants.OK ? "OK" : (dataArea?.result == Constants.NG ? "NG" : "Empty"),
                 result_line = dataLine?.result == Constants.OK ? "OK" : (dataLine?.result == Constants.NG ? "NG" : "Empty"),
                 image = dataArea?.image + "," + dataLine?.image,
-                errors = dataArea?.error + "," + dataLine?.error
+                errors = listErrs
             });
         }
 
@@ -767,7 +783,6 @@ namespace Stiffiner_Inspection.Services
                     .AsSplitQuery()
                     .Where(e => e.TimeLine == Global.TimeLine && e.Side == side && ((e.ResultLine == 2 || e.ResultArea == 2) || (e.ResultArea == 1 && e.ResultLine == 3) || (e.ResultArea == 3 && e.ResultLine == 1)))
                     .OrderByDescending(x => x.Id)
-                    .OrderByDescending(x => x.Tray)
                     .Include(p => p.Errors)
                     .Include(p => p.Images)
                     .Take(200)
