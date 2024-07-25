@@ -208,5 +208,18 @@ namespace Stiffiner_Inspection.Hubs
                 Log.Error($"Error can not set fake data: {ex.Message}");
             }
         }
+
+        public async Task ExportData(string fromDate, string toDate, string model)
+        {
+            try
+            {
+                await _dataService.ExportData(fromDate, toDate, model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error can not get list data: {ex.Message}");
+                throw;
+            }
+        }
     }
 }

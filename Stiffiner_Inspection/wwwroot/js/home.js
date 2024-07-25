@@ -678,6 +678,24 @@ $(function () {
             });
     });
 
+    $('.form-search-btn-export-data').click(function () {
+        $('.form-search-btn-export-data').prop('disabled', true).html('Loading...');
+        let fromDate = $('#start-date').val()
+        let toDate = $('#end-date').val()
+        let model = $('#form-search-model').val();
+
+        connection.invoke("ExportData", fromDate, toDate, model)
+            .then(function (res) {
+                alert('ok');
+            })
+            .catch(function (err) {
+                console.error("Error calling API:", err.toString());
+            })
+            .finally(function () {
+                $('.form-search-btn-export-data').prop('disabled', false).html('Search');
+            });
+    });
+
     $('.form-search-btn-load-more').click(function () {
         $(this).prop('disabled', true).html('Loading...');
 
