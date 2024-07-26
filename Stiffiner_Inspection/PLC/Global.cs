@@ -1,6 +1,8 @@
-﻿using Stiffiner_Inspection.Commons;
+﻿using OfficeOpenXml;
+using Stiffiner_Inspection.Commons;
 using Stiffiner_Inspection.Models.DTO.Data;
 using System.Collections.Concurrent;
+using Stiffiner_Inspection.Models.Response;
 
 namespace Stiffiner_Inspection
 {
@@ -83,6 +85,8 @@ namespace Stiffiner_Inspection
         public static string PATH_SAVE_EXCEL = @"D:\Export_Result";
 
         public static string PATH_SAVE_IMAGE = @"D:\publish_image\images\";
+
+        public static string PATH_EXPORT_EXCEL = @"D:\Export_Excel";
 
         public static void WriteFileToTxt(string filePath, Dictionary<string, string> values)
         {
@@ -191,6 +195,112 @@ namespace Stiffiner_Inspection
             }
 
             return value;
+        }
+
+        private static string GetUniqueFilePath(string filePath)
+        {
+            try
+            {
+                string directory = Path.GetDirectoryName(filePath);
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
+                string extension = Path.GetExtension(filePath);
+                int count = 1;
+
+                while (File.Exists(filePath))
+                {
+                    string newFileName = string.Empty;
+                    newFileName = $"{fileNameWithoutExtension}_({count}){extension}";
+                    filePath = Path.Combine(directory, newFileName);
+                    count++;
+                }
+
+                return filePath;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error can not get unique file path, error: {ex.Message}");
+                return filePath;
+            }
+        }
+
+        public static void ExportExcel(ExportDataResponse rs, string fromDate, string toDate)
+        {
+            try
+            {
+                if (!Directory.Exists(Global.PATH_EXPORT_EXCEL))
+                {
+                    Directory.CreateDirectory(Global.PATH_EXPORT_EXCEL);
+                }
+
+                string fileName = string.Empty;
+
+                if (fromDate == toDate)
+                {
+                    fileName = $"{fromDate}.xlsx";
+                }
+                else
+                {
+                    fileName = $"{fromDate}_{toDate}.xlsx";
+                }
+
+                string filePath = Path.Combine(Global.PATH_EXPORT_EXCEL, fileName);
+                filePath = GetUniqueFilePath(filePath);
+
+                using (ExcelPackage package = new ExcelPackage(new FileInfo(filePath)))
+                {
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets.Count == 0 ? package.Workbook.Worksheets.Add("Sheet1") : package.Workbook.Worksheets[0];
+
+                    int row = worksheet.Dimension?.Rows + 1 ?? 1;
+
+                    if (row == 1)
+                    {
+                        worksheet.Cells[1, 1].Value = "Model";
+                        worksheet.Cells[1, 2].Value = "Date";
+
+                        worksheet.Cells[1, 3].Value = "Inspection";
+                        worksheet.Cells[1, 4].Value = "OK";
+
+                        worksheet.Cells[1, 5].Value = "NG";
+                        worksheet.Cells[1, 6].Value = "NG(%)";
+                        worksheet.Cells[1, 7].Value = "Particle";
+                        worksheet.Cells[1, 8].Value = "NG Tape Position";
+
+                        worksheet.Cells[1, 9].Value = "Deform";
+                        worksheet.Cells[1, 10].Value = "Scratch";
+                        worksheet.Cells[1, 11].Value = "Dirty";
+
+                        worksheet.Column(1).Width = 30;
+                        worksheet.Column(2).Width = 20;
+                        worksheet.Column(3).Width = 15;
+                    }
+
+                    if (row == 1)
+                    {
+                        row += 1;
+                    }
+
+                    worksheet.Cells[row, 1].Value = rs.Model;
+                    worksheet.Cells[row, 2].Value = rs.DateSelect;
+                    worksheet.Cells[row, 3].Value = rs.Ok + rs.Ng;
+                    worksheet.Cells[row, 4].Value = rs.Ok;
+
+                    worksheet.Cells[row, 5].Value = rs.Ng;
+                    worksheet.Cells[row, 6].Value = Math.Round((double)rs.Ng / (double)(rs.Ok + rs.Ng) * 100, 2);
+                    worksheet.Cells[row, 7].Value = rs.ErrorParticle;
+                    worksheet.Cells[row, 8].Value = rs.ErrorNgTapePosition;
+
+                    worksheet.Cells[row, 9].Value = rs.ErrorDeform;
+                    worksheet.Cells[row, 10].Value = rs.ErrorScratch;
+                    worksheet.Cells[row, 11].Value = rs.ErrorDirty;
+                    
+                    FileInfo fileInfo = new FileInfo(filePath);
+                    package.SaveAs(fileInfo);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error can not save file excel, error: {ex.Message}");
+            }
         }
     }
 }

@@ -209,11 +209,11 @@ namespace Stiffiner_Inspection.Hubs
             }
         }
 
-        public async Task ExportData(string fromDate, string toDate, string model)
+        public async Task<string> ExportData(string fromDate, string toDate, string model)
         {
             try
             {
-                await _dataService.ExportData(fromDate, toDate, model);
+                return await _dataService.ExportData(fromDate, toDate, model);
             }
             catch (Exception ex)
             {

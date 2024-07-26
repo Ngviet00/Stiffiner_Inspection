@@ -686,13 +686,18 @@ $(function () {
 
         connection.invoke("ExportData", fromDate, toDate, model)
             .then(function (res) {
-                alert('ok');
+                if (res == 'success') {
+                    alert('Export data successfully!');
+                }
+                else {
+                    alert('Not data to export!');
+                }                
             })
             .catch(function (err) {
                 console.error("Error calling API:", err.toString());
             })
             .finally(function () {
-                $('.form-search-btn-export-data').prop('disabled', false).html('Search');
+                $('.form-search-btn-export-data').prop('disabled', false).html('Export Data');
             });
     });
 

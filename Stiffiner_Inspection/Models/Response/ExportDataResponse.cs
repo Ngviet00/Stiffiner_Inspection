@@ -2,16 +2,15 @@
 {
     public class ExportDataResponse
     {
-        public string? Model { get; set; }
-        public string? Date { get; set; }
-        public int? Inspection { get; set; }
-        public int? OK { get; set; }
-        public int? NG { get; set; }
-        public double? NG_Percent { get; set; }
-        public int? Particle { get; set; }
-        public int? NGTapePosition { get; set; }
-        public int? Deform { get; set; }
-        public int? Scratch { get; set; }
-        public int? Dirty { get; set; }
+        public string DateSelect { get; set; } = DateTime.Now.ToString("dd/MM/yyyy");
+        public string Model { get; set; } = string.Empty;
+        public string TypeModel { get; set; } = string.Empty;
+        public int Ok { get; set; }
+        public int Ng { get; set; }
+        public int ErrorParticle { get; set; }
+        public int ErrorNgTapePosition { get; set; }
+        public int ErrorDeform { get; set; }
+        public int ErrorScratch { get; set; }
+        public int ErrorDirty { get; set; }
     }
 }

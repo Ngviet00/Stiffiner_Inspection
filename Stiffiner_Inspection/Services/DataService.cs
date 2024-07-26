@@ -10,8 +10,6 @@ using System.Net;
 using Stiffiner_Inspection.Models.Response;
 using System.Text;
 using Stiffiner_Inspection.Commons;
-using Microsoft.Data.SqlClient;
-using Microsoft.Ajax.Utilities;
 
 namespace Stiffiner_Inspection.Services
 {
@@ -918,140 +916,83 @@ namespace Stiffiner_Inspection.Services
             }
         }
 
-        public async Task ExportData(string fromDate, string toDate, string model)
+        public async Task<string> ExportData(string fromDate, string toDate, string model)
         {
             try
             {
-                var query = from d in _dbContext.Data
-                            join e in _dbContext.Errors on d.Id equals e.DataId into errors
-                            from e in errors.DefaultIfEmpty()
-                            group new { d, e } by new { Date = d.Time, d.Model } into g
+                var sql = $@"
+                    SELECT 
+                        CAST(d.time AS DATE) AS date_select, 
+                        d.model,
+                        CASE 
+                            WHEN d.model = 'Stiffener_954_PSA_Side' OR d.model = 'Stiffener_953_PSA_Side' OR d.model = 'Stiffener_963_964_PSA_Side'
+                            THEN 'PSA'  
+                            ELSE 'SUS' 
+                        END AS type_model, 
+                        SUM(CASE WHEN d.result_area = 1 AND d.result_line = 1 THEN 1 ELSE 0 END) AS ok,
+                        SUM(CASE WHEN d.result_area = 2 OR d.result_line = 2 THEN 1 ELSE 0 END) AS ng,
+                        SUM(CASE WHEN e.type_error = 1 THEN 1 ELSE 0 END) AS error_particle,
+                        SUM(CASE WHEN e.type_error = 2 THEN 1 ELSE 0 END) AS error_ng_tape_position,
+                        SUM(CASE WHEN e.type_error = 3 THEN 1 ELSE 0 END) AS error_deform,
+                        SUM(CASE WHEN e.type_error = 4 THEN 1 ELSE 0 END) AS error_scratch,
+                        SUM(CASE WHEN e.type_error = 5 THEN 1 ELSE 0 END) AS error_dirty 
+                    FROM data d 
+                    LEFT JOIN errors e ON d.id = e.data_id 
+                    where CAST(d.time AS DATE) >= '{fromDate}' and CAST(d.time AS DATE) <= '{toDate}' and d.model <> ''
+                    GROUP BY d.model, CAST(d.time AS DATE) 
+                    ORDER BY d.model";
 
-                            select new MyResult
-                            {
-                                DateSelect = string.Empty,
-                                Id = string.Empty,
-                                Camera = "area",
-                                ClientId = string.Empty,
-                                Index = string.Empty,
-                                ResultArea = string.Empty,
-                                ResultLine = string.Empty,
-                                Side = string.Empty,
-                                TargetId = string.Empty,
-                                Time = string.Empty,
-                                Timeline = string.Empty,
-                                Tray = string.Empty,
-                                Model = g.Key.Model,
-                                TypeModel = g.Key.Model == "Stiffener_954_PSA_Side" || g.Key.Model == "Stiffener_953_PSA_Side" || g.Key.Model == "Stiffener_963_964_PSA_Side" ? "PSA" : "SUS",
-                                Ok = g.Count(x => x.d.ResultArea == 1 && x.d.ResultLine == 1),
-                                Ng = g.Count(x => x.d.ResultArea == 2 || x.d.ResultLine == 2),
-                                ErrorParticle = g.Count(x => x.e != null && x.e.TypeError == 1),
-                                ErrorNgTapePosition = g.Count(x => x.e != null && x.e.TypeError == 2),
-                                ErrorDeform = g.Count(x => x.e != null && x.e.TypeError == 3),
-                                ErrorScratch = g.Count(x => x.e != null && x.e.TypeError == 4),
-                                ErrorDirty = g.Count(x => x.e != null && x.e.TypeError == 5)
-                            };
+                var results = new List<ExportDataResponse>();
 
-                var data = await query
-                    .OrderBy(x => x.Model)
-                    .ToListAsync();
-
-                foreach (var item in data)
+                using (var connection = _dbContext.Database.GetDbConnection())
                 {
-                    Console.WriteLine(item.Ok);
+                    await connection.OpenAsync();
+
+                    using var command = connection.CreateCommand();
+                    command.CommandText = sql;
+
+                    using var reader = await command.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        var dateSelect = reader.GetDateTime(reader.GetOrdinal("date_select")).ToString("dd/MM/yyyy");
+
+                        var result = new ExportDataResponse
+                        {
+                            DateSelect = dateSelect,
+                            Model = reader.GetString(reader.GetOrdinal("model")),
+                            TypeModel = reader.GetString(reader.GetOrdinal("type_model")),
+                            Ok = reader.GetInt32(reader.GetOrdinal("ok")),
+                            Ng = reader.GetInt32(reader.GetOrdinal("ng")),
+                            ErrorParticle = reader.GetInt32(reader.GetOrdinal("error_particle")),
+                            ErrorNgTapePosition = reader.GetInt32(reader.GetOrdinal("error_ng_tape_position")),
+                            ErrorDeform = reader.GetInt32(reader.GetOrdinal("error_deform")),
+                            ErrorScratch = reader.GetInt32(reader.GetOrdinal("error_scratch")),
+                            ErrorDirty = reader.GetInt32(reader.GetOrdinal("error_dirty"))
+                        };
+
+                        results.Add(result);
+                    }
                 }
 
-                //string sql = "select " +
-                //    "CAST(d.time AS DATE) AS date_select, " +
-                //    "'' AS [id]," +
-                //    "'area' AS [camera]," +
-                //    "'' AS [client_id]," +
-                //    "'' AS [index]," +
-                //    "'' AS [result_area]," +
-                //    "'' AS [result_line]," +
-                //    "'' AS [side]," +
-                //    "'' AS [target_id]," +
-                //    "'' AS [time]," +
-                //    "'' AS [timeline]," +
-                //    "'' AS [tray]," +
-                //    "d.model," +
-                //    "CASE WHEN d.model = 'Stiffener_954_PSA_Side' or d.model = 'Stiffener_953_PSA_Side' or d.model = 'Stiffener_963_964_PSA_Side'" +
-                //    " THEN 'PSA'  ELSE 'SUS' END AS type_model, SUM(CASE WHEN d.result_area = 1 and d.result_line = 1 THEN 1 ELSE 0 END) AS ok," +
-                //    "SUM(CASE WHEN d.result_area = 2 or d.result_line = 2 THEN 1 ELSE 0 END) AS ng," +
-                //    "SUM(CASE WHEN e.type_error = 1 THEN 1 ELSE 0 END) AS error_particle," +
-                //    "SUM(CASE WHEN e.type_error = 2 THEN 1 ELSE 0 END) AS error_ng_tape_position," +
-                //    "SUM(CASE WHEN e.type_error = 3 THEN 1 ELSE 0 END) AS error_deform," +
-                //    "SUM(CASE WHEN e.type_error = 4 THEN 1 ELSE 0 END) AS error_scratch," +
-                //    "SUM(CASE WHEN e.type_error = 5 THEN 1 ELSE 0 END) AS error_dirty from data d left join errors e on d.id = e.data_id " +
-                //    "where CAST(d.time AS DATE) >= '2024-07-01' and CAST(d.time AS DATE) <= '2024-07-29' group by d.model, CAST(d.time AS DATE) order by d.model";
-                //where CAST(d.time AS DATE) >= '2024-07-01' and CAST(d.time AS DATE) <= '2024-07-29'
-                //var data = await _dbContext.Data
-                //    .FromSqlRaw(sql)
-                //    .AsNoTracking()
-                //    .ToListAsync();
+                foreach (var item in results)
+                {
+                    Global.ExportExcel(item, fromDate, toDate);
+                }
 
-                //foreach (var item in data)
-                //{
-                //    Console.WriteLine(item);
-                //}
-
-
-
-                //using (var context = new ApplicationDbContext())
-                //{
-                //    var connection = context.Database.GetDbConnection();
-                //    using (var command = connection.CreateCommand())
-                //    {
-                //        command.CommandText = sql;
-                //        //command.Parameters.Add(new SqlParameter("@SomeValue", someValue));
-
-                //        connection.Open();
-                //        using (var reader = command.ExecuteReader())
-                //        {
-                //            while (reader.Read())
-                //            {
-                //                Console.WriteLine(reader.GetString(reader.GetOrdinal("camera")));
-                //                //results.Add(new MyCustomResult
-                //                //{
-                //                //    Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                //                //    Name = reader.GetString(reader.GetOrdinal("Name")),
-                //                //    FakeColumn = reader.GetString(reader.GetOrdinal("FakeColumn"))
-                //                //});
-                //            }
-                //        }
-                //    }
-                //}
-
+                if (results.Count > 0)
+                {
+                    return "success";
+                }
+                else
+                {
+                    return "Not data";
+                }
             }
             catch (Exception ex)
             {
                 Log.Error($"Error Get List History: {ex.Message}");
+                return "Not data";
             }
         }
-    }
-
-    public class MyResult
-    {
-        public string DateSelect { get; set; }
-        public string Id { get; set; }
-        public string Camera { get; set; }
-        public string ClientId { get; set; }
-        public string Index { get; set; }
-        public string ResultArea { get; set; }
-        public string ResultLine { get; set; }
-        public string Side { get; set; }
-        public string TargetId { get; set; }
-        public string Time { get; set; }
-        public string Timeline { get; set; }
-        public string Tray { get; set; }
-        public string Model { get; set; }
-        public string TypeModel { get; set; }
-        public int Ok { get; set; }
-        public int Ng { get; set; }
-        public int ErrorParticle { get; set; }
-        public int ErrorNgTapePosition { get; set; }
-        public int ErrorDeform { get; set; }
-        public int ErrorScratch { get; set; }
-        public int ErrorDirty { get; set; }
     }
 }

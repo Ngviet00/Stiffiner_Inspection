@@ -90,7 +90,7 @@
                             <div class="qty-error">Quantity</div>
                         </div>
 
-                        <div class="list-error d-none">
+                        <div class="list-error error-type d-none">
                             @for (int i = 0; i <= 3; i++)
                             {
                                 <div class="d-flex">
@@ -110,23 +110,23 @@
                         <div class="list-error">
                             <div class="d-flex">
                                 <div class="label-error">Particle</div>
-                                <div class="qty-error particle-percent">2%</div>
+                                <div class="qty-error particle-percent">@ViewBag.perErrParticle%</div>
                             </div>
                             <div class="d-flex">
                                 <div class="label-error">NG Tape Position</div>
-                                <div class="qty-error ng-tape-position-percent">2%</div>
+                                <div class="qty-error ng-tape-position-percent">@ViewBag.perErrNGTapePosition%</div>
                             </div>
                             <div class="d-flex">
                                 <div class="label-error">Deform</div>
-                                <div class="qty-error deform-percent">2%</div>
+                                <div class="qty-error deform-percent">@ViewBag.perErrDeform%</div>
                             </div>
                             <div class="d-flex">
                                 <div class="label-error">Scratch</div>
-                                <div class="qty-error scratch-percent">2%</div>
+                                <div class="qty-error scratch-percent">@ViewBag.perErrScratch%</div>
                             </div>
                             <div class="d-flex">
                                 <div class="label-error">Dirty</div>
-                                <div class="qty-error dirty-percent">2%</div>
+                                <div class="qty-error dirty-percent">@ViewBag.perErrDirty%</div>
                             </div>
                         </div>
                     </div>
@@ -229,10 +229,9 @@
 
                 $('.no-data').addClass('d-none');
                 $('.error-image').removeClass('d-none');
-                $('.list-error').removeClass('d-none');
+                $('.list-error.error-type').removeClass('d-none');
 
                 isLoading = true;
-
 
                 //set errors
                 let arr = data.errors;
@@ -248,15 +247,17 @@
                 }, {});
 
                 for (const [key, value] of Object.entries(groupedByTypeError)) {
-                    listErrs += `
-                        <div class="d-flex">
-                            <div class="label-error">${GetErrorName(key)}</div>
-                            <div class="qty-error">${value.count}</div>
-                        </div>
-                    `;
+                    if (key > 0) {
+                        listErrs += `
+                            <div class="d-flex">
+                                <div class="label-error">${GetErrorName(key)}</div>
+                                <div class="qty-error">${value.count}</div>
+                            </div>
+                        `;
+                    }
                 }
                 
-                $('.list-error').html(listErrs);
+                $('.list-error.error-type').html(listErrs);
 
                 $('.skeleton').removeClass('d-none');
                 $('#err-image-area').html('')
