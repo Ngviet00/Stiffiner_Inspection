@@ -7,3 +7,9 @@ hidden_setting: 0
 mode: 2
 current_model: 
 timeline: 20240621190534
+total_error: 0
+err_particle: 0
+err_ng_tape_position: 0
+err_deform: 0
+err_scratch: 0
+err_dirty: 0

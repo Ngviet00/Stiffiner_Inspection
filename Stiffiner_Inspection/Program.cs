@@ -1,6 +1,7 @@
 using log4net.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using OfficeOpenXml;
 using Stiffiner_Inspection.Contexts;
 using Stiffiner_Inspection.Hubs;
 using Stiffiner_Inspection.Jobs;
@@ -31,6 +32,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddHostedService<AutoDeleteOldFile>();
+
+ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
 var log4netConfig = new FileInfo("log4net.config");
 XmlConfigurator.Configure(log4netConfig);

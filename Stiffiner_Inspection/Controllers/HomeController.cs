@@ -155,7 +155,13 @@ namespace Stiffiner_Inspection.Controllers
                 { "ng", "0" },
                 { "empty", "0" },
                 { "current_tray", "0" },
-                { "timeline", Global.TimeLine }
+                { "timeline", Global.TimeLine },
+                { "total_error", "0" },
+                { "err_particle", "0" },
+                { "err_ng_tape_position", "0" },
+                { "err_deform", "0" },
+                { "err_scratch", "0" },
+                { "err_dirty", "0" }
             });
 
             await _historyContext.Clients.All.SendAsync("RefreshData");
@@ -178,7 +184,13 @@ namespace Stiffiner_Inspection.Controllers
                 { "ng", "0" },
                 { "empty", "0" },
                 { "current_tray", "0" },
-                { "timeline", Global.TimeLine }
+                { "timeline", Global.TimeLine },
+                { "total_error", "0" },
+                { "err_particle", "0" },
+                { "err_ng_tape_position", "0" },
+                { "err_deform", "0" },
+                { "err_scratch", "0" },
+                { "err_dirty", "0" }
             });
 
             await _dataService.DeleteAllData();

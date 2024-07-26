@@ -161,11 +161,66 @@ namespace Stiffiner_Inspection.Services
                 int ng = 0;
                 int empty = 0;
 
+                int totalError = 0;
+                int errParticle = 0;
+                int errNgTapePosition = 0;
+                int errDeform = 0;
+                int errScratch = 0;
+                int errDirty = 0;
+
                 for (int i = 1; i <= 20; i++)
                 {
                     //pair left
                     var leftArea = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == Constants.CLIENT_1 && e.tray == Global.currentTray);
                     var leftLine = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == Constants.CLIENT_2 && e.tray == Global.currentTray);
+
+                    if (leftArea?.result == Constants.NG)
+                    {
+                        totalError += 1;
+
+                        switch (leftArea.errorCode)
+                        {
+                            case 1:
+                                errParticle += 1;
+                                break;
+                            case 2:
+                                errNgTapePosition += 1;
+                                break;
+                            case 3:
+                                errDeform += 1;
+                                break;
+                            case 4:
+                                errScratch += 1;
+                                break;
+                            case 5:
+                                errDirty += 1;
+                                break;
+                        }
+                    }
+
+                    if (leftLine?.result == Constants.NG)
+                    {
+                        totalError += 1;
+
+                        switch (leftLine.errorCode)
+                        {
+                            case 1:
+                                errParticle += 1;
+                                break;
+                            case 2:
+                                errNgTapePosition += 1;
+                                break;
+                            case 3:
+                                errDeform += 1;
+                                break;
+                            case 4:
+                                errScratch += 1;
+                                break;
+                            case 5:
+                                errDirty += 1;
+                                break;
+                        }
+                    }
 
                     var rsLeft = GetResult(leftArea?.result, leftLine?.result);
 
@@ -195,6 +250,54 @@ namespace Stiffiner_Inspection.Services
                     var rightArea = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == Constants.CLIENT_3 && e.tray == Global.currentTray);
                     var rightLine = Global.CurrentTrayDataV2.FirstOrDefault(e => e.index == i && e.client_id == Constants.CLIENT_4 && e.tray == Global.currentTray);
 
+                    if (rightArea?.result == Constants.NG)
+                    {
+                        totalError += 1;
+
+                        switch (rightArea.errorCode)
+                        {
+                            case 1:
+                                errParticle += 1;
+                                break;
+                            case 2:
+                                errNgTapePosition += 1;
+                                break;
+                            case 3:
+                                errDeform += 1;
+                                break;
+                            case 4:
+                                errScratch += 1;
+                                break;
+                            case 5:
+                                errDirty += 1;
+                                break;
+                        }
+                    }
+
+                    if (rightLine?.result == Constants.NG)
+                    {
+                        totalError += 1;
+
+                        switch (rightLine.errorCode)
+                        {
+                            case 1:
+                                errParticle += 1;
+                                break;
+                            case 2:
+                                errNgTapePosition += 1;
+                                break;
+                            case 3:
+                                errDeform += 1;
+                                break;
+                            case 4:
+                                errScratch += 1;
+                                break;
+                            case 5:
+                                errDirty += 1;
+                                break;
+                        }
+                    }
+
                     var rsRight = GetResult(rightArea?.result, rightLine?.result);
 
                     switch (rsRight)
@@ -223,10 +326,19 @@ namespace Stiffiner_Inspection.Services
                 //ater vision done, send signal
                 Global.controlPLC.VisionDoneIns();
 
+                Dictionary<string, string> currentData = Global.ReadValueFileTxt(Global.PathFileSetting, ["total_error", "err_particle", "err_ng_tape_position", "err_deform", "err_scratch", "err_dirty"]);
+
                 Global.Total += 40;
                 Global.TotalOK += ok;
                 Global.TotalNG += ng;
                 Global.TotalEmpty += empty;
+
+                totalError += int.Parse(currentData["total_error"]);
+                errParticle += int.Parse(currentData["err_particle"]);
+                errNgTapePosition += int.Parse(currentData["err_ng_tape_position"]);
+                errDeform += int.Parse(currentData["err_deform"]);
+                errScratch += int.Parse(currentData["err_scratch"]);
+                errDirty += int.Parse(currentData["err_dirty"]);
 
                 Global.WriteFileToTxt(Global.PathFileSetting, new Dictionary<string, string>
                 {
@@ -234,6 +346,12 @@ namespace Stiffiner_Inspection.Services
                     { "ok", Global.TotalOK.ToString() },
                     { "ng", Global.TotalNG.ToString() },
                     { "empty", Global.TotalEmpty.ToString() },
+                    { "total_error", totalError.ToString() },
+                    { "err_particle", errParticle.ToString() },
+                    { "err_ng_tape_position", errNgTapePosition.ToString() },
+                    { "err_deform", errDeform.ToString() },
+                    { "err_scratch", errScratch.ToString() },
+                    { "err_dirty", errDirty.ToString() },
                 });
 
                 await _hubContext.Clients.All.SendAsync("RefreshData", Global.Total, Global.TotalOK, Global.TotalNG, Global.TotalEmpty);
@@ -795,6 +913,85 @@ namespace Stiffiner_Inspection.Services
             {
                 Log.Error($"Error Get List History: {ex.Message}");
                 return null;
+            }
+        }
+
+        public async Task<string> ExportData(string fromDate, string toDate, string model)
+        {
+            try
+            {
+                var sql = $@"
+                    SELECT 
+                        CAST(d.time AS DATE) AS date_select, 
+                        d.model,
+                        CASE 
+                            WHEN d.model = 'Stiffener_954_PSA_Side' OR d.model = 'Stiffener_953_PSA_Side' OR d.model = 'Stiffener_963_964_PSA_Side'
+                            THEN 'PSA'  
+                            ELSE 'SUS' 
+                        END AS type_model, 
+                        SUM(CASE WHEN d.result_area = 1 AND d.result_line = 1 THEN 1 ELSE 0 END) AS ok,
+                        SUM(CASE WHEN d.result_area = 2 OR d.result_line = 2 THEN 1 ELSE 0 END) AS ng,
+                        SUM(CASE WHEN e.type_error = 1 THEN 1 ELSE 0 END) AS error_particle,
+                        SUM(CASE WHEN e.type_error = 2 THEN 1 ELSE 0 END) AS error_ng_tape_position,
+                        SUM(CASE WHEN e.type_error = 3 THEN 1 ELSE 0 END) AS error_deform,
+                        SUM(CASE WHEN e.type_error = 4 THEN 1 ELSE 0 END) AS error_scratch,
+                        SUM(CASE WHEN e.type_error = 5 THEN 1 ELSE 0 END) AS error_dirty 
+                    FROM data d 
+                    LEFT JOIN errors e ON d.id = e.data_id 
+                    where CAST(d.time AS DATE) >= '{fromDate}' and CAST(d.time AS DATE) <= '{toDate}' and d.model <> ''
+                    GROUP BY d.model, CAST(d.time AS DATE) 
+                    ORDER BY d.model";
+
+                var results = new List<ExportDataResponse>();
+
+                using (var connection = _dbContext.Database.GetDbConnection())
+                {
+                    await connection.OpenAsync();
+
+                    using var command = connection.CreateCommand();
+                    command.CommandText = sql;
+
+                    using var reader = await command.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        var dateSelect = reader.GetDateTime(reader.GetOrdinal("date_select")).ToString("dd/MM/yyyy");
+
+                        var result = new ExportDataResponse
+                        {
+                            DateSelect = dateSelect,
+                            Model = reader.GetString(reader.GetOrdinal("model")),
+                            TypeModel = reader.GetString(reader.GetOrdinal("type_model")),
+                            Ok = reader.GetInt32(reader.GetOrdinal("ok")),
+                            Ng = reader.GetInt32(reader.GetOrdinal("ng")),
+                            ErrorParticle = reader.GetInt32(reader.GetOrdinal("error_particle")),
+                            ErrorNgTapePosition = reader.GetInt32(reader.GetOrdinal("error_ng_tape_position")),
+                            ErrorDeform = reader.GetInt32(reader.GetOrdinal("error_deform")),
+                            ErrorScratch = reader.GetInt32(reader.GetOrdinal("error_scratch")),
+                            ErrorDirty = reader.GetInt32(reader.GetOrdinal("error_dirty"))
+                        };
+
+                        results.Add(result);
+                    }
+                }
+
+                foreach (var item in results)
+                {
+                    Global.ExportExcel(item, fromDate, toDate);
+                }
+
+                if (results.Count > 0)
+                {
+                    return "success";
+                }
+                else
+                {
+                    return "Not data";
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error Get List History: {ex.Message}");
+                return "Not data";
             }
         }
     }
