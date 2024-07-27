@@ -197,7 +197,7 @@ namespace Stiffiner_Inspection
             return value;
         }
 
-        private static string GetUniqueFilePath(string filePath)
+        public static string GetUniqueFilePath(string filePath)
         {
             try
             {
@@ -223,28 +223,10 @@ namespace Stiffiner_Inspection
             }
         }
 
-        public static void ExportExcel(ExportDataResponse rs, string fromDate, string toDate)
+        public static void ExportExcel(ExportDataResponse rs, string filePath)
         {
             try
             {
-                if (!Directory.Exists(Global.PATH_EXPORT_EXCEL))
-                {
-                    Directory.CreateDirectory(Global.PATH_EXPORT_EXCEL);
-                }
-
-                string fileName = string.Empty;
-
-                if (fromDate == toDate)
-                {
-                    fileName = $"{fromDate}.xlsx";
-                }
-                else
-                {
-                    fileName = $"{fromDate}_{toDate}.xlsx";
-                }
-
-                string filePath = Path.Combine(Global.PATH_EXPORT_EXCEL, fileName);
-
                 using (ExcelPackage package = new ExcelPackage(new FileInfo(filePath)))
                 {
                     ExcelWorksheet worksheet = package.Workbook.Worksheets.Count == 0 ? package.Workbook.Worksheets.Add("Sheet1") : package.Workbook.Worksheets[0];

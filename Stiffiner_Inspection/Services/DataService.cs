@@ -1001,13 +1001,32 @@ namespace Stiffiner_Inspection.Services
                     }
                 }
 
-                foreach (var item in results)
-                {
-                    Global.ExportExcel(item, fromDate, toDate);
-                }
-
                 if (results.Count > 0)
                 {
+                    if (!Directory.Exists(Global.PATH_EXPORT_EXCEL))
+                    {
+                        Directory.CreateDirectory(Global.PATH_EXPORT_EXCEL);
+                    }
+
+                    string fileName = string.Empty;
+
+                    if (fromDate == toDate)
+                    {
+                        fileName = $"{fromDate}.xlsx";
+                    }
+                    else
+                    {
+                        fileName = $"{fromDate}_{toDate}.xlsx";
+                    }
+
+                    string filePath = Path.Combine(Global.PATH_EXPORT_EXCEL, fileName);
+                    filePath = Global.GetUniqueFilePath(filePath);
+
+                    foreach (var item in results)
+                    {
+                        Global.ExportExcel(item, filePath);
+                    }
+
                     return "success";
                 }
                 else
