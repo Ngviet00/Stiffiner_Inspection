@@ -244,7 +244,6 @@ namespace Stiffiner_Inspection
                 }
 
                 string filePath = Path.Combine(Global.PATH_EXPORT_EXCEL, fileName);
-                filePath = GetUniqueFilePath(filePath);
 
                 using (ExcelPackage package = new ExcelPackage(new FileInfo(filePath)))
                 {

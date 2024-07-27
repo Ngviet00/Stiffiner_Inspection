@@ -921,26 +921,53 @@ namespace Stiffiner_Inspection.Services
             try
             {
                 var sql = $@"
+                    WITH DataResults AS (
+                        SELECT 
+                            CAST(d.time AS DATE) AS date_select, 
+                            d.model,
+                            CASE 
+                                WHEN d.model = 'Stiffener_954_PSA_Side' OR d.model = 'Stiffener_953_PSA_Side' OR d.model = 'Stiffener_963_964_PSA_Side'
+                                THEN 'PSA'  
+                                ELSE 'SUS' 
+                            END AS type_model, 
+                            SUM(CASE WHEN d.result_area = 1 AND d.result_line = 1 THEN 1 ELSE 0 END) AS ok,
+                            SUM(CASE WHEN d.result_area = 2 OR d.result_line = 2 THEN 1 ELSE 0 END) AS ng
+                        FROM data d
+                        WHERE CAST(d.time AS DATE) >= '{fromDate}' 
+                          AND CAST(d.time AS DATE) <= '{toDate}' 
+                          AND d.model <> ''
+                        GROUP BY d.model, CAST(d.time AS DATE)
+                    ),
+                    ErrorCounts AS (
+                        SELECT 
+                            CAST(d.time AS DATE) AS date_select,
+                            d.model,
+                            SUM(CASE WHEN e.type_error = 1 THEN 1 ELSE 0 END) AS error_particle,
+                            SUM(CASE WHEN e.type_error = 2 THEN 1 ELSE 0 END) AS error_ng_tape_position,
+                            SUM(CASE WHEN e.type_error = 3 THEN 1 ELSE 0 END) AS error_deform,
+                            SUM(CASE WHEN e.type_error = 4 THEN 1 ELSE 0 END) AS error_scratch,
+                            SUM(CASE WHEN e.type_error = 5 THEN 1 ELSE 0 END) AS error_dirty
+                        FROM data d
+                        LEFT JOIN errors e ON d.id = e.data_id
+                        WHERE CAST(d.time AS DATE) >= '{fromDate}' 
+                          AND CAST(d.time AS DATE) <= '{toDate}'
+                          AND d.model <> '' 
+                        GROUP BY d.model, CAST(d.time AS DATE)
+                    )
                     SELECT 
-                        CAST(d.time AS DATE) AS date_select, 
+                        d.date_select,
                         d.model,
-                        CASE 
-                            WHEN d.model = 'Stiffener_954_PSA_Side' OR d.model = 'Stiffener_953_PSA_Side' OR d.model = 'Stiffener_963_964_PSA_Side'
-                            THEN 'PSA'  
-                            ELSE 'SUS' 
-                        END AS type_model, 
-                        SUM(CASE WHEN d.result_area = 1 AND d.result_line = 1 THEN 1 ELSE 0 END) AS ok,
-                        SUM(CASE WHEN d.result_area = 2 OR d.result_line = 2 THEN 1 ELSE 0 END) AS ng,
-                        SUM(CASE WHEN e.type_error = 1 THEN 1 ELSE 0 END) AS error_particle,
-                        SUM(CASE WHEN e.type_error = 2 THEN 1 ELSE 0 END) AS error_ng_tape_position,
-                        SUM(CASE WHEN e.type_error = 3 THEN 1 ELSE 0 END) AS error_deform,
-                        SUM(CASE WHEN e.type_error = 4 THEN 1 ELSE 0 END) AS error_scratch,
-                        SUM(CASE WHEN e.type_error = 5 THEN 1 ELSE 0 END) AS error_dirty 
-                    FROM data d 
-                    LEFT JOIN errors e ON d.id = e.data_id 
-                    where CAST(d.time AS DATE) >= '{fromDate}' and CAST(d.time AS DATE) <= '{toDate}' and d.model <> ''
-                    GROUP BY d.model, CAST(d.time AS DATE) 
-                    ORDER BY d.model";
+                        d.type_model,
+                        d.ok,
+                        d.ng,
+                        COALESCE(e.error_particle, 0) AS error_particle,
+                        COALESCE(e.error_ng_tape_position, 0) AS error_ng_tape_position,
+                        COALESCE(e.error_deform, 0) AS error_deform,
+                        COALESCE(e.error_scratch, 0) AS error_scratch,
+                        COALESCE(e.error_dirty, 0) AS error_dirty
+                    FROM DataResults d
+                    LEFT JOIN ErrorCounts e ON d.model = e.model AND d.date_select = e.date_select
+                    ORDER BY d.date_select asc;";
 
                 var results = new List<ExportDataResponse>();
 
